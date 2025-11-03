@@ -6,13 +6,13 @@ public class LibroLettore {
 	private Lettore lettore;
 	private int progressivo;
 
-	public void LibroLettore(Libro libro, Lettore lettore, int progressivo) {
+	public LibroLettore(Libro libro, Lettore lettore, int progressivo) {
         this.libro = libro;
         this.lettore = lettore;
         this.progressivo = progressivo;
 	}
 
-	public void LibroLettore(Libro libro, int progressivo) {
+	public LibroLettore(Libro libro, int progressivo) {
         this.libro = libro;
         this.progressivo = progressivo;
 	}

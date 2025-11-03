@@ -13,7 +13,7 @@ public class Evento extends EventoAstratto {
     private Lettore creatore;
     private int iscritti;
 
-    public void Evento(Lettore creatore, String nome, Luogo luogo, LocalDateTime data, ArrayList<LibroLettore> scaletta) {
+    public Evento(Lettore creatore, String nome, Luogo luogo, LocalDateTime data, ArrayList<LibroLettore> scaletta) {
         this.creatore = creatore;
         this.nome  = nome;
         this.luogo = luogo;
@@ -21,8 +21,47 @@ public class Evento extends EventoAstratto {
         this.scaletta = scaletta;
     }
 
+    public Evento(int id, Lettore creatore, String nome, Luogo luogo, LocalDateTime data, ArrayList<LibroLettore> scaletta) {
+        this.creatore = creatore;
+        this.nome  = nome;
+        this.luogo = luogo;
+        this.data = data;
+        this.scaletta = scaletta;
+        this.id = id;
+    }
+
     public void setId(int id) {
         this.id = id;
+    }
+
+
+    public String getNome() {
+        return nome;
+    }
+
+    public LocalDateTime getData() {
+        return data;
+    }
+
+    public Luogo getLuogo() {
+        return luogo;
+    }
+
+    public ArrayList<LibroLettore> getScaletta() {
+        return scaletta;
+    }
+
+    public Lettore getCreatore() {
+        return creatore;
+    }
+
+    public int getIscritti() {
+        return iscritti;
+    }
+
+
+    public int getId() {
+        return id;
     }
 
     public void aggiornaEvento(Evento evento) {
@@ -36,9 +75,12 @@ public class Evento extends EventoAstratto {
         LocalDateTime oraFine = data;
         for (LibroLettore ll : scaletta) {
             // Somma la durata di ogni libro alla data di inizio
-            oraFine = data.plusMinutes(ll.getLibro().getTempoLettura());
+            oraFine = oraFine.plusMinutes(ll.getLibro().getTempoLettura());
         }
         return oraFine;
     }
 
+    public void setIscritti(int iscritti) {
+        this.iscritti = iscritti;
+    }
 }
