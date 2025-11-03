@@ -24,4 +24,12 @@ public class LibroLettore {
     public Libro getLibro() {
         return libro;
     }
+
+    public Lettore getLettore() {
+        return lettore;
+    }
+
+    public int getProgressivo() {
+        return progressivo;
+    }
 }
