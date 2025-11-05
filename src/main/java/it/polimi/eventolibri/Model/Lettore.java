@@ -6,7 +6,7 @@ public class Lettore extends  Utente implements Listener {
         super(nome, cognome, userName);
     }
 
-    public void update() {
+    public void update(Evento evento) {
 
 	}
 

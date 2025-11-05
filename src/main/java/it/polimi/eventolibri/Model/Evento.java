@@ -69,6 +69,7 @@ public class Evento extends EventoAstratto {
         this.luogo = evento.luogo;
         this.data = evento.data;
         this.scaletta = evento.scaletta;
+        updateAll(this);
     }
 
     public LocalDateTime calcolaOraFine() {

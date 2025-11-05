@@ -2,6 +2,6 @@ package it.polimi.eventolibri.Model;
 
 public interface Listener {
 
-	public abstract void update();
+	public abstract void update(Evento evento);
 
 }

@@ -33,4 +33,13 @@ public class Figlio {
     public ArrayList<Evento> getIscrizioni() {
         return iscrizioni;
     }
+
+    public void aggiornaEvento(Evento eventoAggiornato) {
+        for (int i = 0; i < iscrizioni.size(); i++) {
+            if (iscrizioni.get(i).getId() == eventoAggiornato.getId()) {
+                iscrizioni.set(i, eventoAggiornato);
+                break;
+            }
+        }
+    }
 }

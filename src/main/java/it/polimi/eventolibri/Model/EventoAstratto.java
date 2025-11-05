@@ -4,18 +4,20 @@ import java.util.ArrayList;
 
 public abstract class EventoAstratto {
 
-	private ArrayList<Listener> Listener;
+	private ArrayList<Listener> listeners;
 
-	public void addListener(int Listener) {
-
+	public void addListener(Listener listener) {
+        listeners.add(listener);
 	}
 
-	public void removeListener(int Listener) {
-
+	public void removeListener(Listener listener) {
+        listeners.remove(listener);
 	}
 
-	public void updateAll() {
-
+	public void updateAll(Evento evento) {
+        for (Listener listener : listeners) {
+            listener.update(evento);
+        }
 	}
 
 }

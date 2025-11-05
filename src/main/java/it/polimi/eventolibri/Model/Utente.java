@@ -12,4 +12,16 @@ public abstract class Utente {
         this.cognome = cognome;
         this.userName = userName;
     }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getCognome() {
+        return cognome;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
 }
