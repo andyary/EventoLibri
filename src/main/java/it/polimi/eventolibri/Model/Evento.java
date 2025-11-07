@@ -19,6 +19,10 @@ public class Evento extends EventoAstratto {
         this.luogo = luogo;
         this.data = data;
         this.scaletta = scaletta;
+        creatore.aggiungiEventiCreati(this);
+        for (LibroLettore ll : scaletta) {
+            this.addListener(ll.getLettore());
+        }
     }
 
     public Evento(int id, Lettore creatore, String nome, Luogo luogo, LocalDateTime data, ArrayList<LibroLettore> scaletta) {
@@ -27,6 +31,10 @@ public class Evento extends EventoAstratto {
         this.luogo = luogo;
         this.data = data;
         this.scaletta = scaletta;
+        creatore.aggiungiEventiCreati(this);
+        for (LibroLettore ll : scaletta) {
+            this.addListener(ll.getLettore());
+        }
         this.id = id;
     }
 
@@ -68,6 +76,20 @@ public class Evento extends EventoAstratto {
         this.nome  = evento.nome;
         this.luogo = evento.luogo;
         this.data = evento.data;
+        for (LibroLettore ll_old : this.scaletta) {
+            int flag = 0;
+            for (LibroLettore ll_new : evento.scaletta) {
+                if (ll_old.getLettore().equals(ll_new.getLettore())) {flag=1;}
+            }
+            if (flag == 0) {this.removeListener(ll_old.getLettore());}
+        }
+        for (LibroLettore ll_new : evento.scaletta) {
+            int flag = 0;
+            for (LibroLettore ll_old : this.scaletta) {
+                if (ll_old.getLettore().equals(ll_new.getLettore())) {flag=1;}
+            }
+            if (flag == 0) {this.addListener(ll_new.getLettore());}
+        }
         this.scaletta = evento.scaletta;
         updateAll(this);
     }

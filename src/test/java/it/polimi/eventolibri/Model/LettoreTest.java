@@ -1,0 +1,13 @@
+package it.polimi.eventolibri.Model;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class LettoreTest {
+
+
+    @Test
+    void update() {
+    }
+}

@@ -7,6 +7,7 @@ public abstract class CreaUtente {
         return utente;
 	}
 
+
     public abstract Utente factory(String nome, String cognome, String userName);
 
 }

@@ -2,6 +2,7 @@ package it.polimi.eventolibri.Model;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -66,6 +67,16 @@ class EventoTest {
         Evento evento1= new Evento(creatore, "Evento di prova", luogo, date, scaletta);
         evento1.setId(5);
 
+
+        Genitore genitore1 = new Genitore("Mario", "Rossi", "mariorossi");
+        Figlio figlio1 = new Figlio("Mario", LocalDate.of(2015, 1, 1));
+        genitore1.aggiungiFiglio(figlio1);
+        figlio1.iscrivi(evento1);
+
+        // evento1.addListener(genitore1);
+        // dobbiamo testare observer pattern lato lettore e verificare lato figli/genitori
+
+
         Lettore creatore2 = new Lettore("Mario2", "Rossi2", "mariorossi2");
         Luogo luogo2 = new Luogo("Sala B", 10, 3);
         LocalDateTime date2 = LocalDateTime.of(2026, 5, 15, 18, 0);
@@ -81,6 +92,7 @@ class EventoTest {
         Evento evento2= new Evento(creatore2, "Evento di prova2", luogo2, date2, scaletta2);
         evento2.setId(2);
         evento1.aggiornaEvento(evento2);
+
         assertNotEquals(evento1, evento2);
         assertEquals(5, evento1.getId());
         assertNotEquals(evento2.getId(), evento1.getId());
@@ -89,6 +101,7 @@ class EventoTest {
         assertEquals(evento2.getLuogo(), evento1.getLuogo());
         assertEquals(evento2.getData(), evento1.getData());
         assertEquals(evento2.getScaletta(), evento1.getScaletta());
+
 
     }
 
