@@ -13,12 +13,6 @@ public class Lettore extends  Utente implements Listener {
         this.eventiCreati = new ArrayList<Evento>();
     }
 
-    /* public Lettore(String nome, String cognome, String userName, ArrayList<Evento> iscrizioniLettura, ArrayList<Evento> eventiCreati) {
-        // Ricordarsi di passare gli ArrayList vuoti se non ci sono iscrizioni o eventi creati, non null
-        super(nome, cognome, userName);
-        this.iscrizioniLettura = iscrizioniLettura;
-        this.eventiCreati = eventiCreati;
-    } */
 
     public void setIscrizioniLettura(ArrayList<Evento> iscrizioniLettura) {
         this.iscrizioniLettura = iscrizioniLettura;
@@ -38,15 +32,17 @@ public class Lettore extends  Utente implements Listener {
         this.eventiCreati.add(eventoCreato);
         eventoCreato.addListener(this);
     }
+
     public void aggiungiIscrizioneLettura(Evento eventoIscritto) {
         this.iscrizioniLettura.add(eventoIscritto);
         eventoIscritto.addListener(this);
     }
+
     public void rimuoviIscrizioneLettura(Evento eventoIscritto) {
         this.iscrizioniLettura.remove(eventoIscritto);
-        eventoIscritto.removeListener(this);
+        if (!this.equals(eventoIscritto.getCreatore()) && !iscrizioniLettura.contains(eventoIscritto)) {
+            eventoIscritto.removeListener(this);}
     }
-
 
     public void update(Evento eventoAggiornato) {
         for (int i = 0; i < iscrizioniLettura.size(); i++) {

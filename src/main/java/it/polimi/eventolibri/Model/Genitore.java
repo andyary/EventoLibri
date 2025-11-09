@@ -19,7 +19,11 @@ public class Genitore extends Utente implements Listener {
         return figli.size();
     }
 
-	public void update(Evento evento) {
+    public ArrayList<Figlio> getFigli() {
+        return figli;
+    }
+
+    public void update(Evento evento) {
         for (Figlio figlio : figli) {
             figlio.aggiornaEvento(evento);
         }

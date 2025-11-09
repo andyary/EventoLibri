@@ -1,7 +1,6 @@
 package it.polimi.eventolibri.Model;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Figlio {
@@ -18,18 +17,28 @@ public class Figlio {
         this.iscrizioni = new ArrayList<>();
     }
 
-    public Figlio(String nome, LocalDate dataNascita, ArrayList<Evento> iscrizioni) {
+    public Figlio(String nome, LocalDate dataNascita, ArrayList<Evento> iscrizioni, Genitore genitore) {
         this.nome = nome;
         this.dataNascita = dataNascita;
         this.iscrizioni = iscrizioni;
+        for (Evento evento : iscrizioni) {
+            evento.addListener(genitore);
+        }
     }
 
-	public void iscrivi(Evento evento) {
+	public void iscrivi(Evento evento, Genitore genitore) {
         iscrizioni.add(evento);
+        evento.addListener(genitore);
     }
 
-	public void disicrivi(Evento evento) {
+	public void disiscrivi(Evento evento, Genitore genitore) {
         iscrizioni.remove(evento);
+        for (Figlio figlio : genitore.getFigli()) {
+            if (figlio.getIscrizioni().contains(evento)) {
+                return; // Un altro figlio del genitore è ancora iscritto all'evento
+            }
+        }
+        evento.removeListener(genitore);
 	}
 
     public int getNumeroIscrizioni() {

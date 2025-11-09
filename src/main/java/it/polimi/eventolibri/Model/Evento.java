@@ -81,14 +81,20 @@ public class Evento extends EventoAstratto {
             for (LibroLettore ll_new : evento.scaletta) {
                 if (ll_old.getLettore().equals(ll_new.getLettore())) {flag=1;}
             }
-            if (flag == 0) {this.removeListener(ll_old.getLettore());}
+            if (flag == 0) {
+                // this.removeListener(ll_old.getLettore());
+                ll_old.getLettore().rimuoviIscrizioneLettura(this);
+            }
         }
         for (LibroLettore ll_new : evento.scaletta) {
             int flag = 0;
             for (LibroLettore ll_old : this.scaletta) {
                 if (ll_old.getLettore().equals(ll_new.getLettore())) {flag=1;}
             }
-            if (flag == 0) {this.addListener(ll_new.getLettore());}
+            if (flag == 0) {
+                // this.addListener(ll_new.getLettore());
+                ll_new.getLettore().aggiungiIscrizioneLettura(this);
+            }
         }
         this.scaletta = evento.scaletta;
         updateAll(this);

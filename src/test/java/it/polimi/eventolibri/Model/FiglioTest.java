@@ -43,9 +43,14 @@ class FiglioTest {
         scaletta2.add(ll4);
         Evento evento2= new Evento(creatore2, "Evento di prova2", luogo2, date2, scaletta2);
         evento2.setId(2);
-        figlio1.iscrivi(evento1);
-        figlio1.iscrivi(evento2);
-        figlio2.iscrivi(evento2);
+
+        Genitore genitore1 = new Genitore("Mario", "Rossi", "mariorossi");
+        genitore1.aggiungiFiglio(figlio1);
+        genitore1.aggiungiFiglio(figlio2);
+
+        figlio1.iscrivi(evento1, genitore1);
+        figlio1.iscrivi(evento2, genitore1);
+        figlio2.iscrivi(evento2, genitore1);
         assertEquals(evento1, figlio1.getIscrizioni().get(0));
         assertEquals(evento2, figlio1.getIscrizioni().get(1));
         assertEquals(evento2, figlio2.getIscrizioni().get(0));
@@ -55,7 +60,7 @@ class FiglioTest {
     }
 
     @Test
-    void disicrivi() {
+    void disiscrivi() {
         Figlio figlio1 = new Figlio("Mario", LocalDate.of(2015, 1, 1));
         Figlio figlio2 = new Figlio("Angela", LocalDate.of(2017, 7, 7));
         Lettore creatore = new Lettore("Mario", "Rossi", "mariorossi");
@@ -87,14 +92,31 @@ class FiglioTest {
         scaletta2.add(ll4);
         Evento evento2= new Evento(creatore2, "Evento di prova2", luogo2, date2, scaletta2);
         evento2.setId(2);
-        figlio1.iscrivi(evento1);
-        figlio1.iscrivi(evento2);
-        figlio2.iscrivi(evento2);
-        figlio1.disicrivi(evento1);
+        Genitore genitore1 = new Genitore("Mario", "Rossi", "mariorossi");
+        genitore1.aggiungiFiglio(figlio1);
+        genitore1.aggiungiFiglio(figlio2);
+        figlio1.iscrivi(evento1, genitore1);
+        figlio1.iscrivi(evento2, genitore1);
+        figlio2.iscrivi(evento2, genitore1);
+        assertEquals(genitore1, evento1.getListeners().get(3));
+        assertEquals(genitore1, evento2.getListeners().get(3));
+
+        figlio1.disiscrivi(evento1, genitore1);
+        assertFalse(evento1.getListeners().contains(genitore1));
+        assertTrue(evento2.getListeners().contains(genitore1));
+
         assertEquals(evento2, figlio1.getIscrizioni().get(0));
         assertEquals(evento2, figlio2.getIscrizioni().get(0));
         assertEquals(1, figlio1.getNumeroIscrizioni());
         assertEquals(1, figlio2.getNumeroIscrizioni());
+
+        figlio1.disiscrivi(evento2, genitore1);
+        assertTrue(evento2.getListeners().contains(genitore1));
+
+        figlio2.disiscrivi(evento2, genitore1);
+        assertFalse(evento2.getListeners().contains(genitore1));
+
+
     }
 
     @Test

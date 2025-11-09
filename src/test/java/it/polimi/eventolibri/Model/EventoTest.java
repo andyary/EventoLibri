@@ -67,11 +67,21 @@ class EventoTest {
         Evento evento1= new Evento(creatore, "Evento di prova", luogo, date, scaletta);
         evento1.setId(5);
 
+        assertEquals(creatore, evento1.getListeners().get(0));
+        assertEquals(lettore1, evento1.getListeners().get(1));
+        assertEquals(lettore2, evento1.getListeners().get(2));
+
 
         Genitore genitore1 = new Genitore("Mario", "Rossi", "mariorossi");
+        Genitore genitore2 = new Genitore("Luca", "Bianchi", "lucabianchi");
         Figlio figlio1 = new Figlio("Mario", LocalDate.of(2015, 1, 1));
+        Figlio figlio2 = new Figlio("Luca", LocalDate.of(2015, 1, 2));
         genitore1.aggiungiFiglio(figlio1);
-        figlio1.iscrivi(evento1);
+        genitore2.aggiungiFiglio(figlio2);
+        figlio1.iscrivi(evento1, genitore1);
+        assertEquals(genitore1, evento1.getListeners().get(3));
+        figlio2.iscrivi(evento1, genitore2);
+        assertEquals(genitore2, evento1.getListeners().get(4));
 
         // evento1.addListener(genitore1);
         // dobbiamo testare observer pattern lato lettore e verificare lato figli/genitori
