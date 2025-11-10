@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 public abstract class EventoAstratto {
 
-
-
     private ArrayList<Listener> listeners = new ArrayList<Listener>();
 
 	public void addListener(Listener listener) {

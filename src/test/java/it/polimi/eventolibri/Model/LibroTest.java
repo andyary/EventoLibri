@@ -16,7 +16,7 @@ class LibroTest {
     void aggiungiRecensione() {
         Libro libro1 = new Libro("Titolo1", 12, "http://linkesempio.com", "Autore1", 1);
         Genitore genitore1 = new Genitore("Mario", "Rossi", "mariorossi");
-        Recensione recensione1 = new Recensione(genitore1, "Ottimo libro!", libro1);
+        Recensione recensione1 = new Recensione(1,genitore1, "Ottimo libro!", libro1);
         Recensione recensione2 = new Recensione(genitore1, "Ottimo libro2!", libro1);
         assertEquals(0, libro1.getRecensioni().size());
         libro1.aggiungiRecensione(recensione1);

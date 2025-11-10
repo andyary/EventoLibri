@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 public class Figlio {
 
+    private int id;
 	private ArrayList<Evento> iscrizioni;
 	private String nome;
 	private LocalDate dataNascita;
@@ -17,7 +18,8 @@ public class Figlio {
         this.iscrizioni = new ArrayList<>();
     }
 
-    public Figlio(String nome, LocalDate dataNascita, ArrayList<Evento> iscrizioni, Genitore genitore) {
+    public Figlio(int id, String nome, LocalDate dataNascita, ArrayList<Evento> iscrizioni, Genitore genitore) {
+        this.id = id;
         this.nome = nome;
         this.dataNascita = dataNascita;
         this.iscrizioni = iscrizioni;
@@ -26,7 +28,11 @@ public class Figlio {
         }
     }
 
-	public void iscrivi(Evento evento, Genitore genitore) {
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void iscrivi(Evento evento, Genitore genitore) {
         iscrizioni.add(evento);
         evento.addListener(genitore);
     }
