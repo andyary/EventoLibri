@@ -13,6 +13,14 @@ public class Lettore extends  Utente implements Listener {
         this.eventiCreati = new ArrayList<Evento>();
     }
 
+    public Lettore(int id, String nome, String cognome, String userName) {
+        super(id, nome, cognome, userName);
+        this.iscrizioniLettura = new ArrayList<Evento>();
+        this.eventiCreati = new ArrayList<Evento>();
+    }
+
+
+
 
     public void setIscrizioniLettura(ArrayList<Evento> iscrizioniLettura) {
         this.iscrizioniLettura = iscrizioniLettura;

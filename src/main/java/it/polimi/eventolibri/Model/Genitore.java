@@ -10,6 +10,10 @@ public class Genitore extends Utente implements Listener {
         super(nome, cognome, userName);
     }
 
+    public Genitore(int id, String nome, String cognome, String userName) {
+        super(id, nome, cognome, userName);
+    }
+
     public void aggiungiFiglio(Figlio figlio) {
         // Aggiungi il figlio all'array figli
         figli.add(figlio);

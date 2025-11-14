@@ -13,6 +13,17 @@ public abstract class Utente {
         this.userName = userName;
     }
 
+    public Utente(int id, String nome, String cognome, String userName) {
+        this.nome = nome;
+        this.cognome = cognome;
+        this.userName = userName;
+        this.id = id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getNome() {
         return nome;
     }
