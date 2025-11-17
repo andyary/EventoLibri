@@ -19,6 +19,10 @@ public class Genitore extends Utente implements Listener {
         figli.add(figlio);
 	}
 
+    public void setFigli(ArrayList<Figlio> figli) {
+        this.figli = figli;
+    }
+
     public int getNumeroFigli() {
         return figli.size();
     }
@@ -26,6 +30,8 @@ public class Genitore extends Utente implements Listener {
     public ArrayList<Figlio> getFigli() {
         return figli;
     }
+
+
 
     public void update(Evento evento) {
         for (Figlio figlio : figli) {

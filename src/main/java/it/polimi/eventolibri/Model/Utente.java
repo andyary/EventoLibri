@@ -24,6 +24,10 @@ public abstract class Utente {
         this.id = id;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public String getNome() {
         return nome;
     }

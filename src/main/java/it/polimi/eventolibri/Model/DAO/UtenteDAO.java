@@ -29,22 +29,30 @@ public class UtenteDAO {
                             result.getString("tipo")){
                         case "Amministratore":
                             CreaUtente creaAmministratore = new CreaAmministratore();
-                            Utente amministratore = creaAmministratore.nuovoUtente(result.getString("nome"), result.getString("cognome"), result.getString("username"));
+                            Utente amministratore = creaAmministratore.nuovoUtente(result.getInt("id"), result.getString("nome"), result.getString("cognome"), result.getString("username"));
                             return amministratore;
                         case "Lettore":
                             CreaUtente creaLettore = new CreaLettore();
-                            Utente lettore = creaLettore.nuovoUtente(result.getString("nome"), result.getString("cognome"), result.getString("username"));
+                            Utente lettore = creaLettore.nuovoUtente(result.getInt("id"), result.getString("nome"), result.getString("cognome"), result.getString("username"));
+                            // manca caricamento eventi creati e di lettura
                             return lettore;
                         case "Genitore":
                             CreaUtente creaGenitore = new CreaGenitore();
-                            Utente genitore = creaGenitore.nuovoUtente(result.getString("nome"), result.getString("cognome"), result.getString("username"));
+                            Utente genitore = creaGenitore.nuovoUtente(result.getInt("id"), result.getString("nome"), result.getString("cognome"), result.getString("username"));
+                            FiglioDAO figlioDAODao = new FiglioDAO(connection);
+                            ((Genitore) genitore).setFigli(figlioDAODao.getFigli((Genitore) genitore));
                             return genitore;
                         default:
                             return null;
                     }
                 }
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+                return null;
             }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            return null;
         }
     }
-
 }

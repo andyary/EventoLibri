@@ -20,8 +20,6 @@ public class Lettore extends  Utente implements Listener {
     }
 
 
-
-
     public void setIscrizioniLettura(ArrayList<Evento> iscrizioniLettura) {
         this.iscrizioniLettura = iscrizioniLettura;
         for (Evento evento : iscrizioniLettura) {
