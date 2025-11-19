@@ -25,20 +25,19 @@ public class FiglioDAO {
                 if (!result.isBeforeFirst()) // no risultati, non esiste utente con queste credenziali
                     return figli;
                 else {
-                    while (!result.isAfterLast()) {
-                        result.next();
-                        Figlio figlio = new Figlio(result.getInt("id"), result.getString("nome"), result.getDate("data_nascita").toLocalDate(), getIscrizioni(result.getInt("id")), genitore);
+                    while (result.next()) {
+                        Figlio figlio = new Figlio(result.getInt("id"), result.getString("nome"), result.getDate("dataNascita").toLocalDate(), getIscrizioni(result.getInt("id")), genitore);
                         figli.add(figlio);
                     }
                     return figli;
                 }
             } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+                System.out.println("1" + ex.getMessage());
                 return figli;
             }
 
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            System.out.println("2" + ex.getMessage());
             return figli;
         }
     }
@@ -53,24 +52,23 @@ public class FiglioDAO {
                 if (!result.isBeforeFirst()) // no risultati, non esiste utente con queste credenziali
                     return iscrizioni;
                 else {
-                    while (!result.isAfterLast()) {
-                        result.next();
-                        CreaUtente creaLettore = new CreaLettore();
-                        Utente lettore = creaLettore.nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
+                    while (result.next()) {
+                        CreaUtente<Lettore> creaLettore = new CreaLettore();
+                        Lettore lettore = creaLettore.nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
                         Luogo luogo = new Luogo(result.getString("l.nome"), result.getInt("l.capienza"),result.getInt("l.id"));
                         LibroLettoreDAO libroLettoreDAO = new LibroLettoreDAO(connection);
                         ArrayList<LibroLettore> scaletta = libroLettoreDAO.getScaletta(result.getInt("e.id"));
-                        iscrizioni.add(new Evento(result.getInt("e.id"), (Lettore) lettore, result.getString("e.nome"), luogo, result.getTimestamp("e.data").toLocalDateTime(), scaletta)) ;
+                        iscrizioni.add(new Evento(result.getInt("e.id"), lettore, result.getString("e.nome"), luogo, result.getTimestamp("e.data").toLocalDateTime(), scaletta)) ;
                     }
                     return iscrizioni;
                 }
             } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+                System.out.println("3" + ex.getMessage());
                 return iscrizioni;
             }
 
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            System.out.println("4" + ex.getMessage());
             return iscrizioni;
         }
     }

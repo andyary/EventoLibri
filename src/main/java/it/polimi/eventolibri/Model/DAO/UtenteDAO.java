@@ -28,30 +28,32 @@ public class UtenteDAO {
                     switch (
                             result.getString("tipo")){
                         case "Amministratore":
-                            CreaUtente creaAmministratore = new CreaAmministratore();
-                            Utente amministratore = creaAmministratore.nuovoUtente(result.getInt("id"), result.getString("nome"), result.getString("cognome"), result.getString("username"));
+                            CreaUtente<Amministratore> creaAmministratore = new CreaAmministratore();
+                            Amministratore amministratore = creaAmministratore.nuovoUtente(result.getInt("id"), result.getString("nome"), result.getString("cognome"), result.getString("username"));
                             return amministratore;
                         case "Lettore":
-                            CreaUtente creaLettore = new CreaLettore();
-                            Utente lettore = creaLettore.nuovoUtente(result.getInt("id"), result.getString("nome"), result.getString("cognome"), result.getString("username"));
-                            // manca caricamento eventi creati e di lettura
+                            CreaUtente<Lettore> creaLettore = new CreaLettore();
+                            Lettore lettore = creaLettore.nuovoUtente(result.getInt("id"), result.getString("nome"), result.getString("cognome"), result.getString("username"));
+                            lettore.setEventiCreati(new EventoDAO(connection).getEventiCreati(lettore));
+                            lettore.setIscrizioniLettura(new LibroLettoreDAO(connection).getEventiLettura(lettore));
                             return lettore;
                         case "Genitore":
-                            CreaUtente creaGenitore = new CreaGenitore();
-                            Utente genitore = creaGenitore.nuovoUtente(result.getInt("id"), result.getString("nome"), result.getString("cognome"), result.getString("username"));
-                            FiglioDAO figlioDAODao = new FiglioDAO(connection);
-                            ((Genitore) genitore).setFigli(figlioDAODao.getFigli((Genitore) genitore));
+                            CreaUtente<Genitore> creaGenitore = new CreaGenitore();
+                            Genitore genitore = creaGenitore.nuovoUtente(result.getInt("id"), result.getString("nome"), result.getString("cognome"), result.getString("username"));
+                            FiglioDAO figlioDAO = new FiglioDAO(connection);
+                            genitore.setFigli(figlioDAO.getFigli(genitore));
                             return genitore;
                         default:
                             return null;
                     }
                 }
+
             } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+                System.out.println("5" + ex.getMessage());
                 return null;
             }
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            System.out.println("6" + ex.getMessage());
             return null;
         }
     }

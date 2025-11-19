@@ -2,7 +2,7 @@ package it.polimi.eventolibri.Model;
 
 import java.util.ArrayList;
 
-public class Lettore extends  Utente implements Listener {
+public class Lettore extends Utente implements Listener {
 
     private ArrayList<Evento> iscrizioniLettura;
     private ArrayList<Evento> eventiCreati;

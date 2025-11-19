@@ -1,21 +1,21 @@
 package it.polimi.eventolibri.Model;
 
-public abstract class CreaUtente {
+public abstract class CreaUtente<T extends Utente> {
 
-	public Utente nuovoUtente(String nome, String cognome, String userName) {
-        Utente utente = factory(nome, cognome, userName);
+	public T nuovoUtente(String nome, String cognome, String userName) {
+        T utente = factory(nome, cognome, userName);
         return utente;
 	}
 
-    public Utente nuovoUtente(int id, String nome, String cognome, String userName) {
-        Utente utente = factory(id, nome, cognome, userName);
+    public T nuovoUtente(int id, String nome, String cognome, String userName) {
+        T utente = factory(id, nome, cognome, userName);
         return utente;
     }
 
 
 
-    public abstract Utente factory(String nome, String cognome, String userName);
+    public abstract T factory(String nome, String cognome, String userName);
 
-    public abstract Utente factory(int id, String nome, String cognome, String userName);
+    public abstract T factory(int id, String nome, String cognome, String userName);
 
 }

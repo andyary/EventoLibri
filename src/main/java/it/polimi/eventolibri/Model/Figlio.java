@@ -63,4 +63,8 @@ public class Figlio {
             }
         }
     }
+
+    public int getId() {
+        return id;
+    }
 }

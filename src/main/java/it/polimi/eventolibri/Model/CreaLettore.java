@@ -2,7 +2,7 @@ package it.polimi.eventolibri.Model;
 
 import java.util.ArrayList;
 
-public class CreaLettore extends CreaUtente {
+public class CreaLettore extends CreaUtente<Lettore> {
 
 	public Lettore factory(String nome, String cognome, String userName) {
         return new Lettore(nome, cognome, userName);

@@ -1,5 +1,7 @@
 package it.polimi.eventolibri.Model;
 
+import java.util.ArrayList;
+
 public abstract class Utente {
 
 	private int id;
@@ -35,6 +37,7 @@ public abstract class Utente {
     public String getCognome() {
         return cognome;
     }
+
 
     public String getUserName() {
         return userName;

@@ -24,8 +24,7 @@ public class LibroLettoreDAO {
                 if (!result.isBeforeFirst()) // no risultati, non esiste utente con queste credenziali
                     return scaletta;
                 else {
-                    while (!result.isAfterLast()) {
-                        result.next();
+                    while (result.next()) {
                         CreaUtente creaLettore = new CreaLettore();
                         Utente lettore = creaLettore.nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
                         Libro libro = new Libro(result.getString("l.titolo"), result.getInt("l.tempoLettura"), result.getString("l.link"), result.getString("l.autore"), result.getInt("l.id"));
@@ -35,12 +34,47 @@ public class LibroLettoreDAO {
                     return scaletta;
                 }
             } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+                System.out.println("7" + ex.getMessage());
                 return scaletta;
             }
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            System.out.println("8" + ex.getMessage());
             return scaletta;
+        }
+    }
+
+    public ArrayList<Evento> getEventiLettura(Lettore lettore) throws SQLException {
+        ArrayList<Evento> eventiLettura = new ArrayList<>();
+        String query = "SELECT * FROM librolettore ll JOIN eventi e JOIN luoghi l JOIN utenti u ON e.id=ll.id_evento AND e.id_luogo=l.id AND u.id=e.id_creatore WHERE ll.id_lettore = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, lettore.getId());
+            try (ResultSet result = pstatement.executeQuery();) {
+                if (!result.isBeforeFirst()) // no risultati, non esiste utente con queste credenziali
+                    return eventiLettura;
+                else {
+                    while (result.next()) {
+                        Luogo luogo = new Luogo(result.getString("l.nome"), result.getInt("l.capienza"),result.getInt("l.id"));
+                        Lettore creatore = new CreaLettore().nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
+                        Evento evento = new Evento(result.getInt("e.id"), creatore, result.getString("e.nome"), luogo , result.getTimestamp("e.data").toLocalDateTime(), getScaletta(result.getInt("e.id")) );
+                        int flag = 0;
+                        for (Evento ev : eventiLettura) {
+                            if (ev.getId() == evento.getId()) {
+                                flag=1;
+                                break;
+                            }
+                        }
+                        if (flag==0) eventiLettura.add(evento);
+                    }
+                    return eventiLettura;
+                }
+            } catch (SQLException ex) {
+                System.out.println("10" + ex.getMessage());
+                return eventiLettura;
+            }
+
+        } catch (SQLException ex) {
+            System.out.println("11" + ex.getMessage());
+            return eventiLettura;
         }
     }
 
