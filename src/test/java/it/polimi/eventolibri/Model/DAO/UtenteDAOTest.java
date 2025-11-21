@@ -1,9 +1,6 @@
 package it.polimi.eventolibri.Model.DAO;
 
-import it.polimi.eventolibri.Model.DBGestore;
-import it.polimi.eventolibri.Model.Genitore;
-import it.polimi.eventolibri.Model.Lettore;
-import it.polimi.eventolibri.Model.Utente;
+import it.polimi.eventolibri.Model.*;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -29,6 +26,9 @@ class UtenteDAOTest {
             Lettore lettorevalido = (Lettore) utenteDAO.checkCredentials("lettore13", "3333");
             assertNotNull(lettorevalido);
             // valutarer altri controlli
+
+            Amministratore amministratorevalido = (Amministratore) utenteDAO.checkCredentials("admin2", "1111");
+            assertNotNull(amministratorevalido);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

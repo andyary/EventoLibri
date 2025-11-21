@@ -2,10 +2,8 @@ package it.polimi.eventolibri.Model.DAO;
 
 import it.polimi.eventolibri.Model.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class EventoDAO {
@@ -43,4 +41,72 @@ public class EventoDAO {
             return eventiCreati;
         }
     }
+
+
+    public ArrayList<Evento> getNextEventi(LocalDateTime data) throws SQLException {
+        ArrayList<Evento> nextEventi = new ArrayList<>();
+        String query = "SELECT * FROM eventi e JOIN luoghi l JOIN utenti u " +
+                "ON e.id_luogo=l.id AND e.id_creatore=u.id WHERE e.data >= ? " +
+                "ORDER BY e.data ASC, e.id ASC LIMIT 10";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setTimestamp(1, Timestamp.valueOf(data));
+            try (ResultSet result = pstatement.executeQuery();) {
+                if (!result.isBeforeFirst()) // no risultati, non esiste utente con queste credenziali
+                    return nextEventi;
+                else {
+                    while (result.next()) {
+                        LibroLettoreDAO libroLettoreDAO = new LibroLettoreDAO(connection);
+                        Luogo luogo = new Luogo(result.getString("l.nome"), result.getInt("l.capienza"),result.getInt("l.id"));
+                        Lettore creatore = new CreaLettore().nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
+                        Evento evento = new Evento(result.getInt("e.id"), creatore, result.getString("e.nome"), luogo , result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")) );
+                        nextEventi.add(evento);
+                    }
+                    return nextEventi;
+                }
+            } catch (SQLException ex) {
+                System.out.println("8" + ex.getMessage());
+                return nextEventi;
+            }
+
+        } catch (SQLException ex) {
+            System.out.println("9" + ex.getMessage());
+            return nextEventi;
+        }
+    }
+
+    public ArrayList<Evento> getNextEventi(Evento eventoUltimoVisto) throws SQLException {
+        ArrayList<Evento> nextEventi = new ArrayList<>();
+        String query = "SELECT * FROM eventi e JOIN luoghi l JOIN utenti u ON e.id_luogo=l.id AND e.id_creatore=u.id " +
+                "WHERE (e.data > ?) OR ((e.data = ?) AND (e.id > ?)) " +
+                "ORDER BY e.data ASC, e.id ASC LIMIT 10 ";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setTimestamp(1, Timestamp.valueOf(eventoUltimoVisto.getData()));
+            pstatement.setTimestamp(2, Timestamp.valueOf(eventoUltimoVisto.getData()));
+            pstatement.setInt(3, eventoUltimoVisto.getId());
+            try (ResultSet result = pstatement.executeQuery();) {
+                if (!result.isBeforeFirst()) // no risultati, non esiste utente con queste credenziali
+                    return nextEventi;
+                else {
+                    while (result.next()) {
+                        LibroLettoreDAO libroLettoreDAO = new LibroLettoreDAO(connection);
+                        Luogo luogo = new Luogo(result.getString("l.nome"), result.getInt("l.capienza"),result.getInt("l.id"));
+                        Lettore creatore = new CreaLettore().nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
+                        Evento evento = new Evento(result.getInt("e.id"), creatore, result.getString("e.nome"), luogo , result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")) );
+                        nextEventi.add(evento);
+                    }
+                    return nextEventi;
+                }
+            } catch (SQLException ex) {
+                System.out.println("8" + ex.getMessage());
+                return nextEventi;
+            }
+
+        } catch (SQLException ex) {
+            System.out.println("9" + ex.getMessage());
+            return nextEventi;
+        }
+    }
+
+
+
 }

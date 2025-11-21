@@ -100,6 +100,8 @@ public class Evento extends EventoAstratto {
         updateAll(this);
     }
 
+
+
     public LocalDateTime calcolaOraFine() {
         LocalDateTime oraFine = data;
         for (LibroLettore ll : scaletta) {
