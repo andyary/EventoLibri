@@ -57,4 +57,49 @@ public class UtenteDAO {
             return null;
         }
     }
+
+    public void creaLettore(String nome, String cognome, String username, String psw) throws SQLException {
+        String query = "INSERT into utenti (nome, cognome, username, psw, tipo)   VALUES(?, ?, ?, ?, ?)";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setString(1, nome);
+            pstatement.setString(2, cognome);
+            pstatement.setString(3, username);
+            pstatement.setString(4, psw);
+            pstatement.setString(5, "Lettore");
+            pstatement.executeUpdate();
+        }
+    }
+
+    public void creaGenitore(String nome, String cognome, String username, String psw) throws SQLException {
+        String query = "INSERT into utenti (nome, cognome, username, psw, tipo)   VALUES(?, ?, ?, ?, ?)";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setString(1, nome);
+            pstatement.setString(2, cognome);
+            pstatement.setString(3, username);
+            pstatement.setString(4, psw);
+            pstatement.setString(5, "Genitore");
+            pstatement.executeUpdate();
+        }
+    }
+
+    public void cancellaGenitore(Genitore genitore) throws SQLException {
+        //cancella figli di genitore
+        FiglioDAO figlioDAO = new FiglioDAO(connection);
+        figlioDAO.cancellaFigli(genitore);
+        String query = "DELETE FROM utenti WHERE id = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, genitore.getId());
+            pstatement.executeUpdate();
+        }
+    }
+
+    public void cancellaLettore(Lettore lettore) throws SQLException {
+        //cancella iscrizioni lettura
+        String query = "DELETE FROM utenti WHERE id = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, lettore.getId());
+            pstatement.executeUpdate();
+        }
+    }
+
 }

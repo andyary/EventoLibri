@@ -40,4 +40,7 @@ public class Libro {
     public ArrayList<Recensione> getRecensioni() {
         return recensioni;
     }
+
+    public int getId() { return id;
+    }
 }

@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class FiglioDAO {
 
@@ -72,4 +73,52 @@ public class FiglioDAO {
             return iscrizioni;
         }
     }
+
+    public void creaFiglio(String nome, Date dataNascita, Genitore genitore) throws SQLException {
+        String query = "INSERT into figli (nome, dataNascita, id_genitore)   VALUES(?, ?, ?)";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setString(1, nome);
+            pstatement.setDate(2, (java.sql.Date) dataNascita);
+            pstatement.setInt(3, genitore.getId());
+            pstatement.executeUpdate();
+        }
+    }
+
+    public void cancellaFiglio(Figlio figlio) throws SQLException {
+        String query = "DELETE FROM iscrizioni WHERE id_figlio = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, figlio.getId());
+            pstatement.executeUpdate();
+        }
+        String query2 = "DELETE FROM figli WHERE id = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(query2);) {
+            pstatement.setInt(1, figlio.getId());
+            pstatement.executeUpdate();
+        }
+    }
+
+    public void cancellaFigli(Genitore genitore) throws SQLException {
+        for (Figlio figlio : genitore.getFigli()) {
+            cancellaFiglio(figlio);
+        }
+    }
+
+    public void iscriviFiglioEvento(Figlio figlio, Evento evento) throws SQLException {
+        String query = "INSERT into iscrizioni (id_figlio, id_evento)   VALUES(?, ?)";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, figlio.getId());
+            pstatement.setInt(2, evento.getId());
+            pstatement.executeUpdate();
+        }
+    }
+
+    public void cancellaFiglioEvento(Figlio figlio, Evento evento) throws SQLException {
+        String query = "DELETE FROM iscrizioni WHERE id_figlio = ? AND id_evento = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, figlio.getId());
+            pstatement.setInt(2, evento.getId());
+            pstatement.executeUpdate();
+        }
+    }
+
 }

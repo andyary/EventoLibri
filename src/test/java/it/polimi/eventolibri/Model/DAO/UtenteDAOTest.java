@@ -4,7 +4,9 @@ import it.polimi.eventolibri.Model.*;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,6 +31,54 @@ class UtenteDAOTest {
 
             Amministratore amministratorevalido = (Amministratore) utenteDAO.checkCredentials("admin2", "1111");
             assertNotNull(amministratorevalido);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void creaLettore() {
+        try {
+            Connection conn = DBGestore.getConnection();
+            UtenteDAO utenteDAO = new UtenteDAO(conn);
+            utenteDAO.creaLettore("Luca", "Castagna", "lettore99", "3333");
+            // crea iscrizione lettura associata al lettore da cancellare
+            Lettore lettorevalido = (Lettore) utenteDAO.checkCredentials("lettore99", "3333");
+            assertNotNull(lettorevalido);
+            assertEquals("lettore99", lettorevalido.getUserName());
+            assertEquals("Castagna", lettorevalido.getCognome());
+            assertEquals("Luca", lettorevalido.getNome());
+            utenteDAO.cancellaLettore(lettorevalido);
+            assertNull(utenteDAO.checkCredentials("lettore99", "3333"));
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void creaGenitore() {
+        try {
+            Connection conn = DBGestore.getConnection();
+            UtenteDAO utenteDAO = new UtenteDAO(conn);
+            utenteDAO.creaGenitore("Alberto", "Castagna", "genitore99", "2222");
+            FiglioDAO figlioDAO = new FiglioDAO(conn);
+            figlioDAO.creaFiglio("Marco99", new Date(2015-01-03), (Genitore) utenteDAO.checkCredentials("genitore99", "2222"));
+            figlioDAO.creaFiglio("Alice99", new Date(2015-01-03), (Genitore) utenteDAO.checkCredentials("genitore99", "2222"));
+            Genitore genitorevalido = (Genitore) utenteDAO.checkCredentials("genitore99", "2222");
+            assertNotNull(genitorevalido);
+            assertEquals("genitore99", genitorevalido.getUserName());
+            assertEquals("Alberto", genitorevalido.getNome());
+            assertEquals("Castagna", genitorevalido.getCognome());
+            assertEquals(2, genitorevalido.getNumeroFigli());
+            EventoDAO eventoDAO = new EventoDAO(conn);
+
+            figlioDAO.iscriviFiglioEvento(genitorevalido.getFigli().get(0), eventoDAO.getEventoDaId(1));
+            figlioDAO.iscriviFiglioEvento(genitorevalido.getFigli().get(1), eventoDAO.getEventoDaId(1));
+
+            utenteDAO.cancellaGenitore(genitorevalido);
+            assertNull(utenteDAO.checkCredentials("genitore99", "2222"));
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

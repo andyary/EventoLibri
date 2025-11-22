@@ -107,6 +107,31 @@ public class EventoDAO {
         }
     }
 
+    public Evento getEventoDaId(int id_evento) throws SQLException {
+        Evento evento = null;
+        String query = "SELECT * FROM eventi e JOIN luoghi l JOIN utenti u ON e.id_luogo=l.id AND e.id_creatore=u.id WHERE e.id = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, id_evento);
+            try (ResultSet result = pstatement.executeQuery();) {
 
+                if (result.next()) {
+                    LibroLettoreDAO libroLettoreDAO = new LibroLettoreDAO(connection);
+                    Luogo luogo = new Luogo(result.getString("l.nome"), result.getInt("l.capienza"), result.getInt("l.id"));
+                    Lettore creatore = new CreaLettore().nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
+                    Evento evento2 = new Evento(result.getInt("e.id"), creatore, result.getString("e.nome"), luogo, result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")));
+                    return evento2;
+                } else {
+                    return evento;
+                }
+            }catch (SQLException ex) {
+                System.out.println("18" + ex.getMessage());
+                return evento;
+            }
+
+        } catch (SQLException ex) {
+            System.out.println("19" + ex.getMessage());
+            return evento;
+        }
+    }
 
 }

@@ -78,4 +78,21 @@ public class LibroLettoreDAO {
         }
     }
 
+    public void creaLibroLettore(Evento evento, Libro libro, Lettore lettore, int progressivo) throws SQLException {
+        String query = "INSERT into librolettore (id_evento, id_libro, id_lettore, progressivo)   VALUES(?, ?, ?, ?)";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, evento.getId());
+            pstatement.setInt(2, libro.getId());
+            pstatement.setInt(3, lettore.getId());
+            pstatement.setInt(4, progressivo);
+            pstatement.executeUpdate();
+            }
+    }
+
+    public void creaScaletta(Evento evento, ArrayList<LibroLettore> scaletta) throws SQLException {
+        for (LibroLettore libroLettore : scaletta) {
+            creaLibroLettore(evento, libroLettore.getLibro(), libroLettore.getLettore(), libroLettore.getProgressivo());
+        }
+    }
+
 }
