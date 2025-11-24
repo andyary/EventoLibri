@@ -37,6 +37,10 @@ public class Libro {
         recensioni.add(recensione);
     }
 
+    public void aggiungiRecensioni(ArrayList<Recensione> recensioni) {
+        this.recensioni = recensioni;
+    }
+
     public ArrayList<Recensione> getRecensioni() {
         return recensioni;
     }

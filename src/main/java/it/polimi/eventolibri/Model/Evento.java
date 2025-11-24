@@ -123,4 +123,8 @@ public class Evento extends EventoAstratto {
     public void setIscritti(int iscritti) {
         this.iscritti = iscritti;
     }
+
+    public void setScaletta(ArrayList<LibroLettore> scaletta) {
+        this.scaletta = scaletta;
+    }
 }

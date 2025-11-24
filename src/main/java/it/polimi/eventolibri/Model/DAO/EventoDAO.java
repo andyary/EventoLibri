@@ -135,8 +135,8 @@ public class EventoDAO {
     }
 
     public int creaEvento(Lettore creatore, String nome, Luogo luogo, LocalDateTime data) throws SQLException {
-        String query = "INSERT into evento (nome, data. id_creatore, id_luogo)   VALUES(?, ?, ?, ?)";
-        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+        String query = "INSERT into eventi (nome, data, id_creatore, id_luogo)   VALUES(?, ?, ?, ?)";
+        try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
             pstatement.setString(1, nome);
             pstatement.setTimestamp(2, Timestamp.valueOf(data));
             pstatement.setInt(3, creatore.getId());
@@ -164,10 +164,10 @@ public class EventoDAO {
         }
     }
 
-    public void cancellaEvento(Evento evento) throws SQLException {
+    public void cancellaEvento(int id_evento) throws SQLException {
         String query = "DELETE FROM eventi e WHERE e.id = ?";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
-            pstatement.setInt(1, evento.getId());
+            pstatement.setInt(1, id_evento);
             pstatement.executeUpdate();
         }
     }

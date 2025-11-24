@@ -66,7 +66,7 @@ public class UtenteDAO {
             pstatement.executeUpdate();
             ResultSet rs = pstatement.getGeneratedKeys();
             if (rs.next()) {
-                return rs.getInt("id");
+                return rs.getInt(1);
             }
             return -1;
         }

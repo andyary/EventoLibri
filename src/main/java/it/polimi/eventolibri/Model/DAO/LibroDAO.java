@@ -24,8 +24,10 @@ public class LibroDAO {
                     return null;
                 else {
                     result.next();
-                    // get recensioni DAO
-                    return new Libro(result.getString("titolo"), result.getInt("tempoLettura"), result.getString("link"), result.getString("autore"), result.getInt("id"));
+                    Libro libro = new Libro(result.getString("titolo"), result.getInt("tempoLettura"), result.getString("link"), result.getString("autore"), result.getInt("id"));
+                    RecensioneDAO recensioneDAO = new RecensioneDAO(connection);
+                    libro.aggiungiRecensioni(recensioneDAO.getRecensione(libro));
+                    return libro;
                 }
             }catch (SQLException ex) {
                 System.out.println("205" + ex.getMessage());
