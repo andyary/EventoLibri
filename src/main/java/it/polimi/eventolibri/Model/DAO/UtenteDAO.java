@@ -2,10 +2,7 @@ package it.polimi.eventolibri.Model.DAO;
 
 import it.polimi.eventolibri.Model.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class UtenteDAO {
 
@@ -58,27 +55,37 @@ public class UtenteDAO {
         }
     }
 
-    public void creaLettore(String nome, String cognome, String username, String psw) throws SQLException {
+    public int creaLettore(String nome, String cognome, String username, String psw) throws SQLException {
         String query = "INSERT into utenti (nome, cognome, username, psw, tipo)   VALUES(?, ?, ?, ?, ?)";
-        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+        try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
             pstatement.setString(1, nome);
             pstatement.setString(2, cognome);
             pstatement.setString(3, username);
             pstatement.setString(4, psw);
             pstatement.setString(5, "Lettore");
             pstatement.executeUpdate();
+            ResultSet rs = pstatement.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+            return -1;
         }
     }
 
-    public void creaGenitore(String nome, String cognome, String username, String psw) throws SQLException {
+    public int creaGenitore(String nome, String cognome, String username, String psw) throws SQLException {
         String query = "INSERT into utenti (nome, cognome, username, psw, tipo)   VALUES(?, ?, ?, ?, ?)";
-        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+        try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
             pstatement.setString(1, nome);
             pstatement.setString(2, cognome);
             pstatement.setString(3, username);
             pstatement.setString(4, psw);
             pstatement.setString(5, "Genitore");
             pstatement.executeUpdate();
+            ResultSet rs = pstatement.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            return -1;
         }
     }
 

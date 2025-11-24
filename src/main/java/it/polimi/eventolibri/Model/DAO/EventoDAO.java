@@ -134,4 +134,43 @@ public class EventoDAO {
         }
     }
 
+    public int creaEvento(Lettore creatore, String nome, Luogo luogo, LocalDateTime data) throws SQLException {
+        String query = "INSERT into evento (nome, data. id_creatore, id_luogo)   VALUES(?, ?, ?, ?)";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setString(1, nome);
+            pstatement.setTimestamp(2, Timestamp.valueOf(data));
+            pstatement.setInt(3, creatore.getId());
+            pstatement.setInt(4, luogo.getId());
+            pstatement.executeUpdate();
+            ResultSet rs = pstatement.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            return -1;
+        }
+    }
+
+    public void modificaEvento(Evento evento) throws SQLException {
+        LibroLettoreDAO libroLettoreDAO = new LibroLettoreDAO(connection);
+        libroLettoreDAO.cancellaScaletta(evento);
+        libroLettoreDAO.creaScaletta(evento, evento.getScaletta());
+        String query = "UPDATE eventi e SET e.nome = ?, e.data = ?, e.id_luogo = ? WHERE e.id = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setString(1, evento.getNome());
+            pstatement.setTimestamp(2, Timestamp.valueOf(evento.getData()));
+            pstatement.setInt(3, evento.getLuogo().getId());
+            pstatement.setInt(4, evento.getId());
+            pstatement.executeUpdate();
+        }
+    }
+
+    public void cancellaEvento(Evento evento) throws SQLException {
+        String query = "DELETE FROM eventi e WHERE e.id = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, evento.getId());
+            pstatement.executeUpdate();
+        }
+    }
+
+
 }

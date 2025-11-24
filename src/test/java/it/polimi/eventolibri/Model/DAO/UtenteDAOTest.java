@@ -43,7 +43,7 @@ class UtenteDAOTest {
             Connection conn = DBGestore.getConnection();
             UtenteDAO utenteDAO = new UtenteDAO(conn);
             utenteDAO.creaLettore("Luca", "Castagna", "lettore99", "3333");
-            // crea iscrizione lettura associata al lettore da cancellare
+
             Lettore lettorevalido = (Lettore) utenteDAO.checkCredentials("lettore99", "3333");
             assertNotNull(lettorevalido);
             assertEquals("lettore99", lettorevalido.getUserName());
@@ -62,10 +62,25 @@ class UtenteDAOTest {
         try {
             Connection conn = DBGestore.getConnection();
             UtenteDAO utenteDAO = new UtenteDAO(conn);
-            utenteDAO.creaGenitore("Alberto", "Castagna", "genitore99", "2222");
+            int id_genitore = utenteDAO.creaGenitore("Alberto", "Castagna", "genitore99", "2222");
+
+            CreaUtente<Genitore> creaGenitore = new CreaGenitore();
+            Genitore genitorevalido11= creaGenitore.nuovoUtente(id_genitore,"Alberto", "Castagna", "genitore99");
+
             FiglioDAO figlioDAO = new FiglioDAO(conn);
-            figlioDAO.creaFiglio("Marco99", new Date(2015-01-03), (Genitore) utenteDAO.checkCredentials("genitore99", "2222"));
-            figlioDAO.creaFiglio("Alice99", new Date(2015-01-03), (Genitore) utenteDAO.checkCredentials("genitore99", "2222"));
+            int id_figlio1 = figlioDAO.creaFiglio("Marco99", new Date(2015-01-03), (Genitore) utenteDAO.checkCredentials("genitore99", "2222"));
+            int id_figlio2 = figlioDAO.creaFiglio("Alice99", new Date(2015-01-03), (Genitore) utenteDAO.checkCredentials("genitore99", "2222"));
+
+            Figlio figlio1 = new Figlio(id_figlio1,"Marco99", new Date(2015-01-03).toLocalDate());
+            Figlio figlio2 = new Figlio(id_figlio2,"Alice99", new Date(2015-01-03).toLocalDate());
+            genitorevalido11.aggiungiFiglio(figlio1);
+            genitorevalido11.aggiungiFiglio(figlio2);
+            assertNotNull(genitorevalido11);
+            assertEquals("genitore99", genitorevalido11.getUserName());
+            assertEquals("Alberto", genitorevalido11.getNome());
+            assertEquals("Castagna", genitorevalido11.getCognome());
+            assertEquals(2, genitorevalido11.getNumeroFigli());
+
             Genitore genitorevalido = (Genitore) utenteDAO.checkCredentials("genitore99", "2222");
             assertNotNull(genitorevalido);
             assertEquals("genitore99", genitorevalido.getUserName());

@@ -2,10 +2,7 @@ package it.polimi.eventolibri.Model.DAO;
 
 import it.polimi.eventolibri.Model.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -74,13 +71,18 @@ public class FiglioDAO {
         }
     }
 
-    public void creaFiglio(String nome, Date dataNascita, Genitore genitore) throws SQLException {
+    public int creaFiglio(String nome, Date dataNascita, Genitore genitore) throws SQLException {
         String query = "INSERT into figli (nome, dataNascita, id_genitore)   VALUES(?, ?, ?)";
-        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+        try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
             pstatement.setString(1, nome);
             pstatement.setDate(2, (java.sql.Date) dataNascita);
             pstatement.setInt(3, genitore.getId());
             pstatement.executeUpdate();
+            ResultSet rs = pstatement.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            return -1;
         }
     }
 

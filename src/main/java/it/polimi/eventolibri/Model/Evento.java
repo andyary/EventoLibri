@@ -13,6 +13,15 @@ public class Evento extends EventoAstratto {
     private Lettore creatore;
     private int iscritti;
 
+    public Evento(Lettore creatore, String nome, Luogo luogo, LocalDateTime data) {
+        this.creatore = creatore;
+        this.nome  = nome;
+        this.luogo = luogo;
+        this.data = data;
+        this.scaletta = new ArrayList<>();
+        creatore.aggiungiEventiCreati(this);
+    }
+
     public Evento(Lettore creatore, String nome, Luogo luogo, LocalDateTime data, ArrayList<LibroLettore> scaletta) {
         this.creatore = creatore;
         this.nome  = nome;

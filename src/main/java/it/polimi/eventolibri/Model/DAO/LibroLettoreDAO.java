@@ -95,4 +95,14 @@ public class LibroLettoreDAO {
         }
     }
 
+    public void cancellaScaletta(Evento evento) throws SQLException {
+        String query = "DELETE from librolettore WHERE id_evento = ?";
+        try  (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, evento.getId());
+            pstatement.executeUpdate();
+        }
+    }
+
+
+
 }

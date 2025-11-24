@@ -18,6 +18,13 @@ public class Figlio {
         this.iscrizioni = new ArrayList<>();
     }
 
+    public Figlio(int id, String nome, LocalDate dataNascita) {
+        this.id = id;
+        this.nome = nome;
+        this.dataNascita = dataNascita;
+        this.iscrizioni = new ArrayList<>();
+    }
+
     public Figlio(int id, String nome, LocalDate dataNascita, ArrayList<Evento> iscrizioni, Genitore genitore) {
         this.id = id;
         this.nome = nome;
