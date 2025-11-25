@@ -55,4 +55,13 @@ public class RecensioneDAO {
         }
     }
 
+    public void cancellaRecensione(Libro libro, Genitore genitore) throws SQLException {
+        String query = "DELETE FROM recensioni WHERE id_libro = ? AND id_genitore = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, libro.getId());
+            pstatement.setInt(2, genitore.getId());
+            pstatement.executeUpdate();
+        }
+    }
+
 }
