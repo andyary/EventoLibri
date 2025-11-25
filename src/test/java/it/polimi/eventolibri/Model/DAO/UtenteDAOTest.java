@@ -92,6 +92,12 @@ class UtenteDAOTest {
             figlioDAO.iscriviFiglioEvento(genitorevalido.getFigli().get(0), eventoDAO.getEventoDaId(1));
             figlioDAO.iscriviFiglioEvento(genitorevalido.getFigli().get(1), eventoDAO.getEventoDaId(1));
 
+            assertEquals(1, figlioDAO.getIscrizioni(genitorevalido.getFigli().get(0).getId()).size());
+            assertEquals(1, figlioDAO.getIscrizioni(genitorevalido.getFigli().get(1).getId()).size());
+
+            figlioDAO.cancellaFiglioEvento(genitorevalido.getFigli().get(0), eventoDAO.getEventoDaId(1));
+            assertEquals(0, figlioDAO.getIscrizioni(genitorevalido.getFigli().get(0).getId()).size());
+
             utenteDAO.cancellaGenitore(genitorevalido);
             assertNull(utenteDAO.checkCredentials("genitore99", "2222"));
 
