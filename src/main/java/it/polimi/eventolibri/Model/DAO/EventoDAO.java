@@ -164,10 +164,10 @@ public class EventoDAO {
         }
     }
 
-    public void cancellaEvento(int id_evento) throws SQLException {
+    public void cancellaEvento(Evento evento) throws SQLException {
         String query = "DELETE FROM eventi e WHERE e.id = ?";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
-            pstatement.setInt(1, id_evento);
+            pstatement.setInt(1, evento.getId());
             pstatement.executeUpdate();
         }
     }

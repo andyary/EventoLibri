@@ -61,8 +61,8 @@ class EventoDAOTest {
             Evento evento1 = eventoDAO.getEventoDaId(id_evento);
             assertEquals(2, evento1.getScaletta().size());
 
-            LibroLettore ll2 = new LibroLettore(libro1, lettore2,1);
-            LibroLettore l21 = new LibroLettore(libro2, lettore1,2);
+            LibroLettore ll2 = new LibroLettore(libro1, lettore2,3);
+            LibroLettore l21 = new LibroLettore(libro2, lettore1,4);
             scaletta.add(l21);
             scaletta.add(ll2);
             evento.setScaletta(scaletta);
@@ -70,7 +70,7 @@ class EventoDAOTest {
             Evento evento2 = eventoDAO.getEventoDaId(id_evento);
             assertEquals(4, evento2.getScaletta().size());
 
-            eventoDAO.cancellaEvento(id_evento);
+            eventoDAO.cancellaEvento(evento);
             utenteDAO.cancellaLettore(creatore);
         } catch (SQLException e) {
             throw new RuntimeException(e);
