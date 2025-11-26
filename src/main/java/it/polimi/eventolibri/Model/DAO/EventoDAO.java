@@ -108,33 +108,34 @@ public class EventoDAO {
     }
 
     public Evento getEventoDaId(int id_evento) throws SQLException {
-        Evento evento = null;
         String query = "SELECT * FROM eventi e JOIN luoghi l JOIN utenti u ON e.id_luogo=l.id AND e.id_creatore=u.id WHERE e.id = ?";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
             pstatement.setInt(1, id_evento);
             try (ResultSet result = pstatement.executeQuery();) {
-
                 if (result.next()) {
                     LibroLettoreDAO libroLettoreDAO = new LibroLettoreDAO(connection);
                     Luogo luogo = new Luogo(result.getString("l.nome"), result.getInt("l.capienza"), result.getInt("l.id"));
                     Lettore creatore = new CreaLettore().nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
-                    Evento evento2 = new Evento(result.getInt("e.id"), creatore, result.getString("e.nome"), luogo, result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")));
-                    return evento2;
-                } else {
+                    Evento evento = new Evento(result.getInt("e.id"), creatore, result.getString("e.nome"), luogo, result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")));
                     return evento;
+                } else {
+                    return null;
                 }
             }catch (SQLException ex) {
                 System.out.println("18" + ex.getMessage());
-                return evento;
+                return null;
             }
 
         } catch (SQLException ex) {
             System.out.println("19" + ex.getMessage());
-            return evento;
+            return null;
         }
     }
 
     public int creaEvento(Lettore creatore, String nome, Luogo luogo, LocalDateTime data) throws SQLException {
+
+        // aggiungere controllo in base alla ora di inizio e al luogo scelto
+
         String query = "INSERT into eventi (nome, data, id_creatore, id_luogo)   VALUES(?, ?, ?, ?)";
         try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
             pstatement.setString(1, nome);
@@ -151,9 +152,12 @@ public class EventoDAO {
     }
 
     public void modificaEvento(Evento evento) throws SQLException {
+
+        // aggiungere controllo in base alla ora di inizio e al luogo scelto
+
         LibroLettoreDAO libroLettoreDAO = new LibroLettoreDAO(connection);
         libroLettoreDAO.cancellaScaletta(evento);
-        libroLettoreDAO.creaScaletta(evento, evento.getScaletta());
+        libroLettoreDAO.creaScaletta(evento);
         String query = "UPDATE eventi e SET e.nome = ?, e.data = ?, e.id_luogo = ? WHERE e.id = ?";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
             pstatement.setString(1, evento.getNome());
@@ -169,6 +173,42 @@ public class EventoDAO {
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
             pstatement.setInt(1, evento.getId());
             pstatement.executeUpdate();
+        }
+    }
+
+    public ArrayList<Evento> eventiInConflitto(Evento evento) throws SQLException {
+        String query = "SELECT e.id, e.data AS dataInizio, SUM(l.tempoLettura) AS durataEvento, DATE_ADD(e.data, INTERVAL SUM(l.tempoLettura) MINUTE)  AS dataFine " +
+                "FROM eventi e JOIN libroLettore ll JOIN libri l " +
+                "ON e.id=ll.id_evento AND ll.id_libro=l.id " +
+                "WHERE e.id_luogo = ? AND e.id <> ? AND " +
+                "(datainizio < ? AND dataFine > ?) AND " +
+                "(datainizio < ? AND dataFine > ?) AND " +
+                "(datainizio > ? AND dataFine < ?) " +
+                "GROUP BY e.id";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, evento.getLuogo().getId());
+            pstatement.setInt(2, evento.getId());
+            pstatement.setTimestamp(3, Timestamp.valueOf(evento.getData()));
+            pstatement.setTimestamp(4, Timestamp.valueOf(evento.getData()));
+            pstatement.setTimestamp(5, Timestamp.valueOf(evento.calcolaOraFine()));
+            pstatement.setTimestamp(6, Timestamp.valueOf(evento.calcolaOraFine()));
+            pstatement.setTimestamp(7, Timestamp.valueOf(evento.getData()));
+            pstatement.setTimestamp(8, Timestamp.valueOf(evento.calcolaOraFine()));
+            try (ResultSet result = pstatement.executeQuery();) {
+                ArrayList<Evento> eventiConflitto = new ArrayList<>();
+                if (!result.isBeforeFirst()) // no risultati, non esiste utente con queste credenziali
+                    return eventiConflitto;
+                else {
+                    while (result.next()) {
+                        Evento eventoInConflitto = getEventoDaId(result.getInt("e.id"));
+                        eventiConflitto.add(eventoInConflitto);
+                    }
+                    return eventiConflitto;
+                }
+            } catch (SQLException ex) {
+                System.out.println("29" + ex.getMessage());
+                return null;
+            }
         }
     }
 

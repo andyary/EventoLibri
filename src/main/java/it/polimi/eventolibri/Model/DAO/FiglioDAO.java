@@ -106,6 +106,9 @@ public class FiglioDAO {
     }
 
     public void iscriviFiglioEvento(Figlio figlio, Evento evento) throws SQLException {
+
+        // aggiungere controllo capienza del luogo
+
         String query = "INSERT into iscrizioni (id_figlio, id_evento)   VALUES(?, ?)";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
             pstatement.setInt(1, figlio.getId());

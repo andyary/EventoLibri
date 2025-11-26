@@ -58,7 +58,6 @@ class EventoDAOTest {
             assertEquals(1, libroDAO.getLibro(3).getRecensioni().size());
             assertEquals(1, libroDAO.getLibro(4).getRecensioni().size());
 
-
             ArrayList<LibroLettore> scaletta = new ArrayList<>();
             LibroLettore ll11 = new LibroLettore(libro1, lettore1,1);
             LibroLettore ll22 = new LibroLettore(libro2, lettore2,2);
@@ -68,7 +67,8 @@ class EventoDAOTest {
             assertEquals(0, evento.getScaletta().size());
 
             LibroLettoreDAO librolettoreDAO = new LibroLettoreDAO(conn);
-            librolettoreDAO.creaScaletta(evento, scaletta);
+            evento.setScaletta(scaletta);
+            librolettoreDAO.creaScaletta(evento);
             Evento evento1 = eventoDAO.getEventoDaId(id_evento);
             assertEquals(2, evento1.getScaletta().size());
 
@@ -81,14 +81,11 @@ class EventoDAOTest {
             Evento evento2 = eventoDAO.getEventoDaId(id_evento);
             assertEquals(4, evento2.getScaletta().size());
 
-
             recensioneDAO.cancellaRecensione(libro1, genitore);
             recensioneDAO.cancellaRecensione(libro2, genitore);
 
             assertEquals(0, libroDAO.getLibro(3).getRecensioni().size());
             assertEquals(0, libroDAO.getLibro(4).getRecensioni().size());
-
-
 
             eventoDAO.cancellaEvento(evento);
             utenteDAO.cancellaLettore(creatore);

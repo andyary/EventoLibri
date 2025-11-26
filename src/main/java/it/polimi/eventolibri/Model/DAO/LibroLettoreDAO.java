@@ -89,8 +89,8 @@ public class LibroLettoreDAO {
             }
     }
 
-    public void creaScaletta(Evento evento, ArrayList<LibroLettore> scaletta) throws SQLException {
-        for (LibroLettore libroLettore : scaletta) {
+    public void creaScaletta(Evento evento) throws SQLException {
+        for (LibroLettore libroLettore : evento.getScaletta()) {
             creaLibroLettore(evento, libroLettore.getLibro(), libroLettore.getLettore(), libroLettore.getProgressivo());
         }
     }
