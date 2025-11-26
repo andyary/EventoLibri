@@ -95,4 +95,19 @@ class EventoDAOTest {
         }
 
     }
+
+    @Test
+    void eventiInConflitto() {
+        try{
+            Connection conn = DBGestore.getConnection();
+            EventoDAO eventoDAO = new EventoDAO(conn);
+            Evento evento = eventoDAO.getEventoDaId(1);
+            ArrayList<Evento> conflitti = eventoDAO.eventiInConflitto(evento);
+            assertNotNull(conflitti);
+            assertEquals(1, conflitti.size());
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
