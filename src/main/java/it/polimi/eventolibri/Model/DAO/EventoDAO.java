@@ -25,8 +25,8 @@ public class EventoDAO {
                 else {
                     while (result.next()) {
                         LibroLettoreDAO libroLettoreDAO = new LibroLettoreDAO(connection);
-                        Luogo luogo = new Luogo(result.getString("l.nome"), result.getInt("l.capienza"),result.getInt("l.id"));
-                        Evento evento = new Evento(result.getInt("e.id"), lettore, result.getString("e.nome"), luogo , result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")) );
+                        Luogo luogo = new Luogo(result.getString("l.nome"), result.getInt("l.capienza"), result.getInt("l.id"));
+                        Evento evento = new Evento(result.getInt("e.id"), lettore, result.getString("e.nome"), luogo, result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")));
                         eventiCreati.add(evento);
                     }
                     return eventiCreati;
@@ -56,9 +56,9 @@ public class EventoDAO {
                 else {
                     while (result.next()) {
                         LibroLettoreDAO libroLettoreDAO = new LibroLettoreDAO(connection);
-                        Luogo luogo = new Luogo(result.getString("l.nome"), result.getInt("l.capienza"),result.getInt("l.id"));
+                        Luogo luogo = new Luogo(result.getString("l.nome"), result.getInt("l.capienza"), result.getInt("l.id"));
                         Lettore creatore = new CreaLettore().nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
-                        Evento evento = new Evento(result.getInt("e.id"), creatore, result.getString("e.nome"), luogo , result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")) );
+                        Evento evento = new Evento(result.getInt("e.id"), creatore, result.getString("e.nome"), luogo, result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")));
                         nextEventi.add(evento);
                     }
                     return nextEventi;
@@ -89,9 +89,9 @@ public class EventoDAO {
                 else {
                     while (result.next()) {
                         LibroLettoreDAO libroLettoreDAO = new LibroLettoreDAO(connection);
-                        Luogo luogo = new Luogo(result.getString("l.nome"), result.getInt("l.capienza"),result.getInt("l.id"));
+                        Luogo luogo = new Luogo(result.getString("l.nome"), result.getInt("l.capienza"), result.getInt("l.id"));
                         Lettore creatore = new CreaLettore().nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
-                        Evento evento = new Evento(result.getInt("e.id"), creatore, result.getString("e.nome"), luogo , result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")) );
+                        Evento evento = new Evento(result.getInt("e.id"), creatore, result.getString("e.nome"), luogo, result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")));
                         nextEventi.add(evento);
                     }
                     return nextEventi;
@@ -121,7 +121,7 @@ public class EventoDAO {
                 } else {
                     return null;
                 }
-            }catch (SQLException ex) {
+            } catch (SQLException ex) {
                 System.out.println("18" + ex.getMessage());
                 return null;
             }
@@ -177,14 +177,14 @@ public class EventoDAO {
     }
 
     public ArrayList<Evento> eventiInConflitto(Evento evento) throws SQLException {
-        String query = "SELECT e.id, e.data AS dataInizio, SUM(l.tempoLettura) AS durataEvento, DATE_ADD(e.data, INTERVAL SUM(l.tempoLettura) MINUTE)  AS dataFine " +
+        String query = "SELECT e.id, e.data AS dataInizio, SUM(l.tempoLettura) AS durataEvento, DATE_ADD(e.data, INTERVAL SUM(l.tempoLettura) MINUTE) AS dataFine " +
                 "FROM eventi e JOIN libroLettore ll JOIN libri l " +
                 "ON e.id=ll.id_evento AND ll.id_libro=l.id " +
-                "WHERE e.id_luogo = ? AND e.id <> ? AND " +
-                "(datainizio < ? AND dataFine > ?) AND " +
-                "(datainizio < ? AND dataFine > ?) AND " +
-                "(datainizio > ? AND dataFine < ?) " +
-                "GROUP BY e.id";
+                "WHERE e.id_luogo = ? AND e.id <> ? " +
+                "GROUP BY e.id HAVING " +
+                "((e.data <= ? AND DATE_ADD(e.data, INTERVAL SUM(l.tempoLettura) MINUTE) >= ?) OR " +
+                "(e.data <= ? AND DATE_ADD(e.data, INTERVAL SUM(l.tempoLettura) MINUTE) >= ?) OR " +
+                "(e.data >= ? AND DATE_ADD(e.data, INTERVAL SUM(l.tempoLettura) MINUTE) <= ?)) ";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
             pstatement.setInt(1, evento.getLuogo().getId());
             pstatement.setInt(2, evento.getId());

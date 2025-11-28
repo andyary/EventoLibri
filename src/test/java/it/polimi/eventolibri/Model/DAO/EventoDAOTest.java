@@ -14,13 +14,13 @@ class EventoDAOTest {
 
     @Test
     void getNextEventi() {
-        try{
+        try {
             Connection conn = DBGestore.getConnection();
             EventoDAO eventoDAO = new EventoDAO(conn);
             ArrayList<Evento> result1 = eventoDAO.getNextEventi(LocalDateTime.parse("2025-01-02T00:00:00"));
             assertNotNull(result1);
             if (result1.size() > 2) {
-                ArrayList<Evento> result2 = eventoDAO.getNextEventi(result1.get(result1.size()-2));
+                ArrayList<Evento> result2 = eventoDAO.getNextEventi(result1.get(result1.size() - 2));
                 assertTrue(result2.getFirst().getId() == result1.getLast().getId());
             }
 
@@ -31,7 +31,7 @@ class EventoDAOTest {
 
 
     @Test
-    void CRUD_Evento()  {
+    void CRUD_Evento() {
         Connection conn = null;
         try {
             conn = DBGestore.getConnection();
@@ -59,8 +59,8 @@ class EventoDAOTest {
             assertEquals(1, libroDAO.getLibro(4).getRecensioni().size());
 
             ArrayList<LibroLettore> scaletta = new ArrayList<>();
-            LibroLettore ll11 = new LibroLettore(libro1, lettore1,1);
-            LibroLettore ll22 = new LibroLettore(libro2, lettore2,2);
+            LibroLettore ll11 = new LibroLettore(libro1, lettore1, 1);
+            LibroLettore ll22 = new LibroLettore(libro2, lettore2, 2);
             scaletta.add(ll11);
             scaletta.add(ll22);
             Evento evento = eventoDAO.getEventoDaId(id_evento);
@@ -72,8 +72,8 @@ class EventoDAOTest {
             Evento evento1 = eventoDAO.getEventoDaId(id_evento);
             assertEquals(2, evento1.getScaletta().size());
 
-            LibroLettore ll2 = new LibroLettore(libro1, lettore2,3);
-            LibroLettore l21 = new LibroLettore(libro2, lettore1,4);
+            LibroLettore ll2 = new LibroLettore(libro1, lettore2, 3);
+            LibroLettore l21 = new LibroLettore(libro2, lettore1, 4);
             scaletta.add(l21);
             scaletta.add(ll2);
             evento.setScaletta(scaletta);
@@ -98,7 +98,7 @@ class EventoDAOTest {
 
     @Test
     void eventiInConflitto() {
-        try{
+        try {
             Connection conn = DBGestore.getConnection();
             EventoDAO eventoDAO = new EventoDAO(conn);
             Evento evento = eventoDAO.getEventoDaId(1);
