@@ -133,9 +133,6 @@ public class EventoDAO {
     }
 
     public int creaEvento(Lettore creatore, String nome, Luogo luogo, LocalDateTime data) throws SQLException {
-
-        // aggiungere controllo in base alla ora di inizio e al luogo scelto
-
         String query = "INSERT into eventi (nome, data, id_creatore, id_luogo)   VALUES(?, ?, ?, ?)";
         try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
             pstatement.setString(1, nome);
@@ -152,9 +149,6 @@ public class EventoDAO {
     }
 
     public void modificaEvento(Evento evento) throws SQLException {
-
-        // aggiungere controllo in base alla ora di inizio e al luogo scelto
-
         LibroLettoreDAO libroLettoreDAO = new LibroLettoreDAO(connection);
         libroLettoreDAO.cancellaScaletta(evento);
         libroLettoreDAO.creaScaletta(evento);
@@ -211,6 +205,4 @@ public class EventoDAO {
             }
         }
     }
-
-
 }
