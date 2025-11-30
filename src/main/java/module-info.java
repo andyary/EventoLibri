@@ -7,4 +7,5 @@ module it.polimi.eventolibri {
 
     opens it.polimi.eventolibri to javafx.fxml;
     exports it.polimi.eventolibri;
+    exports it.polimi.eventolibri.View;
 }

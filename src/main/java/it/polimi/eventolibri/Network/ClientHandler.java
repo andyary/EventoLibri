@@ -1,5 +1,6 @@
 package it.polimi.eventolibri.Network;
 
+import it.polimi.eventolibri.Controller.Controller;
 import it.polimi.eventolibri.Message.Messaggio;
 import it.polimi.eventolibri.Message.RichiestaLogin;
 import it.polimi.eventolibri.Message.RispostaLogin;
@@ -14,9 +15,11 @@ public class ClientHandler extends Thread {
     private Socket socket;
     private ObjectInputStream in;
     private ObjectOutputStream out;
+    private Controller controller;
 
     public ClientHandler(Socket socket) {
         this.socket = socket;
+        this.controller = new Controller();
     }
 
     @Override
@@ -37,7 +40,8 @@ public class ClientHandler extends Thread {
     private void handleMessage(Messaggio msg) throws IOException {
         // esempio di DAO
         if (msg instanceof RichiestaLogin) {
-            out.writeObject(new RispostaLogin());
+            RispostaLogin risposta = controller.controllaLogin(((RichiestaLogin) msg).getUsername(), ((RichiestaLogin) msg).getPassword());
+            out.writeObject(risposta);
         }
         // QUI CONTINUI AD AGGIUNGERE I MESSAGGI
     }

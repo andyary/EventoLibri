@@ -3,6 +3,7 @@ package it.polimi.eventolibri.Network;
 import it.polimi.eventolibri.Message.Messaggio;
 import it.polimi.eventolibri.Message.RichiestaLogin;
 import it.polimi.eventolibri.Message.RispostaLogin;
+import it.polimi.eventolibri.View.LoginView;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -14,13 +15,15 @@ public class Client {
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
+    private LoginView loginView;
+    // add altre viste qui
 
-    public void start() throws Exception {
+
+    public void start(LoginView loginView) throws Exception {
         socket = new Socket("localhost", 5000);
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
-        // esempio: chiedo eventi
-        out.writeObject(new RichiestaLogin());
+        this.loginView = loginView;
     }
 
     public void startListening() {
@@ -40,10 +43,16 @@ public class Client {
     }
 
 
+
     private void handleMessage(Messaggio msg) {
         // Gestisci il messaggio ricevuto dal server
         System.out.println("Messaggio ricevuto dal server: " + msg);
         if (msg instanceof RispostaLogin) {
+            if (((RispostaLogin) msg).isSuccesso()) {
+                System.out.println("Login riuscito!");
+            } else {
+                loginView.mostraErrore(((RispostaLogin) msg).getMessaggioerrore());
+            }
             System.out.println("Ricevuto risposta login ");
         }
 
@@ -59,12 +68,8 @@ public class Client {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        Client client = new Client();
-        client.start();
-        client.startListening();
-        client.close();
-
+    public void sendMessage(Messaggio msg) throws IOException {
+        out.writeObject(msg);
     }
 
 }
