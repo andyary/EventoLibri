@@ -1,13 +1,15 @@
 package it.polimi.eventolibri.Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public abstract class Utente {
+public abstract class Utente implements Serializable {
 
 	private int id;
 	private String nome;
 	private String cognome;
 	private String userName;
+
 
     public Utente(String nome, String cognome, String userName) {
         this.nome = nome;

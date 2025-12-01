@@ -1,16 +1,19 @@
 package it.polimi.eventolibri.Model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class Figlio {
+public class Figlio implements Serializable {
 
     private int id;
 	private ArrayList<Evento> iscrizioni;
 	private String nome;
 	private LocalDate dataNascita;
 
-
+    public String getNome() {
+        return nome;
+    }
 
     public Figlio(String nome, LocalDate dataNascita) {
         this.nome = nome;

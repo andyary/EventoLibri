@@ -4,6 +4,8 @@ module it.polimi.eventolibri {
 
     requires org.controlsfx.controls;
     requires java.sql;
+    requires javafx.graphics;
+
 
     opens it.polimi.eventolibri to javafx.fxml;
     exports it.polimi.eventolibri;

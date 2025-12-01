@@ -11,9 +11,11 @@ public class Window extends Application {
 
         Client client = new Client();
         LoginView loginView = new LoginView(client);
+        HomeGenitore homeGenitore = new HomeGenitore(client);
+
 
         try {
-            client.start(loginView);
+            client.start(loginView, homeGenitore);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -24,5 +26,7 @@ public class Window extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
+
 
 }

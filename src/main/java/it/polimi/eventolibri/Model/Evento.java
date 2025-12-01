@@ -1,9 +1,10 @@
 package it.polimi.eventolibri.Model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class Evento extends EventoAstratto {
+public class Evento extends EventoAstratto implements Serializable {
 
     private String nome;
     private LocalDateTime data;

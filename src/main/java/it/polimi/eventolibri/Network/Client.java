@@ -3,12 +3,15 @@ package it.polimi.eventolibri.Network;
 import it.polimi.eventolibri.Message.Messaggio;
 import it.polimi.eventolibri.Message.RichiestaLogin;
 import it.polimi.eventolibri.Message.RispostaLogin;
+import it.polimi.eventolibri.Model.*;
+import it.polimi.eventolibri.View.HomeGenitore;
 import it.polimi.eventolibri.View.LoginView;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Client {
 
@@ -16,14 +19,19 @@ public class Client {
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private LoginView loginView;
+    private HomeGenitore homeGenitore;
     // add altre viste qui
+    private ArrayList<Evento> eventi;
+    private Utente utente;
 
 
-    public void start(LoginView loginView) throws Exception {
+
+    public void start(LoginView loginView, HomeGenitore homeGenitore) throws Exception {
         socket = new Socket("localhost", 5000);
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
         this.loginView = loginView;
+        this.homeGenitore = homeGenitore;
     }
 
     public void startListening() {
@@ -50,6 +58,19 @@ public class Client {
         if (msg instanceof RispostaLogin) {
             if (((RispostaLogin) msg).isSuccesso()) {
                 System.out.println("Login riuscito!");
+                switch (((RispostaLogin) msg).getUtente()) {
+                    case Genitore gen -> {
+                        CreaUtente<Genitore> creaGenitore = new CreaGenitore();
+                        Genitore genitore = creaGenitore.nuovoUtente(gen.getId(), gen.getNome(),gen.getCognome(), gen.getUserName());
+                        utente = genitore;
+                        homeGenitore.show(loginView.getStage(), genitore, ((RispostaLogin) msg).getProssimiEventi());
+                    }
+                    default -> {
+                        System.out.println("Tipo di utente non gestito.");
+                    }
+                    // gestisci altri tipi di utenti qui
+                }
+
             } else {
                 loginView.mostraErrore(((RispostaLogin) msg).getMessaggioerrore());
             }

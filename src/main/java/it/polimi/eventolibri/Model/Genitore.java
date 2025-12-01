@@ -1,8 +1,9 @@
 package it.polimi.eventolibri.Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Genitore extends Utente implements Listener {
+public class Genitore extends Utente implements Listener, Serializable {
 
 	private ArrayList<Figlio> figli= new ArrayList<>();
 

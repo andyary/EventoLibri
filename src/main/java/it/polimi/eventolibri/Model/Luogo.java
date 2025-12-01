@@ -1,6 +1,8 @@
 package it.polimi.eventolibri.Model;
 
-public class Luogo {
+import java.io.Serializable;
+
+public class Luogo  implements Serializable {
 
 	private String nome;
 	private int capienza;

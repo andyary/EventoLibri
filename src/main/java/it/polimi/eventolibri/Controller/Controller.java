@@ -5,6 +5,7 @@ import it.polimi.eventolibri.Model.DAO.*;
 import it.polimi.eventolibri.Model.DBGestore;
 
 import java.sql.Connection;
+import java.time.LocalDateTime;
 
 public class Controller {
 
@@ -37,6 +38,7 @@ public class Controller {
             if (utenteDAO.checkCredentials(username, password) != null) {
                 risposta.setSuccesso(true);
                 risposta.setUtente(utenteDAO.checkCredentials(username, password));
+                risposta.setProssimiEventi(eventoDAO.getNextEventi(LocalDateTime.now()));
             } else {
                 risposta.setSuccesso(false);
                 risposta.setMessaggioerrore("Credenziali non valide.");

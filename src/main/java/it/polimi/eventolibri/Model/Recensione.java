@@ -1,6 +1,8 @@
 package it.polimi.eventolibri.Model;
 
-public class Recensione {
+import java.io.Serializable;
+
+public class Recensione  implements Serializable {
 
 	private int id;
 	private Genitore genitore;

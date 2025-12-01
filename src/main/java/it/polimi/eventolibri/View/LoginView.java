@@ -36,8 +36,10 @@ public class LoginView {
 
         Button loginButton = new Button("Login");
         loginButton.setOnAction(e -> {
+
             String username = usernameField.getText().trim();
             String password = passwordField.getText().trim();
+            this.messaggioerrore.setText("");
 
             if (username.isEmpty() || password.isEmpty()) {
                 System.out.println("Missing fields");
@@ -71,4 +73,9 @@ public class LoginView {
            this.messaggioerrore.setText(messaggioerrore);
        });
     }
+
+    public Stage getStage() {
+        return (Stage) layout.getScene().getWindow();
+    }
+
 }

@@ -1,6 +1,8 @@
 package it.polimi.eventolibri.Model;
 
-public class LibroLettore {
+import java.io.Serializable;
+
+public class LibroLettore  implements Serializable {
 
 	private Libro libro;
 	private Lettore lettore;

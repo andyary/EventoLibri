@@ -1,8 +1,9 @@
 package it.polimi.eventolibri.Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Lettore extends Utente implements Listener {
+public class Lettore extends Utente implements Listener, Serializable {
 
     private ArrayList<Evento> iscrizioniLettura;
     private ArrayList<Evento> eventiCreati;
