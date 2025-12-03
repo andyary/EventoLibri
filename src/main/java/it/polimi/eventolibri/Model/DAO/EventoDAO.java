@@ -98,12 +98,12 @@ public class EventoDAO {
                 }
             } catch (SQLException ex) {
                 System.out.println("8" + ex.getMessage());
-                return nextEventi;
+                throw ex;
             }
 
         } catch (SQLException ex) {
             System.out.println("9" + ex.getMessage());
-            return nextEventi;
+            throw ex;
         }
     }
 

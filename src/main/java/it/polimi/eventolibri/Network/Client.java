@@ -1,8 +1,6 @@
 package it.polimi.eventolibri.Network;
 
-import it.polimi.eventolibri.Message.Messaggio;
-import it.polimi.eventolibri.Message.RichiestaLogin;
-import it.polimi.eventolibri.Message.RispostaLogin;
+import it.polimi.eventolibri.Message.*;
 import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.View.HomeGenitore;
 import it.polimi.eventolibri.View.LoginView;
@@ -62,6 +60,7 @@ public class Client {
                     case Genitore gen -> {
                         CreaUtente<Genitore> creaGenitore = new CreaGenitore();
                         Genitore genitore = creaGenitore.nuovoUtente(gen.getId(), gen.getNome(),gen.getCognome(), gen.getUserName());
+                        genitore.setFigli(gen.getFigli());
                         utente = genitore;
                         homeGenitore.show(loginView.getStage(), genitore, ((RispostaLogin) msg).getProssimiEventi());
                     }
@@ -71,10 +70,24 @@ public class Client {
                     // gestisci altri tipi di utenti qui
                 }
 
+
+
             } else {
                 loginView.mostraErrore(((RispostaLogin) msg).getMessaggioerrore());
             }
             System.out.println("Ricevuto risposta login ");
+        }
+
+        if (msg instanceof RispostaNextEventi) {
+            if (((RispostaNextEventi) msg).isSuccesso()) {
+                System.out.println("Next Eventi Arrivati!");
+                if (((RispostaNextEventi) msg).getProssimiEventi().isEmpty()) {
+                    homeGenitore.nascondiBottoneNextEventi();
+                } else {
+                    homeGenitore.aggiornaEventi(((RispostaNextEventi) msg).getProssimiEventi());
+                }
+
+            }
         }
 
     }

@@ -1,14 +1,18 @@
 package it.polimi.eventolibri.View;
 
+import it.polimi.eventolibri.Message.Messaggio;
+import it.polimi.eventolibri.Message.RichiestaNextEventi;
 import it.polimi.eventolibri.Model.Evento;
 import it.polimi.eventolibri.Model.Figlio;
 import it.polimi.eventolibri.Model.Genitore;
 import it.polimi.eventolibri.Network.Client;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -22,12 +26,19 @@ import java.util.Map;
 public class HomeGenitore {
 
     private final Client client;
+    private Stage stage;
+    private Genitore genitore;
+    private ArrayList<Evento> eventiProssimi;
+    private Button nextEventiButton;
 
     public HomeGenitore(Client client) {
         this.client = client;
     }
 
     public void show(Stage stage, Genitore genitore, ArrayList<Evento> eventiProssimi) {
+        this.stage = stage;
+        this.genitore = genitore;
+        this.eventiProssimi = eventiProssimi;
 
         // ---------- TOP BAR CON PROFILO ----------
         Button profiloButton = new Button("Profilo e figli");
@@ -36,8 +47,8 @@ public class HomeGenitore {
             // qui aprirai ProfileView
         });
 
-        HBox topBar = new HBox(profiloButton);
-        topBar.setPadding(new Insets(10));
+        HBox topBar = new HBox(new Label("  Benvenuto, " + genitore.getNome() + "!          "), profiloButton);
+        topBar.setPadding(new Insets(20));
         topBar.setAlignment(Pos.TOP_RIGHT);
 
 
@@ -91,6 +102,18 @@ public class HomeGenitore {
             }
         }
 
+        nextEventiButton = new Button("Carica Eventi Successivi");
+        nextEventiButton.setOnAction(e -> {
+            RichiestaNextEventi req = new RichiestaNextEventi(eventiProssimi.getLast());
+            try {
+                client.sendMessage(req);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+        });
+        eventiProssimiBox.getChildren().add(nextEventiButton);
+
 
         // ---------- CONTENUTO CENTRALE ----------
         VBox centro = new VBox(30, figliSection, eventiProssimiBox);
@@ -99,14 +122,35 @@ public class HomeGenitore {
 
 
         // ---------- LAYOUT FINALE ----------
+
         BorderPane root = new BorderPane();
         root.setTop(topBar);
         root.setCenter(centro);
 
-        Scene scene = new Scene(root, 600, 400);
-        stage.setScene(scene);
-        stage.setTitle("Home");
-        stage.show();
+        ScrollPane scrollPane = new ScrollPane(root);
+        scrollPane.setFitToWidth(true);  // adatta la larghezza del contenuto alla finestra
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // scroll verticale solo se serve
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+        Scene scene = new Scene(scrollPane);
+        Platform.runLater(() -> {;
+            stage.setScene(scene);
+            stage.setMaximized(true);
+            stage.setTitle("Home");
+            stage.show();
+        });
+
+    }
+
+
+    public void nascondiBottoneNextEventi() {
+        nextEventiButton.setVisible(false);
+    }
+
+
+    public void aggiornaEventi(ArrayList<Evento> prossimiEventi) {
+        eventiProssimi.addAll(prossimiEventi);
+        this.show(stage, genitore, eventiProssimi);
     }
 
 
@@ -124,6 +168,7 @@ public class HomeGenitore {
 
         return riga;
     }
+
 
 
 }

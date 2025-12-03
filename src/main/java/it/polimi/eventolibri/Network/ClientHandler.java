@@ -1,14 +1,14 @@
 package it.polimi.eventolibri.Network;
 
 import it.polimi.eventolibri.Controller.Controller;
-import it.polimi.eventolibri.Message.Messaggio;
-import it.polimi.eventolibri.Message.RichiestaLogin;
-import it.polimi.eventolibri.Message.RispostaLogin;
+import it.polimi.eventolibri.Message.*;
+import it.polimi.eventolibri.Model.Evento;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class ClientHandler extends Thread {
 
@@ -42,6 +42,13 @@ public class ClientHandler extends Thread {
         if (msg instanceof RichiestaLogin) {
             RispostaLogin risposta = controller.controllaLogin(((RichiestaLogin) msg).getUsername(), ((RichiestaLogin) msg).getPassword());
             out.writeObject(risposta);
+        }
+        if (msg instanceof RichiestaNextEventi) {
+            // gestisci la richiesta di next eventi
+            Evento ultimoEvento = ((RichiestaNextEventi) msg).getUltimoEvento();
+            RispostaNextEventi risposta = controller.getNextEventi(ultimoEvento);
+            out.writeObject(risposta);
+
         }
         // QUI CONTINUI AD AGGIUNGERE I MESSAGGI
     }

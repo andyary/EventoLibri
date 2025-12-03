@@ -1,8 +1,10 @@
 package it.polimi.eventolibri.Controller;
 
 import it.polimi.eventolibri.Message.RispostaLogin;
+import it.polimi.eventolibri.Message.RispostaNextEventi;
 import it.polimi.eventolibri.Model.DAO.*;
 import it.polimi.eventolibri.Model.DBGestore;
+import it.polimi.eventolibri.Model.Evento;
 
 import java.sql.Connection;
 import java.time.LocalDateTime;
@@ -46,6 +48,19 @@ public class Controller {
         } catch (Exception e) {
             risposta.setSuccesso(false);
             risposta.setMessaggioerrore("Errore richiesta al server.");
+            e.printStackTrace();
+        }
+        return risposta;
+    }
+
+    public RispostaNextEventi getNextEventi(Evento ultimoEvento) {
+        RispostaNextEventi risposta = new RispostaNextEventi();
+        try {
+            risposta.setProssimiEventi(eventoDAO.getNextEventi(ultimoEvento));
+            risposta.setSuccesso(true);
+        } catch (Exception e) {
+            risposta.setSuccesso(false);
+            risposta.setMessaggioErrore("Errore richiesta al server.");
             e.printStackTrace();
         }
         return risposta;
