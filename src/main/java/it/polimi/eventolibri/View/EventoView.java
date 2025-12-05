@@ -110,11 +110,11 @@ public class EventoView {
         scalettaBox.getChildren().add(titoloScaletta);
         for (LibroLettore ll : evento.getScaletta()) {
             String nomeLettore = "---------";
-            if (ll.getLettore() != null) nomeLettore = ll.getLettore().getNome();
+            if (ll.getLettore().getNome()!=null) {nomeLettore = ll.getLettore().getNome();}
             String titoloLibro = ll.getLibro().getTitolo();
             HBox riga = new HBox(10);
             riga.setAlignment(Pos.CENTER_LEFT);
-            Label lbl = new Label(ll.getProgressivo() + titoloLibro + " letto da\"" + nomeLettore + " durata\"" + ll.getLibro().getTempoLettura() +"min\"");
+            Label lbl = new Label(ll.getProgressivo() + ") <" + titoloLibro + "> letto da <" + nomeLettore + "> durata " + ll.getLibro().getTempoLettura() +" minuti");
             lbl.setStyle("-fx-font-size: 14px;");
             riga.getChildren().add(lbl);
             scalettaBox.getChildren().add(riga);
