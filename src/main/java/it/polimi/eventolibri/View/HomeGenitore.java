@@ -132,10 +132,10 @@ public class HomeGenitore {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // scroll verticale solo se serve
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        Scene scene = new Scene(scrollPane);
+        Scene scene = new Scene(scrollPane, 500, 800);
         Platform.runLater(() -> {;
             stage.setScene(scene);
-            stage.setMaximized(true);
+            // stage.setMaximized(true);
             stage.setTitle("Home");
             stage.show();
         });
@@ -160,7 +160,10 @@ public class HomeGenitore {
 
         apri.setOnAction(e -> {
             System.out.println("Apro dettagli evento: " + evento.getNome());
-            // Apri DettagliEventoView
+            EventoView eventoView = new EventoView(client);
+            eventoView.show(stage, evento, genitore, () -> {
+                this.show(stage, genitore, eventiProssimi);
+            });
         });
 
         HBox riga = new HBox(20, nome, apri);

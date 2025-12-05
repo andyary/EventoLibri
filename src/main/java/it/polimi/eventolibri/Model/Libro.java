@@ -48,4 +48,8 @@ public class Libro  implements Serializable {
 
     public int getId() { return id;
     }
+
+    public String getTitolo() {
+        return titolo;
+    }
 }

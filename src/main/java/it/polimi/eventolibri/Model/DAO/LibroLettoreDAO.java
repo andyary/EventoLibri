@@ -17,7 +17,7 @@ public class LibroLettoreDAO {
 
     public ArrayList<LibroLettore> getScaletta(int id_evento) throws SQLException {
         ArrayList<LibroLettore> scaletta = new ArrayList<>();
-        String query = "SELECT * FROM librolettore ll JOIN libri l JOIN utenti u ON ll.id_libro=l.id AND ll.id_lettore=u.id WHERE id_evento = ?";
+        String query = "SELECT * FROM librolettore ll JOIN libri l ON ll.id_libro=l.id  LEFT JOIN utenti u ON  ll.id_lettore=u.id WHERE id_evento =";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
             pstatement.setInt(1, id_evento);
             try (ResultSet result = pstatement.executeQuery();) {

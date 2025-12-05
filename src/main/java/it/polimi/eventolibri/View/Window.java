@@ -12,6 +12,7 @@ public class Window extends Application {
         Client client = new Client();
         LoginView loginView = new LoginView(client);
         HomeGenitore homeGenitore = new HomeGenitore(client);
+        EventoView eventoView = new EventoView(client);
 
 
         try {

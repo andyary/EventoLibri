@@ -81,7 +81,7 @@ public class Client {
         if (msg instanceof RispostaNextEventi) {
             if (((RispostaNextEventi) msg).isSuccesso()) {
                 System.out.println("Next Eventi Arrivati!");
-                if (((RispostaNextEventi) msg).getProssimiEventi().isEmpty()) {
+                if (((RispostaNextEventi) msg).getProssimiEventi().size() < 10) {
                     homeGenitore.nascondiBottoneNextEventi();
                 } else {
                     homeGenitore.aggiornaEventi(((RispostaNextEventi) msg).getProssimiEventi());

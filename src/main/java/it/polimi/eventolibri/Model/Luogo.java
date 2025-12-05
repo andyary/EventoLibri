@@ -4,7 +4,8 @@ import java.io.Serializable;
 
 public class Luogo  implements Serializable {
 
-	private String nome;
+
+    private String nome;
 	private int capienza;
 	private int id;
 
@@ -16,5 +17,13 @@ public class Luogo  implements Serializable {
 
     public int getId() {
         return id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public int getCapienza() {
+        return capienza;
     }
 }
