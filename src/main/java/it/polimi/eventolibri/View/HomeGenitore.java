@@ -30,8 +30,10 @@ public class HomeGenitore {
     private Genitore genitore;
     private ArrayList<Evento> eventiProssimi;
     private Button nextEventiButton;
+    private EventoView eventoView;
 
-    public HomeGenitore(Client client) {
+    public HomeGenitore(Client client, EventoView eventoView) {
+        this.eventoView = eventoView;
         this.client = client;
     }
 
@@ -160,7 +162,6 @@ public class HomeGenitore {
 
         apri.setOnAction(e -> {
             System.out.println("Apro dettagli evento: " + evento.getNome());
-            EventoView eventoView = new EventoView(client);
             eventoView.show(stage, evento, genitore, () -> {
                 this.show(stage, genitore, eventiProssimi);
             });

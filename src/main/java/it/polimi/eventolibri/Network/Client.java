@@ -2,6 +2,7 @@ package it.polimi.eventolibri.Network;
 
 import it.polimi.eventolibri.Message.*;
 import it.polimi.eventolibri.Model.*;
+import it.polimi.eventolibri.View.EventoView;
 import it.polimi.eventolibri.View.HomeGenitore;
 import it.polimi.eventolibri.View.LoginView;
 
@@ -18,18 +19,21 @@ public class Client {
     private ObjectInputStream in;
     private LoginView loginView;
     private HomeGenitore homeGenitore;
+    private EventoView eventoView;
     // add altre viste qui
     private ArrayList<Evento> eventi;
     private Utente utente;
 
 
 
-    public void start(LoginView loginView, HomeGenitore homeGenitore) throws Exception {
+    public void start(LoginView loginView, HomeGenitore homeGenitore, EventoView eventoView) throws Exception {
         socket = new Socket("localhost", 5000);
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
         this.loginView = loginView;
         this.homeGenitore = homeGenitore;
+        this.eventoView = eventoView;
+
     }
 
     public void startListening() {
@@ -89,6 +93,20 @@ public class Client {
 
             }
         }
+
+        if (msg instanceof RispostaIscrizioneEvento) {
+            if (((RispostaIscrizioneEvento) msg).isSuccesso()) {
+                Figlio f = ((RispostaIscrizioneEvento) msg).getFiglio();
+                Evento evento = ((RispostaIscrizioneEvento) msg).getEvento();
+                Genitore genitore = ((RispostaIscrizioneEvento) msg).getGenitore();
+                f.iscrivi(evento, genitore);
+                System.out.println("Iscritto " + f.getNome());}
+            else {
+                System.out.println("Messaggio di errore ricevuto : " + ((RispostaIscrizioneEvento) msg).getMessaggioErrore());
+                eventoView.mostraErrore(((RispostaIscrizioneEvento) msg).getMessaggioErrore());
+            }
+        }
+
 
     }
 

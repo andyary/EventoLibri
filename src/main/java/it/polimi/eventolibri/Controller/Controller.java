@@ -1,10 +1,12 @@
 package it.polimi.eventolibri.Controller;
 
+import it.polimi.eventolibri.Message.RispostaIscrizioneEvento;
 import it.polimi.eventolibri.Message.RispostaLogin;
 import it.polimi.eventolibri.Message.RispostaNextEventi;
 import it.polimi.eventolibri.Model.DAO.*;
 import it.polimi.eventolibri.Model.DBGestore;
 import it.polimi.eventolibri.Model.Evento;
+import it.polimi.eventolibri.Model.Figlio;
 
 import java.sql.Connection;
 import java.time.LocalDateTime;
@@ -61,6 +63,19 @@ public class Controller {
         } catch (Exception e) {
             risposta.setSuccesso(false);
             risposta.setMessaggioErrore("Errore richiesta al server.");
+            e.printStackTrace();
+        }
+        return risposta;
+    }
+
+    public RispostaIscrizioneEvento iscriviFiglioEvento(Figlio figlio, Evento evento) {
+        RispostaIscrizioneEvento risposta = new RispostaIscrizioneEvento();
+        try {
+            figlioDAO.iscriviFiglioEvento(figlio, evento);
+            risposta.setSuccesso(true);
+        } catch (Exception e) {
+            risposta.setSuccesso(false);
+            risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
             e.printStackTrace();
         }
         return risposta;

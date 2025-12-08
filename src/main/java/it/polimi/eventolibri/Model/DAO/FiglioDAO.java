@@ -106,10 +106,22 @@ public class FiglioDAO {
     }
 
     public void iscriviFiglioEvento(Figlio figlio, Evento evento) throws SQLException {
+        String query = "SELECT COUNT(*) AS count, l.capienza AS capienza, i.id_evento AS id_evento FROM iscrizioni i JOIN eventi e ON i.id_evento=e.id JOIN luoghi l ON e.id_luogo=l.id WHERE i.id_evento = ? GROUP BY i.id_evento";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, evento.getId());
+            try (ResultSet result = pstatement.executeQuery();) {
+                if (result.next()) {
+                    int count = result.getInt("count");
+                    int capienza = result.getInt("capienza");
+                    if (count >= capienza) {
+                        throw new SQLException("Capienza massima del luogo raggiunta.");
+                    }
+                }
+            }
+        }
 
-        // aggiungere controllo capienza del luogo
 
-        String query = "INSERT into iscrizioni (id_figlio, id_evento)   VALUES(?, ?)";
+        query = "INSERT into iscrizioni (id_figlio, id_evento)   VALUES(?, ?)";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
             pstatement.setInt(1, figlio.getId());
             pstatement.setInt(2, evento.getId());

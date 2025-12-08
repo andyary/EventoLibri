@@ -18,6 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.control.Label;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class EventoView {
@@ -26,10 +27,12 @@ public class EventoView {
     private Evento evento;
     private Genitore genitore;
     private Runnable onBack;
+    private Label messaggioerrore;
 
     public EventoView(Client client) {
         this.client = client;
-
+        this.messaggioerrore = new Label("");
+        this.messaggioerrore.setStyle("-fx-text-fill: red;");
     }
 
     /**
@@ -44,7 +47,8 @@ public class EventoView {
         Label titolo = new Label(evento.getNome());
         titolo.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
 
-        Label data = new Label("Data: " + evento.getData());
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMMM yyyy 'alle' HH:mm");
+        Label data = new Label("Data: " + evento.getData().format(fmt));
         Label luogo = new Label("Luogo: " + evento.getLuogo().getNome());
 
         // ---------- CHECKBOX PER TUTTI I FIGLI ----------
@@ -65,8 +69,11 @@ public class EventoView {
             figliBox.getChildren().add(cb);
         }
 
+
+
         Button aggiornaButton = new Button("Aggiorna iscrizioni");
         aggiornaButton.setOnAction(e -> {
+            this.messaggioerrore.setText("");
             for (int i = 0; i < checkFigli.size(); i++) {
                 Figlio f = genitore.getFigli().get(i);
                 boolean selezionato = checkFigli.get(i).isSelected();
@@ -74,11 +81,10 @@ public class EventoView {
 
                 if (selezionato && !eraIscritto) {
                     // iscrizione
-                    RichiestaIscrizioneEvento req = new RichiestaIscrizioneEvento(f, evento);
+                    RichiestaIscrizioneEvento req = new RichiestaIscrizioneEvento(f, evento, genitore);
                     try {
                         client.sendMessage(req);
-                        f.getIscrizioni().add(evento);
-                        System.out.println("Iscritto " + f.getNome());
+
                     } catch (Exception ex) {
                         System.out.println("Errore iscrizione: " + ex.getMessage());
                     }
@@ -87,7 +93,7 @@ public class EventoView {
                     RichiestaDisiscrizioneEvento req = new RichiestaDisiscrizioneEvento(f, evento);
                     try {
                         client.sendMessage(req);
-                        f.getIscrizioni().remove(evento);
+                        f.disiscrivi(evento, genitore);
                         System.out.println("Disiscritto " + f.getNome());
                     } catch (Exception ex) {
                         System.out.println("Errore disiscrizione: " + ex.getMessage());
@@ -95,7 +101,7 @@ public class EventoView {
                 }
             }
 
-            if (onBack != null) onBack.run();
+            // if (onBack != null) onBack.run();
         });
 
         Button backButton = new Button("Indietro");
@@ -121,9 +127,11 @@ public class EventoView {
         }
 
 
-        VBox layout = new VBox(15, titolo, data, luogo, figliBox, aggiornaButton, backButton, scalettaBox);
+        VBox layout = new VBox(15, titolo, data, luogo, figliBox, aggiornaButton, messaggioerrore, backButton, scalettaBox);
         layout.setAlignment(Pos.TOP_CENTER);
         layout.setPadding(new Insets(20));
+
+        System.out.println("dalla show contenuto di messaggio errore:" + messaggioerrore);
 
         Scene scene = new Scene(layout, 500, 800);
 
@@ -131,6 +139,14 @@ public class EventoView {
             stage.setScene(scene);
             stage.setTitle("Dettagli Evento");
             stage.show();
+        });
+    }
+
+    public void mostraErrore(String msgerrore) {
+        Platform.runLater(()->{
+            System.out.println("dalla mostraerrore contenuto di this.messaggio errore:" + this.messaggioerrore);
+            System.out.println("dalla mostraerrore contenuto di messaggio errore:" + msgerrore);
+            this.messaggioerrore.setText(msgerrore);
         });
     }
 

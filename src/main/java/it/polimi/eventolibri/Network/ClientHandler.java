@@ -3,6 +3,8 @@ package it.polimi.eventolibri.Network;
 import it.polimi.eventolibri.Controller.Controller;
 import it.polimi.eventolibri.Message.*;
 import it.polimi.eventolibri.Model.Evento;
+import it.polimi.eventolibri.Model.Figlio;
+import it.polimi.eventolibri.Model.Genitore;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -48,8 +50,20 @@ public class ClientHandler extends Thread {
             Evento ultimoEvento = ((RichiestaNextEventi) msg).getUltimoEvento();
             RispostaNextEventi risposta = controller.getNextEventi(ultimoEvento);
             out.writeObject(risposta);
-
         }
+
+        if (msg instanceof RichiestaIscrizioneEvento) {
+            Evento evento = ((RichiestaIscrizioneEvento) msg).getEvento();
+            Figlio figlio = ((RichiestaIscrizioneEvento) msg).getFiglio();
+            Genitore genitore = ((RichiestaIscrizioneEvento) msg).getGenitore();
+            RispostaIscrizioneEvento risposta = controller.iscriviFiglioEvento(figlio, evento);
+            risposta.setFiglio(figlio);
+            risposta.setGenitore(genitore);
+            risposta.setEvento(evento);
+            out.writeObject(risposta);
+        }
+
+
         // QUI CONTINUI AD AGGIUNGERE I MESSAGGI
     }
 
