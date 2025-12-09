@@ -12,7 +12,10 @@ public class RispostaIscrizioneEvento extends Messaggio {
     private Evento evento;
     private Genitore genitore;
 
-    public RispostaIscrizioneEvento() {
+    public RispostaIscrizioneEvento(Figlio figlio, Evento evento, Genitore genitore) {
+        this.genitore = genitore;
+        this.figlio = figlio;
+        this.evento = evento;
     }
 
     public boolean isSuccesso() {

@@ -56,10 +56,12 @@ public class ClientHandler extends Thread {
             Evento evento = ((RichiestaIscrizioneEvento) msg).getEvento();
             Figlio figlio = ((RichiestaIscrizioneEvento) msg).getFiglio();
             Genitore genitore = ((RichiestaIscrizioneEvento) msg).getGenitore();
-            RispostaIscrizioneEvento risposta = controller.iscriviFiglioEvento(figlio, evento);
-            risposta.setFiglio(figlio);
-            risposta.setGenitore(genitore);
-            risposta.setEvento(evento);
+            RispostaIscrizioneEvento risposta = controller.iscriviFiglioEvento(figlio, evento, genitore);
+            out.writeObject(risposta);
+        }
+
+        if (msg instanceof RichiestaIscrittiEvento) {
+            RispostaIscrittiEvento risposta = controller.getIscrittiEvento(((RichiestaIscrittiEvento) msg).getEvento());
             out.writeObject(risposta);
         }
 

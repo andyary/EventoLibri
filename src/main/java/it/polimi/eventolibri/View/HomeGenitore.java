@@ -162,6 +162,7 @@ public class HomeGenitore {
 
         apri.setOnAction(e -> {
             System.out.println("Apro dettagli evento: " + evento.getNome());
+
             eventoView.show(stage, evento, genitore, () -> {
                 this.show(stage, genitore, eventiProssimi);
             });

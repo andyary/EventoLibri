@@ -205,4 +205,25 @@ public class EventoDAO {
             }
         }
     }
+
+    public int getIscrittiEvento(Evento evento) throws SQLException {
+        String query = "SELECT COUNT(*) AS numIscritti FROM iscrizioni WHERE id_evento = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, evento.getId());
+            try (ResultSet result = pstatement.executeQuery();) {
+                if (result.next()) {
+                    return result.getInt("numIscritti");
+                } else {
+                    return 0;
+                }
+            } catch (SQLException ex) {
+                System.out.println("Errore query iscritto evento:" + ex.getMessage());
+                throw new SQLException();
+            }
+
+        } catch (SQLException ex) {
+            System.out.println("Errore query iscritto evento2:" + ex.getMessage());
+            throw new SQLException();
+        }
+    }
 }

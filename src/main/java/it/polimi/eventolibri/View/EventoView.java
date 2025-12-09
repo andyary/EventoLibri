@@ -1,6 +1,7 @@
 package it.polimi.eventolibri.View;
 
 import it.polimi.eventolibri.Message.RichiestaDisiscrizioneEvento;
+import it.polimi.eventolibri.Message.RichiestaIscrittiEvento;
 import it.polimi.eventolibri.Message.RichiestaIscrizioneEvento;
 import it.polimi.eventolibri.Model.Evento;
 import it.polimi.eventolibri.Model.Figlio;
@@ -18,6 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.control.Label;
 
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
@@ -28,11 +30,13 @@ public class EventoView {
     private Genitore genitore;
     private Runnable onBack;
     private Label messaggioerrore;
+    private Label iscritti;
 
     public EventoView(Client client) {
         this.client = client;
         this.messaggioerrore = new Label("");
         this.messaggioerrore.setStyle("-fx-text-fill: red;");
+        this.iscritti = new Label("Iscritti: TBD");
     }
 
     /**
@@ -44,12 +48,22 @@ public class EventoView {
         this.genitore = genitore;
         this.onBack = onBack;
 
+        RichiestaIscrittiEvento richiestaIscritti = new RichiestaIscrittiEvento(evento);
+        try {
+            client.sendMessage(richiestaIscritti);
+        } catch (IOException e) {
+            System.out.println("Errore nel richiestaIscrittiEvento" + e.getMessage());
+        }
+
         Label titolo = new Label(evento.getNome());
         titolo.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
 
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMMM yyyy 'alle' HH:mm");
         Label data = new Label("Data: " + evento.getData().format(fmt));
         Label luogo = new Label("Luogo: " + evento.getLuogo().getNome());
+        Label capienza = new Label("Capienza: " + evento.getLuogo().getCapienza());
+        iscritti.setText("Iscritti: " + evento.getIscritti());
+
 
         // ---------- CHECKBOX PER TUTTI I FIGLI ----------
         VBox figliBox = new VBox(5);
@@ -63,7 +77,6 @@ public class EventoView {
             boolean iscritto = f.getIscrizioni().stream()
                     .anyMatch(e -> e.getId() == (evento.getId()));
             cb.setSelected(iscritto);
-
 
             checkFigli.add(cb);
             figliBox.getChildren().add(cb);
@@ -127,7 +140,7 @@ public class EventoView {
         }
 
 
-        VBox layout = new VBox(15, titolo, data, luogo, figliBox, aggiornaButton, messaggioerrore, backButton, scalettaBox);
+        VBox layout = new VBox(15, titolo, data, luogo, capienza, iscritti, figliBox, aggiornaButton, messaggioerrore, backButton, scalettaBox);
         layout.setAlignment(Pos.TOP_CENTER);
         layout.setPadding(new Insets(20));
 
@@ -147,6 +160,13 @@ public class EventoView {
             System.out.println("dalla mostraerrore contenuto di this.messaggio errore:" + this.messaggioerrore);
             System.out.println("dalla mostraerrore contenuto di messaggio errore:" + msgerrore);
             this.messaggioerrore.setText(msgerrore);
+        });
+    }
+
+    public void aggiornaIscritti(int numIscritti) {
+        evento.setIscritti(numIscritti);
+        Platform.runLater(() -> {
+            iscritti.setText("Iscritti: " + evento.getIscritti());
         });
     }
 
