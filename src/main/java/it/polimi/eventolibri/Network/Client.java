@@ -99,6 +99,12 @@ public class Client {
                 for (Figlio f: eventoView.getGenitore().getFigli()) {
                     if (f.getId() == ((RispostaIscrizioneEvento) msg).getFiglio().getId()) {
                         f.iscrivi(eventoView.getEvento(), eventoView.getGenitore());
+                        RichiestaIscrittiEvento richiestaIscritti = new RichiestaIscrittiEvento(eventoView.getEvento());
+                        try {
+                            this.sendMessage(richiestaIscritti);
+                        } catch (IOException e) {
+                            System.out.println("Errore nel richiestaIscrittiEvento" + e.getMessage());
+                        }
                     }
                 }
                 System.out.println("Iscritto " + ((RispostaIscrizioneEvento) msg).getFiglio().getNome());}
@@ -113,6 +119,7 @@ public class Client {
 
                 int numIscritti = ((RispostaIscrittiEvento) msg).getEvento().getIscritti();
                 eventoView.aggiornaIscritti(((RispostaIscrittiEvento) msg).getEvento().getIscritti());
+
                 System.out.println("Numero iscritti aggiornato: " + ((RispostaIscrittiEvento) msg).getEvento().getIscritti());
             }
         }
@@ -133,6 +140,7 @@ public class Client {
     public void sendMessage(Messaggio msg) throws IOException {
         out.writeObject(msg);
         out.flush();
+        out.reset();
     }
 
 }
