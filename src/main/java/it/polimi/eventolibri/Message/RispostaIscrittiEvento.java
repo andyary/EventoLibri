@@ -32,4 +32,7 @@ public class RispostaIscrittiEvento extends Messaggio{
     }
 
 
+    public void setEvento(Evento evento) {
+        this.evento = evento;
+    }
 }

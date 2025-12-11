@@ -212,7 +212,8 @@ public class EventoDAO {
             pstatement.setInt(1, evento.getId());
             try (ResultSet result = pstatement.executeQuery();) {
                 if (result.next()) {
-                    return result.getInt("numIscritti");
+                    int numIscritti = result.getInt("numIscritti");
+                    return numIscritti;
                 } else {
                     return 0;
                 }

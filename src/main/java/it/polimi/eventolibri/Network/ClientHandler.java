@@ -44,12 +44,14 @@ public class ClientHandler extends Thread {
         if (msg instanceof RichiestaLogin) {
             RispostaLogin risposta = controller.controllaLogin(((RichiestaLogin) msg).getUsername(), ((RichiestaLogin) msg).getPassword());
             out.writeObject(risposta);
+            out.flush();
         }
         if (msg instanceof RichiestaNextEventi) {
             // gestisci la richiesta di next eventi
             Evento ultimoEvento = ((RichiestaNextEventi) msg).getUltimoEvento();
             RispostaNextEventi risposta = controller.getNextEventi(ultimoEvento);
             out.writeObject(risposta);
+            out.flush();
         }
 
         if (msg instanceof RichiestaIscrizioneEvento) {
@@ -58,11 +60,13 @@ public class ClientHandler extends Thread {
             Genitore genitore = ((RichiestaIscrizioneEvento) msg).getGenitore();
             RispostaIscrizioneEvento risposta = controller.iscriviFiglioEvento(figlio, evento, genitore);
             out.writeObject(risposta);
+            out.flush();
         }
 
         if (msg instanceof RichiestaIscrittiEvento) {
             RispostaIscrittiEvento risposta = controller.getIscrittiEvento(((RichiestaIscrittiEvento) msg).getEvento());
             out.writeObject(risposta);
+            out.flush();
         }
 
 

@@ -96,7 +96,11 @@ public class Client {
 
         if (msg instanceof RispostaIscrizioneEvento) {
             if (((RispostaIscrizioneEvento) msg).isSuccesso()) {
-                ((RispostaIscrizioneEvento) msg).getFiglio().iscrivi(((RispostaIscrizioneEvento) msg).getEvento(), ((RispostaIscrizioneEvento) msg).getGenitore());
+                for (Figlio f: eventoView.getGenitore().getFigli()) {
+                    if (f.getId() == ((RispostaIscrizioneEvento) msg).getFiglio().getId()) {
+                        f.iscrivi(eventoView.getEvento(), eventoView.getGenitore());
+                    }
+                }
                 System.out.println("Iscritto " + ((RispostaIscrizioneEvento) msg).getFiglio().getNome());}
             else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaIscrizioneEvento) msg).getMessaggioErrore());
@@ -106,6 +110,8 @@ public class Client {
 
         if (msg instanceof RispostaIscrittiEvento) {
             if (((RispostaIscrittiEvento) msg).isSuccesso()) {
+
+                int numIscritti = ((RispostaIscrittiEvento) msg).getEvento().getIscritti();
                 eventoView.aggiornaIscritti(((RispostaIscrittiEvento) msg).getEvento().getIscritti());
                 System.out.println("Numero iscritti aggiornato: " + ((RispostaIscrittiEvento) msg).getEvento().getIscritti());
             }
@@ -126,6 +132,7 @@ public class Client {
 
     public void sendMessage(Messaggio msg) throws IOException {
         out.writeObject(msg);
+        out.flush();
     }
 
 }

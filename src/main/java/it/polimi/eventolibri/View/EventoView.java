@@ -39,6 +39,22 @@ public class EventoView {
         this.iscritti = new Label("Iscritti: TBD");
     }
 
+    public Genitore getGenitore() {
+        return genitore;
+    }
+
+    public void setGenitore(Genitore genitore) {
+        this.genitore = genitore;
+    }
+
+    public Evento getEvento() {
+        return evento;
+    }
+
+    public void setEvento(Evento evento) {
+        this.evento = evento;
+    }
+
     /**
      * Mostra la finestra dei dettagli evento con iscrizione/disiscrizione figli
      */
@@ -169,5 +185,7 @@ public class EventoView {
             iscritti.setText("Iscritti: " + evento.getIscritti());
         });
     }
+
+
 
 }
