@@ -1,9 +1,6 @@
 package it.polimi.eventolibri.Controller;
 
-import it.polimi.eventolibri.Message.RispostaIscrittiEvento;
-import it.polimi.eventolibri.Message.RispostaIscrizioneEvento;
-import it.polimi.eventolibri.Message.RispostaLogin;
-import it.polimi.eventolibri.Message.RispostaNextEventi;
+import it.polimi.eventolibri.Message.*;
 import it.polimi.eventolibri.Model.DAO.*;
 import it.polimi.eventolibri.Model.DBGestore;
 import it.polimi.eventolibri.Model.Evento;
@@ -82,6 +79,20 @@ public class Controller {
         }
         return risposta;
     }
+
+    public RispostaDisiscrizioneEvento disiscriviFiglioEvento(Figlio figlio, Evento evento, Genitore genitore) {
+        RispostaDisiscrizioneEvento risposta = new RispostaDisiscrizioneEvento(figlio, evento, genitore);
+        try {
+            figlioDAO.cancellaFiglioEvento(figlio, evento);
+            risposta.setSuccesso(true);
+        } catch (Exception e) {
+            risposta.setSuccesso(false);
+            risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
+            e.printStackTrace();
+        }
+        return risposta;
+    }
+
 
     public RispostaIscrittiEvento getIscrittiEvento(Evento evento) {
         RispostaIscrittiEvento risposta = new RispostaIscrittiEvento(evento);

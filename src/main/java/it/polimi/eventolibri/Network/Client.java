@@ -124,6 +124,25 @@ public class Client {
             }
         }
 
+        if (msg instanceof RispostaDisiscrizioneEvento) {
+            if (((RispostaDisiscrizioneEvento) msg).isSuccesso()) {
+                for (Figlio f: eventoView.getGenitore().getFigli()) {
+                    if (f.getId() == ((RispostaDisiscrizioneEvento) msg).getFiglio().getId()) {
+                        f.disiscrivi(eventoView.getEvento(), eventoView.getGenitore());
+                        RichiestaIscrittiEvento richiestaIscritti = new RichiestaIscrittiEvento(eventoView.getEvento());
+                        try {
+                            this.sendMessage(richiestaIscritti);
+                        } catch (IOException e) {
+                            System.out.println("Errore nel richiestaIscrittiEvento" + e.getMessage());
+                        }
+                    }
+                }
+                System.out.println("Disiscritto " + ((RispostaDisiscrizioneEvento) msg).getFiglio().getNome());}
+            else {
+                System.out.println("Messaggio di errore ricevuto : " + ((RispostaDisiscrizioneEvento) msg).getMessaggioErrore());
+                eventoView.mostraErrore(((RispostaDisiscrizioneEvento) msg).getMessaggioErrore());
+            }
+        }
 
     }
 

@@ -73,6 +73,15 @@ public class ClientHandler extends Thread {
             out.reset();
         }
 
+        if (msg instanceof RichiestaDisiscrizioneEvento) {
+            Evento evento = ((RichiestaDisiscrizioneEvento) msg).getEvento();
+            Figlio figlio = ((RichiestaDisiscrizioneEvento) msg).getFiglio();
+            Genitore genitore = ((RichiestaDisiscrizioneEvento) msg).getGenitore();
+            RispostaDisiscrizioneEvento risposta = controller.disiscriviFiglioEvento(figlio, evento, genitore);
+            out.writeObject(risposta);
+            out.flush();
+            out.reset();
+        }
 
         // QUI CONTINUI AD AGGIUNGERE I MESSAGGI
     }

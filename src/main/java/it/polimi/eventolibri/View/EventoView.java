@@ -113,17 +113,14 @@ public class EventoView {
                     RichiestaIscrizioneEvento req = new RichiestaIscrizioneEvento(f, evento, genitore);
                     try {
                         client.sendMessage(req);
-
                     } catch (Exception ex) {
                         System.out.println("Errore iscrizione: " + ex.getMessage());
                     }
                 } else if (!selezionato && eraIscritto) {
                     // disiscrizione
-                    RichiestaDisiscrizioneEvento req = new RichiestaDisiscrizioneEvento(f, evento);
+                    RichiestaDisiscrizioneEvento req = new RichiestaDisiscrizioneEvento(f, evento, genitore);
                     try {
                         client.sendMessage(req);
-                        f.disiscrivi(evento, genitore);
-                        System.out.println("Disiscritto " + f.getNome());
                     } catch (Exception ex) {
                         System.out.println("Errore disiscrizione: " + ex.getMessage());
                     }
