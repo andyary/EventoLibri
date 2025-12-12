@@ -3,8 +3,8 @@ package it.polimi.eventolibri.Model.DAO;
 import it.polimi.eventolibri.Model.*;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class FiglioDAO {
 
@@ -71,11 +71,11 @@ public class FiglioDAO {
         }
     }
 
-    public int creaFiglio(String nome, Date dataNascita, Genitore genitore) throws SQLException {
+    public int creaFiglio(String nome, LocalDate dataNascita, Genitore genitore) throws SQLException {
         String query = "INSERT into figli (nome, dataNascita, id_genitore)   VALUES(?, ?, ?)";
         try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
             pstatement.setString(1, nome);
-            pstatement.setDate(2, (java.sql.Date) dataNascita);
+            pstatement.setDate(2, Date.valueOf(dataNascita));
             pstatement.setInt(3, genitore.getId());
             pstatement.executeUpdate();
             ResultSet rs = pstatement.getGeneratedKeys();

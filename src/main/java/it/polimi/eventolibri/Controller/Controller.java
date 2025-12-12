@@ -125,4 +125,25 @@ public class Controller {
         }
         return risposta;
     }
+
+    public RispostaAggiungiFiglio aggiungiFiglio(Genitore genitore, Figlio nuovoFiglio) {
+        RispostaAggiungiFiglio risposta = new RispostaAggiungiFiglio();
+        try {
+            if (figlioDAO.creaFiglio(nuovoFiglio.getNome(), nuovoFiglio.getDataNascita(), genitore)==1) {
+                risposta.setSuccesso(true);
+                risposta.setGenitore(genitore);
+                risposta.setNuovoFiglio(nuovoFiglio);
+            }
+            else {
+                risposta.setSuccesso(false);
+                risposta.setMessaggioErrore("Errore creazione figlio su DB");
+            }
+        } catch (Exception e) {
+            risposta.setSuccesso(false);
+            risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
+            e.printStackTrace();
+        }
+        return risposta;
+    }
+
 }

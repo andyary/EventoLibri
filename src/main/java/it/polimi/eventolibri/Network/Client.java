@@ -170,6 +170,25 @@ public class Client {
             }
         }
 
+        if (msg instanceof RispostaAggiungiFiglio) {
+            if (((RispostaAggiungiFiglio) msg).isSuccesso()) {
+                profiloGenitore.getGenitore().aggiungiFiglio((((RispostaAggiungiFiglio) msg).getNuovoFiglio()));
+
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION,"", ButtonType.OK);
+                    alert.setTitle("Aggiornamento Genitore");
+                    alert.setHeaderText("Aggiunto nuovo figlio!");
+                    alert.setContentText(null);
+                    alert.showAndWait();
+                });
+
+            }
+            else {
+                System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiungiFiglio) msg).getMessaggioErrore());
+                profiloGenitore.mostraErrore2(((RispostaAggiungiFiglio) msg).getMessaggioErrore());
+            }
+        }
+
     }
 
     private void close() {

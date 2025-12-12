@@ -1,6 +1,7 @@
 package it.polimi.eventolibri.View;
 
 import it.polimi.eventolibri.Message.RichiestaAggiornaGenitore;
+import it.polimi.eventolibri.Message.RichiestaAggiungiFiglio;
 import it.polimi.eventolibri.Message.RichiestaNextEventi;
 import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.Network.Client;
@@ -25,12 +26,21 @@ public class ProfiloGenitore {
     private Stage stage;
     private Genitore genitore;
     private Label messaggioerrore;
+    private Label messaggioerrore2;
+    private VBox figliBox;
+    private TextField nomeFiglioField;
+    private DatePicker dataNascitaPicker;
 
 
     public ProfiloGenitore(Client client) {
         this.client = client;
         this.messaggioerrore = new Label("");
         this.messaggioerrore.setStyle("-fx-text-fill: red;");
+        this.messaggioerrore2 = new Label("");
+        this.messaggioerrore2.setStyle("-fx-text-fill: red;");
+        this.figliBox = new VBox(10);
+        this.nomeFiglioField = new TextField();
+        this.dataNascitaPicker = new DatePicker();
     }
 
     public Genitore getGenitore() {
@@ -83,7 +93,6 @@ public class ProfiloGenitore {
         // ===========================
         Label figliTitle = new Label("Figli:");
         figliTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-        VBox figliBox = new VBox(10);
         figliBox.setPadding(new Insets(10));
         if (genitore.getFigli().isEmpty()) {
             figliBox.getChildren().add(new Label("Nessun figlio registrato."));
@@ -97,24 +106,33 @@ public class ProfiloGenitore {
         // ===========================
         Label addTitle = new Label("Aggiungi Figlio:");
         addTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-        TextField nomeFiglioField = new TextField();
         nomeFiglioField.setPromptText("Nome figlio");
-        DatePicker dataNascitaPicker = new DatePicker();
         dataNascitaPicker.setPromptText("Data di nascita");
         Button aggiungiFiglioButton = new Button("Aggiungi figlio");
         aggiungiFiglioButton.setOnAction(e -> {
+            this.messaggioerrore2.setText("");
             if (nomeFiglioField.getText().isBlank() || dataNascitaPicker.getValue() == null) {
-                new Alert(Alert.AlertType.WARNING, "Inserisci nome e data di nascita.", ButtonType.OK).show();
+                Alert alert2 = new Alert(Alert.AlertType.WARNING, "", ButtonType.OK);
+                alert2.setTitle("Aggiungi Figlio");
+                alert2.setHeaderText("Inserisci nome e data di nascita.");
+                alert2.setContentText(null);
+                alert2.show();
                 return;
             }
-            Figlio nuovo = new Figlio(nomeFiglioField.getText(), dataNascitaPicker.getValue());
-            genitore.aggiungiFiglio(nuovo);
-            // TODO: client.sendMessage(new RichiestaAggiungiFiglio(genitore, nuovo));
-            figliBox.getChildren().add(creaRigaFiglio(genitore, nuovo, figliBox));
-            nomeFiglioField.clear();
-            dataNascitaPicker.setValue(null);
+            CreaUtente<Genitore> creaGenitore = new CreaGenitore();
+            Genitore genitoreTemp2= creaGenitore.nuovoUtente(genitore.getId(),genitore.getNome(), genitore.getCognome(), genitore.getUserName());
+            Figlio nuovoFiglio = new Figlio(nomeFiglioField.getText(), dataNascitaPicker.getValue());
+            // genitoreTemp2.aggiungiFiglio(nuovo);
+            try {
+                client.sendMessage(new RichiestaAggiungiFiglio(genitoreTemp2, nuovoFiglio));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+//            figliBox.getChildren().add(creaRigaFiglio(genitore, nuovo, figliBox));
+//            nomeFiglioField.clear();
+//            dataNascitaPicker.setValue(null);
         });
-        VBox aggiungiBox = new VBox(10, addTitle, nomeFiglioField, dataNascitaPicker, aggiungiFiglioButton);
+        VBox aggiungiBox = new VBox(10, addTitle, nomeFiglioField, dataNascitaPicker, aggiungiFiglioButton, messaggioerrore2);
         aggiungiBox.setPadding(new Insets(10));
         // ===========================
         // INDIETRO
@@ -158,6 +176,20 @@ public class ProfiloGenitore {
     public void mostraErrore(String msgerrore) {
         Platform.runLater(()->{
             this.messaggioerrore.setText(msgerrore);
+        });
+    }
+
+    public void mostraErrore2(String msgerrore) {
+        Platform.runLater(()->{
+            this.messaggioerrore2.setText(msgerrore);
+        });
+    }
+
+    public void aggiornaFigli(Figlio nuovoFiglio) {
+        Platform.runLater(()->{
+            this.figliBox.getChildren().add(creaRigaFiglio(genitore, nuovoFiglio, figliBox));
+            this.nomeFiglioField.clear();
+            this.dataNascitaPicker.setValue(null);
         });
     }
 
