@@ -27,9 +27,11 @@ public class ProfiloGenitore {
     private Genitore genitore;
     private Label messaggioerrore;
     private Label messaggioerrore2;
+    private Label noFigliLabel;
     private VBox figliBox;
     private TextField nomeFiglioField;
     private DatePicker dataNascitaPicker;
+
 
 
     public ProfiloGenitore(Client client) {
@@ -41,6 +43,7 @@ public class ProfiloGenitore {
         this.figliBox = new VBox(10);
         this.nomeFiglioField = new TextField();
         this.dataNascitaPicker = new DatePicker();
+        this.noFigliLabel = new Label("Nessun figlio registrato.");
     }
 
     public Genitore getGenitore() {
@@ -95,7 +98,7 @@ public class ProfiloGenitore {
         figliTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
         figliBox.setPadding(new Insets(10));
         if (genitore.getFigli().isEmpty()) {
-            figliBox.getChildren().add(new Label("Nessun figlio registrato."));
+            figliBox.getChildren().add(noFigliLabel);
         } else {
             for (Figlio f : genitore.getFigli()) {
                 figliBox.getChildren().add(creaRigaFiglio(genitore, f, figliBox));
@@ -122,15 +125,11 @@ public class ProfiloGenitore {
             CreaUtente<Genitore> creaGenitore = new CreaGenitore();
             Genitore genitoreTemp2= creaGenitore.nuovoUtente(genitore.getId(),genitore.getNome(), genitore.getCognome(), genitore.getUserName());
             Figlio nuovoFiglio = new Figlio(nomeFiglioField.getText(), dataNascitaPicker.getValue());
-            // genitoreTemp2.aggiungiFiglio(nuovo);
             try {
                 client.sendMessage(new RichiestaAggiungiFiglio(genitoreTemp2, nuovoFiglio));
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
-//            figliBox.getChildren().add(creaRigaFiglio(genitore, nuovo, figliBox));
-//            nomeFiglioField.clear();
-//            dataNascitaPicker.setValue(null);
         });
         VBox aggiungiBox = new VBox(10, addTitle, nomeFiglioField, dataNascitaPicker, aggiungiFiglioButton, messaggioerrore2);
         aggiungiBox.setPadding(new Insets(10));
@@ -187,6 +186,9 @@ public class ProfiloGenitore {
 
     public void aggiornaFigli(Figlio nuovoFiglio) {
         Platform.runLater(()->{
+            if (!this.genitore.getFigli().isEmpty() && this.figliBox.getChildren().contains(noFigliLabel)) {
+                this.figliBox.getChildren().remove(noFigliLabel);
+            }
             this.figliBox.getChildren().add(creaRigaFiglio(genitore, nuovoFiglio, figliBox));
             this.nomeFiglioField.clear();
             this.dataNascitaPicker.setValue(null);

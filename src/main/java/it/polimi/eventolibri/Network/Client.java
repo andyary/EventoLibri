@@ -173,6 +173,7 @@ public class Client {
         if (msg instanceof RispostaAggiungiFiglio) {
             if (((RispostaAggiungiFiglio) msg).isSuccesso()) {
                 profiloGenitore.getGenitore().aggiungiFiglio((((RispostaAggiungiFiglio) msg).getNuovoFiglio()));
+                profiloGenitore.aggiornaFigli((((RispostaAggiungiFiglio) msg).getNuovoFiglio()));
 
                 Platform.runLater(() -> {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION,"", ButtonType.OK);

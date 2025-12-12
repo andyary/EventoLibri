@@ -129,7 +129,9 @@ public class Controller {
     public RispostaAggiungiFiglio aggiungiFiglio(Genitore genitore, Figlio nuovoFiglio) {
         RispostaAggiungiFiglio risposta = new RispostaAggiungiFiglio();
         try {
-            if (figlioDAO.creaFiglio(nuovoFiglio.getNome(), nuovoFiglio.getDataNascita(), genitore)==1) {
+            int id = figlioDAO.creaFiglio(nuovoFiglio.getNome(), nuovoFiglio.getDataNascita(), genitore);
+            if (id !=-1) {
+                nuovoFiglio.setId(id);
                 risposta.setSuccesso(true);
                 risposta.setGenitore(genitore);
                 risposta.setNuovoFiglio(nuovoFiglio);
