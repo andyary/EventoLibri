@@ -31,10 +31,12 @@ public class HomeGenitore {
     private ArrayList<Evento> eventiProssimi;
     private Button nextEventiButton;
     private EventoView eventoView;
+    private ProfiloGenitore profiloGenitore;
 
-    public HomeGenitore(Client client, EventoView eventoView) {
+    public HomeGenitore(Client client, EventoView eventoView, ProfiloGenitore profiloGenitore) {
         this.eventoView = eventoView;
         this.client = client;
+        this.profiloGenitore = profiloGenitore;
     }
 
     public void show(Stage stage, Genitore genitore, ArrayList<Evento> eventiProssimi) {
@@ -46,7 +48,10 @@ public class HomeGenitore {
         Button profiloButton = new Button("Profilo e figli");
         profiloButton.setOnAction(e -> {
             System.out.println("Apertura schermata profilo...");
-            // qui aprirai ProfileView
+            profiloGenitore.show(stage, genitore, () -> {
+                this.show(stage, genitore, eventiProssimi);
+            });
+
         });
 
         HBox topBar = new HBox(new Label("  Benvenuto, " + genitore.getNome() + "!          "), profiloButton);

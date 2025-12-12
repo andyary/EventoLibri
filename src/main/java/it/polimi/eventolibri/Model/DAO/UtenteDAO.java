@@ -109,4 +109,14 @@ public class UtenteDAO {
         }
     }
 
+    public int aggiornaGenitore(Genitore genitore) throws SQLException {
+        String query = "UPDATE utenti SET nome = ? , cognome = ? WHERE id = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
+            pstatement.setString(1, genitore.getNome());
+            pstatement.setString(2, genitore.getCognome());
+            pstatement.setInt(3, genitore.getId());
+            return pstatement.executeUpdate();
+        }
+    }
+
 }

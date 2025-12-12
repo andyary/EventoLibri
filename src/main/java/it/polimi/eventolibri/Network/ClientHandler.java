@@ -83,6 +83,14 @@ public class ClientHandler extends Thread {
             out.reset();
         }
 
+        if (msg instanceof RichiestaAggiornaGenitore) {
+            Genitore genitore = ((RichiestaAggiornaGenitore) msg).getGenitore();
+            RispostaAggiornaGenitore risposta = controller.aggiornaGenitore(genitore);
+            out.writeObject(risposta);
+            out.flush();
+            out.reset();
+        }
+
         // QUI CONTINUI AD AGGIUNGERE I MESSAGGI
     }
 

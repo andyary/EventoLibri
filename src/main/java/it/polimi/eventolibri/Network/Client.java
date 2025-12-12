@@ -5,6 +5,10 @@ import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.View.EventoView;
 import it.polimi.eventolibri.View.HomeGenitore;
 import it.polimi.eventolibri.View.LoginView;
+import it.polimi.eventolibri.View.ProfiloGenitore;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -20,19 +24,21 @@ public class Client {
     private LoginView loginView;
     private HomeGenitore homeGenitore;
     private EventoView eventoView;
+    private ProfiloGenitore profiloGenitore;
     // add altre viste qui
     private ArrayList<Evento> eventi;
     private Utente utente;
 
 
 
-    public void start(LoginView loginView, HomeGenitore homeGenitore, EventoView eventoView) throws Exception {
+    public void start(LoginView loginView, HomeGenitore homeGenitore, EventoView eventoView, ProfiloGenitore profiloGenitore) throws Exception {
         socket = new Socket("localhost", 5000);
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
         this.loginView = loginView;
         this.homeGenitore = homeGenitore;
         this.eventoView = eventoView;
+        this.profiloGenitore = profiloGenitore;
 
     }
 
@@ -141,6 +147,26 @@ public class Client {
             else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaDisiscrizioneEvento) msg).getMessaggioErrore());
                 eventoView.mostraErrore(((RispostaDisiscrizioneEvento) msg).getMessaggioErrore());
+            }
+        }
+
+        if (msg instanceof RispostaAggiornaGenitore) {
+            if (((RispostaAggiornaGenitore) msg).isSuccesso()) {
+                profiloGenitore.getGenitore().setNome(((RispostaAggiornaGenitore) msg).getGenitore().getNome());
+                profiloGenitore.getGenitore().setCognome(((RispostaAggiornaGenitore) msg).getGenitore().getCognome());
+
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION,"", ButtonType.OK);
+                    alert.setTitle("Aggiornamento Genitore");
+                    alert.setHeaderText("Dati Genitore aggiornati!");
+                    alert.setContentText(null);
+                    alert.showAndWait();
+                });
+
+            }
+            else {
+                System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiornaGenitore) msg).getMessaggioErrore());
+                profiloGenitore.mostraErrore(((RispostaAggiornaGenitore) msg).getMessaggioErrore());
             }
         }
 

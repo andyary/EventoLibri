@@ -106,4 +106,23 @@ public class Controller {
         }
         return risposta;
     }
+
+    public RispostaAggiornaGenitore aggiornaGenitore(Genitore genitore) {
+        RispostaAggiornaGenitore risposta = new RispostaAggiornaGenitore();
+        try {
+            if (utenteDAO.aggiornaGenitore(genitore)==1) {
+                risposta.setSuccesso(true);
+                risposta.setGenitore(genitore);
+            }
+            else {
+                risposta.setSuccesso(false);
+                risposta.setMessaggioErrore("Errore aggiornamento genitore su DB");
+            }
+        } catch (Exception e) {
+            risposta.setSuccesso(false);
+            risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
+            e.printStackTrace();
+        }
+        return risposta;
+    }
 }

@@ -77,4 +77,8 @@ public class Figlio implements Serializable {
     public int getId() {
         return id;
     }
+
+    public LocalDate getDataNascita() {
+        return dataNascita;
+    }
 }
