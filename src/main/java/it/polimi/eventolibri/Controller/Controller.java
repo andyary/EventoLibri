@@ -148,4 +148,25 @@ public class Controller {
         return risposta;
     }
 
+    public RispostaNuovoGenitore registraNuovoGenitore(Genitore nuovoGenitore, String psw) {
+        RispostaNuovoGenitore risposta = new RispostaNuovoGenitore();
+        try {
+            int id = utenteDAO.creaGenitore(nuovoGenitore.getNome(), nuovoGenitore.getCognome(), nuovoGenitore.getUserName(), psw);
+            if (id !=-1) {
+                nuovoGenitore.setId(id);
+                risposta.setSuccesso(true);
+                risposta.setNuovoGenitore(nuovoGenitore);
+            }
+            else {
+                risposta.setSuccesso(false);
+                risposta.setMessaggioErrore("Errore creazione nuovo genitore su DB");
+            }
+        } catch (Exception e) {
+            risposta.setSuccesso(false);
+            risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
+            e.printStackTrace();
+        }
+        return risposta;
+    }
+
 }

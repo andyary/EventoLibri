@@ -97,10 +97,12 @@ public class ProfiloGenitore {
         Label figliTitle = new Label("Figli:");
         figliTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
         figliBox.setPadding(new Insets(10));
+        figliBox.getChildren().clear();
         if (genitore.getFigli().isEmpty()) {
             figliBox.getChildren().add(noFigliLabel);
         } else {
             for (Figlio f : genitore.getFigli()) {
+
                 figliBox.getChildren().add(creaRigaFiglio(genitore, f, figliBox));
             }
         }

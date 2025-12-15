@@ -5,6 +5,7 @@ import it.polimi.eventolibri.Message.*;
 import it.polimi.eventolibri.Model.Evento;
 import it.polimi.eventolibri.Model.Figlio;
 import it.polimi.eventolibri.Model.Genitore;
+import it.polimi.eventolibri.Model.Lettore;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -95,6 +96,14 @@ public class ClientHandler extends Thread {
             Genitore genitore = ((RichiestaAggiungiFiglio) msg).getGenitore();
             Figlio nuovoFiglio = ((RichiestaAggiungiFiglio) msg).getFiglioNuovo();
             RispostaAggiungiFiglio risposta = controller.aggiungiFiglio(genitore, nuovoFiglio);
+            out.writeObject(risposta);
+            out.flush();
+            out.reset();
+        }
+
+        if (msg instanceof RichiestaNuovoGenitore) {
+            Genitore nuovoGenitore = ((RichiestaNuovoGenitore) msg).getNuovoGenitore();
+            RispostaNuovoGenitore risposta = controller.registraNuovoGenitore(nuovoGenitore, ((RichiestaNuovoGenitore) msg).getPassword());
             out.writeObject(risposta);
             out.flush();
             out.reset();

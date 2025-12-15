@@ -2,10 +2,7 @@ package it.polimi.eventolibri.Network;
 
 import it.polimi.eventolibri.Message.*;
 import it.polimi.eventolibri.Model.*;
-import it.polimi.eventolibri.View.EventoView;
-import it.polimi.eventolibri.View.HomeGenitore;
-import it.polimi.eventolibri.View.LoginView;
-import it.polimi.eventolibri.View.ProfiloGenitore;
+import it.polimi.eventolibri.View.*;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -25,13 +22,14 @@ public class Client {
     private HomeGenitore homeGenitore;
     private EventoView eventoView;
     private ProfiloGenitore profiloGenitore;
+    private RegistraNewGenitore registraNewGenitore;
     // add altre viste qui
     private ArrayList<Evento> eventi;
     private Utente utente;
 
 
 
-    public void start(LoginView loginView, HomeGenitore homeGenitore, EventoView eventoView, ProfiloGenitore profiloGenitore) throws Exception {
+    public void start(LoginView loginView, HomeGenitore homeGenitore, EventoView eventoView, ProfiloGenitore profiloGenitore, RegistraNewGenitore registraNewGenitore) throws Exception {
         socket = new Socket("localhost", 5000);
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
@@ -39,6 +37,7 @@ public class Client {
         this.homeGenitore = homeGenitore;
         this.eventoView = eventoView;
         this.profiloGenitore = profiloGenitore;
+        this.registraNewGenitore = registraNewGenitore;
 
     }
 
@@ -187,6 +186,16 @@ public class Client {
             else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiungiFiglio) msg).getMessaggioErrore());
                 profiloGenitore.mostraErrore2(((RispostaAggiungiFiglio) msg).getMessaggioErrore());
+            }
+        }
+
+        if (msg instanceof RispostaNuovoGenitore) {
+            if (((RispostaNuovoGenitore) msg).isSuccesso()) {
+                registraNewGenitore.mostraSuccesso("Nuovo genitore registrato!");
+            }
+            else {
+                System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiungiFiglio) msg).getMessaggioErrore());
+                registraNewGenitore.mostraErrore(((RispostaAggiungiFiglio) msg).getMessaggioErrore());
             }
         }
 

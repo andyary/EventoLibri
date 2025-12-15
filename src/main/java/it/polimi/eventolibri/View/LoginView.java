@@ -18,12 +18,16 @@ public class LoginView {
     private final Client client;
     private VBox layout;
     private Label messaggioerrore;
+    private Stage stage;
+    private final RegistraNewGenitore registraNewGenitore;
 
-    public LoginView(Client client) {
+    public LoginView(Client client, RegistraNewGenitore registraNewGenitore) {
+        this.registraNewGenitore = registraNewGenitore;
         this.client = client;
     }
 
     public void show(Stage stage) {
+        this.stage = stage;
 
         TextField usernameField = new TextField();
         usernameField.setPromptText("username");
@@ -59,7 +63,18 @@ public class LoginView {
         messaggioerrore = new Label("");
         messaggioerrore.setStyle("-fx-text-fill: red;");
 
-        layout = new VBox(15, title, usernameField, passwordField, loginButton, messaggioerrore);
+
+        // ---------- REGISTRA NUOVO GENITORE BUTTON ----------
+        Button newGenitoreButton = new Button("Registra nuovo genitore");
+        newGenitoreButton.setOnAction(e -> {
+            System.out.println("Apertura schermata registra nuovo genitore...");
+            registraNewGenitore.show(stage, () -> {
+                this.show(stage);
+            });
+
+        });
+
+        layout = new VBox(15, title, usernameField, passwordField, loginButton, messaggioerrore, newGenitoreButton);
         layout.setAlignment(Pos.CENTER);
 
         Scene scene = new Scene(layout, 350, 250);
