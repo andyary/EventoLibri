@@ -65,4 +65,12 @@ public class Lettore extends Utente implements Listener, Serializable {
             }
         }
     }
+
+    public ArrayList<Evento> getEventiCreati() {
+        return eventiCreati;
+    }
+
+    public ArrayList<Evento> getIscrizioniLettura() {
+        return iscrizioniLettura;
+    }
 }

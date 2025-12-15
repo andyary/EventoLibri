@@ -45,7 +45,7 @@ public class LibroLettoreDAO {
 
     public ArrayList<Evento> getEventiLettura(Lettore lettore) throws SQLException {
         ArrayList<Evento> eventiLettura = new ArrayList<>();
-        String query = "SELECT * FROM librolettore ll JOIN eventi e JOIN luoghi l JOIN utenti u ON e.id=ll.id_evento AND e.id_luogo=l.id AND u.id=e.id_creatore WHERE ll.id_lettore = ?";
+        String query = "SELECT * FROM librolettore ll JOIN eventi e JOIN luoghi l JOIN utenti u ON e.id=ll.id_evento AND e.id_luogo=l.id AND u.id=e.id_creatore WHERE ll.id_lettore = ? AND e.data >= NOW() ORDER BY e.data ASC";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
             pstatement.setInt(1, lettore.getId());
             try (ResultSet result = pstatement.executeQuery();) {

@@ -1,10 +1,9 @@
 package it.polimi.eventolibri.View;
 
-import it.polimi.eventolibri.Message.Messaggio;
 import it.polimi.eventolibri.Message.RichiestaNextEventi;
 import it.polimi.eventolibri.Model.Evento;
 import it.polimi.eventolibri.Model.Figlio;
-import it.polimi.eventolibri.Model.Genitore;
+import it.polimi.eventolibri.Model.Lettore;
 import it.polimi.eventolibri.Network.Client;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -23,78 +22,70 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-
-public class HomeGenitore {
+public class HomeLettore {
 
     private final Client client;
     private Stage stage;
-    private Genitore genitore;
+    private Lettore lettore;
     private ArrayList<Evento> eventiProssimi;
     private Button nextEventiButton;
-    private EventoView eventoView;
-    private ProfiloGenitore profiloGenitore;
+    private EventoViewLettore eventoView;
+    private ProfiloLettore profiloLettore;
 
-    public HomeGenitore(Client client, EventoView eventoView, ProfiloGenitore profiloGenitore) {
-        this.eventoView = eventoView;
+    public HomeLettore(Client client, EventoViewLettore eventoView, ProfiloLettore profiloLettore) {
         this.client = client;
-        this.profiloGenitore = profiloGenitore;
+        this.eventoView = eventoView;
+        this.profiloLettore = profiloLettore;
     }
 
-    public void show(Stage stage, Genitore genitore, ArrayList<Evento> eventiProssimi) {
+    public void show(Stage stage, Lettore lettore, ArrayList<Evento> eventiProssimi) {
         this.stage = stage;
-        this.genitore = genitore;
+        this.lettore = lettore;
         this.eventiProssimi = eventiProssimi;
 
         // ---------- TOP BAR CON PROFILO ----------
-        Button profiloButton = new Button("Profilo e figli");
+        Button profiloButton = new Button("Profilo lettore");
         profiloButton.setOnAction(e -> {
             System.out.println("Apertura schermata profilo...");
-            profiloGenitore.show(stage, genitore, () -> {
-                this.show(stage, genitore, eventiProssimi);
+            profiloLettore.show(stage, lettore, () -> {
+                this.show(stage, lettore, eventiProssimi);
             });
 
         });
 
-        HBox topBar = new HBox(new Label("  Benvenuto, " + genitore.getNome() + "!          "), profiloButton);
+        HBox topBar = new HBox(new Label("  Benvenuto, " + lettore.getNome() + "!          "), profiloButton);
         topBar.setPadding(new Insets(20));
         topBar.setAlignment(Pos.TOP_RIGHT);
 
 
-        // ---------- EVENTI FIGLI ----------
-        Map<Figlio, ArrayList<Evento>> eventiPerFiglio = new HashMap<>();
+        // ---------- EVENTI CREATI ----------
+        VBox eventiCreatiBox = new VBox(10);
+        eventiCreatiBox.getChildren().add(new Label("Eventi creati:"));
+        eventiCreatiBox.setPadding(new Insets(10));
 
-        for (Figlio f : genitore.getFigli()) {
-            ArrayList<Evento> eventi = f.getIscrizioni();
-            eventiPerFiglio.put(f, eventi);
-        }
-
-        VBox figliSection = new VBox(25);
-        figliSection.setPadding(new Insets(10));
-        Label titoloFigli = new Label("Eventi a cui sono iscritti i tuoi figli:");
-        titoloFigli.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-        figliSection.getChildren().add(titoloFigli);
-        if (eventiPerFiglio.isEmpty()) {
-            figliSection.getChildren().add(new Label("Nessun figlio oppure nessuna iscrizione."));
+        if (lettore.getEventiCreati().isEmpty()) {
+            eventiCreatiBox.getChildren().add(new Label("Nessun evento creato."));
         } else {
-            eventiPerFiglio.forEach((figlio, listaEventi) -> {
-                VBox boxFiglio = new VBox(10);
-                boxFiglio.setPadding(new Insets(5, 0, 5, 10));
-                // usa figlio.getNome() per il titolo
-                Label titoloFiglio = new Label("Eventi di " + figlio.getNome() + ":");
-                titoloFiglio.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
-                boxFiglio.getChildren().add(titoloFiglio);
-                if (listaEventi.isEmpty()) {
-                    boxFiglio.getChildren().add(new Label("Nessun evento iscritto."));
-                } else {
-                    for (Evento evento : listaEventi) {
-                        boxFiglio.getChildren().add(creaRigaEvento(evento));
-                    }
-                }
-                figliSection.getChildren().add(boxFiglio);
-            });
+            for (Evento evento : lettore.getEventiCreati()) {
+                HBox riga = creaRigaEvento(evento);
+                eventiCreatiBox.getChildren().add(riga);
+            }
         }
 
 
+        // ---------- EVENTI A CUI IL LETTORE è ISCRITTO ----------
+        VBox eventiIscrittoBox = new VBox(10);
+        eventiIscrittoBox.getChildren().add(new Label("Eventi a cui leggerai:"));
+        eventiIscrittoBox.setPadding(new Insets(10));
+
+        if (lettore.getIscrizioniLettura().isEmpty()) {
+            eventiIscrittoBox.getChildren().add(new Label("Nessun evento."));
+        } else {
+            for (Evento evento : lettore.getIscrizioniLettura()) {
+                HBox riga = creaRigaEvento(evento);
+                eventiIscrittoBox.getChildren().add(riga);
+            }
+        }
 
         // ---------- EVENTI PROSSIMI ----------
         VBox eventiProssimiBox = new VBox(10);
@@ -105,26 +96,31 @@ public class HomeGenitore {
             eventiProssimiBox.getChildren().add(new Label("Nessun evento disponibile."));
         } else {
             for (Evento evento : eventiProssimi) {
+                if (lettore.getEventiCreati().stream().anyMatch(e -> e.getId() == evento.getId()) ||
+                        lettore.getIscrizioniLettura().stream().anyMatch(e -> e.getId() == evento.getId())) {
+                    continue; // salta gli eventi già creati o a cui è iscritto
+                }
                 HBox riga = creaRigaEvento(evento);
                 eventiProssimiBox.getChildren().add(riga);
             }
         }
 
-        nextEventiButton = new Button("Carica Eventi Successivi");
-        nextEventiButton.setOnAction(e -> {
-            RichiestaNextEventi req = new RichiestaNextEventi(eventiProssimi.getLast());
-            try {
-                client.sendMessage(req);
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-            }
-
-        });
-        eventiProssimiBox.getChildren().add(nextEventiButton);
+        if (eventiProssimi.size() == 10) {
+            nextEventiButton = new Button("Carica Eventi Successivi");
+            nextEventiButton.setOnAction(e -> {
+                RichiestaNextEventi req = new RichiestaNextEventi(eventiProssimi.getLast());
+                try {
+                    client.sendMessage(req);
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                }
+            });
+            eventiProssimiBox.getChildren().add(nextEventiButton);
+        }
 
 
         // ---------- CONTENUTO CENTRALE ----------
-        VBox centro = new VBox(30, figliSection, eventiProssimiBox);
+        VBox centro = new VBox(30, eventiCreatiBox, eventiIscrittoBox, eventiProssimiBox);
         centro.setAlignment(Pos.TOP_CENTER);
         centro.setPadding(new Insets(20));
 
@@ -158,7 +154,7 @@ public class HomeGenitore {
 
     public void aggiornaEventi(ArrayList<Evento> prossimiEventi) {
         eventiProssimi.addAll(prossimiEventi);
-        this.show(stage, genitore, eventiProssimi);
+        this.show(stage, lettore, eventiProssimi);
     }
 
 
@@ -170,8 +166,8 @@ public class HomeGenitore {
         apri.setOnAction(e -> {
             System.out.println("Apro dettagli evento: " + evento.getNome());
 
-            eventoView.show(stage, evento, genitore, () -> {
-                this.show(stage, genitore, eventiProssimi);
+            eventoView.show(stage, evento, lettore, () -> {
+                this.show(stage, lettore, eventiProssimi);
             });
         });
 
@@ -181,6 +177,5 @@ public class HomeGenitore {
         return riga;
     }
 
-
-
 }
+

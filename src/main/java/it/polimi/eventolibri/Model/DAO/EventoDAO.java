@@ -16,7 +16,7 @@ public class EventoDAO {
 
     public ArrayList<Evento> getEventiCreati(Lettore lettore) throws SQLException {
         ArrayList<Evento> eventiCreati = new ArrayList<>();
-        String query = "SELECT * FROM eventi e JOIN luoghi l ON e.id_luogo=l.id WHERE e.id_creatore = ?";
+        String query = "SELECT * FROM eventi e JOIN luoghi l ON e.id_luogo=l.id WHERE e.id_creatore = ? AND e.data >= NOW() ORDER BY e.data ASC";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
             pstatement.setInt(1, lettore.getId());
             try (ResultSet result = pstatement.executeQuery();) {

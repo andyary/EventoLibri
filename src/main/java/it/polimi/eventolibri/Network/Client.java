@@ -20,6 +20,7 @@ public class Client {
     private ObjectInputStream in;
     private LoginView loginView;
     private HomeGenitore homeGenitore;
+    private HomeLettore homeLettore;
     private EventoView eventoView;
     private ProfiloGenitore profiloGenitore;
     private RegistraNewGenitore registraNewGenitore;
@@ -29,12 +30,13 @@ public class Client {
 
 
 
-    public void start(LoginView loginView, HomeGenitore homeGenitore, EventoView eventoView, ProfiloGenitore profiloGenitore, RegistraNewGenitore registraNewGenitore) throws Exception {
+    public void start(LoginView loginView, HomeGenitore homeGenitore, HomeLettore homeLettore, EventoView eventoView, ProfiloGenitore profiloGenitore, RegistraNewGenitore registraNewGenitore) throws Exception {
         socket = new Socket("localhost", 5000);
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
         this.loginView = loginView;
         this.homeGenitore = homeGenitore;
+        this.homeLettore = homeLettore;
         this.eventoView = eventoView;
         this.profiloGenitore = profiloGenitore;
         this.registraNewGenitore = registraNewGenitore;
@@ -72,6 +74,14 @@ public class Client {
                         genitore.setFigli(gen.getFigli());
                         utente = genitore;
                         homeGenitore.show(loginView.getStage(), genitore, ((RispostaLogin) msg).getProssimiEventi());
+                    }
+                    case Lettore let -> {
+                        CreaUtente<Lettore> creaLettore = new CreaLettore();
+                        Lettore lettore = creaLettore.nuovoUtente(let.getId(), let.getNome(),let.getCognome(), let.getUserName());
+                        lettore.setIscrizioniLettura(let.getIscrizioniLettura());
+                        lettore.setEventiCreati(let.getEventiCreati());
+                        utente = lettore;
+                        homeLettore.show(loginView.getStage(), lettore, ((RispostaLogin) msg).getProssimiEventi());
                     }
                     default -> {
                         System.out.println("Tipo di utente non gestito.");
