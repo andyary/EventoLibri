@@ -68,8 +68,8 @@ class UtenteDAOTest {
             Genitore genitorevalido11= creaGenitore.nuovoUtente(id_genitore,"Alberto", "Castagna", "genitore99");
 
             FiglioDAO figlioDAO = new FiglioDAO(conn);
-            int id_figlio1 = figlioDAO.creaFiglio("Marco99", new Date(2015-01-03), (Genitore) utenteDAO.checkCredentials("genitore99", "2222"));
-            int id_figlio2 = figlioDAO.creaFiglio("Alice99", new Date(2015-01-03), (Genitore) utenteDAO.checkCredentials("genitore99", "2222"));
+            int id_figlio1 = figlioDAO.creaFiglio("Marco99", new Date(2015-01-03).toLocalDate(), (Genitore) utenteDAO.checkCredentials("genitore99", "2222"));
+            int id_figlio2 = figlioDAO.creaFiglio("Alice99", new Date(2015-01-03).toLocalDate(), (Genitore) utenteDAO.checkCredentials("genitore99", "2222"));
 
             Figlio figlio1 = new Figlio(id_figlio1,"Marco99", new Date(2015-01-03).toLocalDate());
             Figlio figlio2 = new Figlio(id_figlio2,"Alice99", new Date(2015-01-03).toLocalDate());

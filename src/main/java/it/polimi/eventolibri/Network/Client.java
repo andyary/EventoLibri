@@ -22,6 +22,7 @@ public class Client {
     private HomeGenitore homeGenitore;
     private HomeLettore homeLettore;
     private EventoView eventoView;
+    private EventoViewLettore eventoViewLettore;
     private ProfiloGenitore profiloGenitore;
     private RegistraNewGenitore registraNewGenitore;
     // add altre viste qui
@@ -30,14 +31,15 @@ public class Client {
 
 
 
-    public void start(LoginView loginView, HomeGenitore homeGenitore, HomeLettore homeLettore, EventoView eventoView, ProfiloGenitore profiloGenitore, RegistraNewGenitore registraNewGenitore) throws Exception {
+    public void start(LoginView loginView, HomeGenitore homeGenitore, EventoView eventoView, HomeLettore homeLettore, EventoViewLettore eventoViewLettore, ProfiloGenitore profiloGenitore, RegistraNewGenitore registraNewGenitore) throws Exception {
         socket = new Socket("localhost", 5000);
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
         this.loginView = loginView;
         this.homeGenitore = homeGenitore;
-        this.homeLettore = homeLettore;
         this.eventoView = eventoView;
+        this.homeLettore = homeLettore;
+        this.eventoViewLettore = eventoViewLettore;
         this.profiloGenitore = profiloGenitore;
         this.registraNewGenitore = registraNewGenitore;
 
@@ -101,9 +103,20 @@ public class Client {
             if (((RispostaNextEventi) msg).isSuccesso()) {
                 System.out.println("Next Eventi Arrivati!");
                 if (((RispostaNextEventi) msg).getProssimiEventi().size() < 10) {
-                    homeGenitore.nascondiBottoneNextEventi();
+                    if (utente instanceof Lettore) {
+                        homeLettore.nascondiBottoneNextEventi();
+                    }
+                    if (utente instanceof Genitore) {
+                        homeGenitore.nascondiBottoneNextEventi();
+                    }
                 } else {
-                    homeGenitore.aggiornaEventi(((RispostaNextEventi) msg).getProssimiEventi());
+                    if (utente instanceof Lettore) {
+                        homeLettore.aggiornaEventi(((RispostaNextEventi) msg).getProssimiEventi());
+                    }
+                    if (utente instanceof Genitore) {
+                        homeGenitore.aggiornaEventi(((RispostaNextEventi) msg).getProssimiEventi());
+                    }
+
                 }
 
             }
@@ -131,9 +144,13 @@ public class Client {
 
         if (msg instanceof RispostaIscrittiEvento) {
             if (((RispostaIscrittiEvento) msg).isSuccesso()) {
+                if (utente instanceof Lettore) {
+                    eventoViewLettore.aggiornaIscritti(((RispostaIscrittiEvento) msg).getEvento().getIscritti());
+                }
+                if (utente instanceof Genitore) {
+                    eventoView.aggiornaIscritti(((RispostaIscrittiEvento) msg).getEvento().getIscritti());
+                }
 
-                int numIscritti = ((RispostaIscrittiEvento) msg).getEvento().getIscritti();
-                eventoView.aggiornaIscritti(((RispostaIscrittiEvento) msg).getEvento().getIscritti());
 
                 System.out.println("Numero iscritti aggiornato: " + ((RispostaIscrittiEvento) msg).getEvento().getIscritti());
             }

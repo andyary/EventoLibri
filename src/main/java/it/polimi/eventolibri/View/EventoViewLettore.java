@@ -53,7 +53,7 @@ public class EventoViewLettore {
     }
 
     /**
-     * Mostra la finestra dei dettagli evento con iscrizione/disiscrizione figli
+     * Mostra la finestra dei dettagli evento con dettaglio scaletta ed iscizione come lettore
      */
     public void show(Stage stage, Evento evento, Lettore lettore, Runnable onBack) {
         this.stage = stage;
