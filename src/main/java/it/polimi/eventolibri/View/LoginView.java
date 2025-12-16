@@ -77,7 +77,7 @@ public class LoginView {
         layout = new VBox(15, title, usernameField, passwordField, loginButton, messaggioerrore, newGenitoreButton);
         layout.setAlignment(Pos.CENTER);
 
-        Scene scene = new Scene(layout, 350, 250);
+        Scene scene = new Scene(layout, 700, 700);
         stage.setScene(scene);
         stage.setTitle("Login");
         stage.show();

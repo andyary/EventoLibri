@@ -144,9 +144,6 @@ public class Client {
 
         if (msg instanceof RispostaIscrittiEvento) {
             if (((RispostaIscrittiEvento) msg).isSuccesso()) {
-                if (utente instanceof Lettore) {
-                    eventoViewLettore.aggiornaIscritti(((RispostaIscrittiEvento) msg).getEvento().getIscritti());
-                }
                 if (utente instanceof Genitore) {
                     eventoView.aggiornaIscritti(((RispostaIscrittiEvento) msg).getEvento().getIscritti());
                 }

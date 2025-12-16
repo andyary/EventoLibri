@@ -17,6 +17,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,7 +54,16 @@ public class HomeLettore {
 
         });
 
-        HBox topBar = new HBox(new Label("  Benvenuto, " + lettore.getNome() + "!          "), profiloButton);
+        Button newEventoButton = new Button("Crea Nuovo Evento");
+        newEventoButton.setOnAction(e -> {
+            System.out.println("Apertura schermata crea nuovo evento...");
+            eventoView.show(stage, new Evento(lettore, "", null, LocalDateTime.now()), lettore, () -> {
+                this.show(stage, lettore, eventiProssimi);
+            });
+
+        });
+
+        HBox topBar = new HBox(new Label("  Benvenuto, " + lettore.getNome() + "!          "), profiloButton, newEventoButton);
         topBar.setPadding(new Insets(20));
         topBar.setAlignment(Pos.TOP_RIGHT);
 
@@ -136,7 +146,7 @@ public class HomeLettore {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // scroll verticale solo se serve
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        Scene scene = new Scene(scrollPane, 500, 800);
+        Scene scene = new Scene(scrollPane, 700, 700);
         Platform.runLater(() -> {;
             stage.setScene(scene);
             // stage.setMaximized(true);

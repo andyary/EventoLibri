@@ -82,16 +82,12 @@ public class EventoViewLettore {
             System.out.println("Errore nel richiestaLettoriELuoghi" + e.getMessage());
         }
 
-        if (evento == null) {
-            evento = new Evento(lettore, "", null, LocalDateTime.now());
-        }
-
         /* ---------- TITOLO ---------- */
-
         Label titoloLabel = new Label("Crea nuovo evento");
         titoloLabel.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
         TextField titoloField = new TextField(evento.getNome());
         titoloField.setPromptText("Titolo evento");
+        titoloField.setAlignment(Pos.CENTER_LEFT);
         /* ---------- LUOGO ---------- */
 
         luogoCombo.getItems().addAll(luoghi);
@@ -101,12 +97,18 @@ public class EventoViewLettore {
             protected void updateItem(Luogo item, boolean empty) {
                 super.updateItem(item, empty);
                 setText(empty || item == null ? "" : item.getNome());
+                setAlignment(Pos.CENTER_LEFT);
             }
         });
-        luogoCombo.setButtonCell(luogoCombo.getCellFactory().call(null));
+        luogoCombo.setButtonCell(luogoCombo.getCellFactory().call(null));;
         /* ---------- DATA / ORA ---------- */
         DatePicker datePicker = new DatePicker(evento.getData().toLocalDate());
         datePicker.setPromptText("Data evento");
+        HBox dataBox = new HBox(5,
+                new Label("Data:"),
+                datePicker
+        );
+        dataBox.setAlignment(Pos.CENTER_LEFT);
         Spinner<Integer> hourSpinner = new Spinner<>(0, 23, evento.getData().toLocalTime().getHour());
         Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, evento.getData().toLocalTime().getMinute());
         hourSpinner.setEditable(true);
@@ -129,6 +131,7 @@ public class EventoViewLettore {
         Button scegliLibroBtn = new Button("Scegli libro");
         final Libro[] libroSelezionato = new Libro[1];
         scegliLibroBtn.setOnAction(e -> {
+            messaggioerrore.setText("");
             // TODO finestra utility per scelta libro
             // libroSelezionato[0] = libro;
             // libroSelezionatoLabel.setText(libro.getTitolo());
@@ -141,9 +144,23 @@ public class EventoViewLettore {
             protected void updateItem(Lettore item, boolean empty) {
                 super.updateItem(item, empty);
                 setText(empty || item == null ? "" : item.getNome());
+                setAlignment(Pos.CENTER_LEFT);
             }
         });
         lettoreCombo.setButtonCell(lettoreCombo.getCellFactory().call(null));
+
+        Button cancellaRigaBtn = new Button("Cancella riga");
+        cancellaRigaBtn.setOnAction(e -> {
+            messaggioerrore.setText("");
+            if (scaletta.isEmpty()) {
+                messaggioerrore.setText("Nessuna riga da cancellare");
+                return;
+            }
+            scaletta.remove(scaletta.size() - 1);
+            refreshScalettaUI(scalettaBox, scaletta);
+        });
+
+
         Button aggiungiRigaBtn = new Button("Aggiungi riga");
         aggiungiRigaBtn.setOnAction(e -> {
             messaggioerrore.setText("");
@@ -162,6 +179,17 @@ public class EventoViewLettore {
             libroSelezionatoLabel.setText("Nessun libro selezionato");
             lettoreCombo.setValue(null);
         });
+
+        HBox libroLettoreBox = new HBox(5,
+                new Label("Libro:"),
+                scegliLibroBtn,
+                new Label("Lettore:"),
+                lettoreCombo,
+                cancellaRigaBtn,
+                aggiungiRigaBtn
+        );
+        libroLettoreBox.setAlignment(Pos.CENTER_LEFT);
+
         /* ---------- BOTTONI ---------- */
         Button salvaBtn = new Button("Salva evento");
         Button annullaBtn = new Button("Annulla");
@@ -194,26 +222,29 @@ public class EventoViewLettore {
             if (onBack != null) onBack.run();
         });
 
-        /* ---------- LAYOUT ---------- */
-        VBox layout = new VBox(15,
-                titoloLabel,
-                titoloField,
-                luogoCombo,
-                datePicker,
-                oraBox,
-                scalettaLabel,
-                libroSelezionatoLabel,
-                scegliLibroBtn,
-                lettoreCombo,
-                aggiungiRigaBtn,
-                scalettaBox,
-                messaggioerrore,
+        HBox mainBtnBox = new HBox(5,
                 salvaBtn,
                 annullaBtn
         );
+        mainBtnBox.setAlignment(Pos.CENTER_RIGHT);
+
+        /* ---------- LAYOUT ---------- */
+        VBox layout = new VBox(15,
+                mainBtnBox,
+                messaggioerrore,
+                titoloLabel,
+                titoloField,
+                luogoCombo,
+                dataBox,
+                oraBox,
+                scalettaLabel,
+                libroSelezionatoLabel,
+                libroLettoreBox,
+                scalettaBox
+        );
         layout.setPadding(new Insets(20));
-        layout.setAlignment(Pos.TOP_CENTER);
-        stage.setScene(new Scene(layout, 650, 900));
+        layout.setAlignment(Pos.TOP_LEFT);
+        stage.setScene(new Scene(layout, 700, 700));
         stage.setTitle("Crea Evento");
         stage.show();
     }
@@ -224,12 +255,6 @@ public class EventoViewLettore {
         });
     }
 
-    public void aggiornaIscritti(int numIscritti) {
-        evento.setIscritti(numIscritti);
-        Platform.runLater(() -> {
-            iscritti.setText("Iscritti: " + evento.getIscritti());
-        });
-    }
 
     public void aggiornaLettoriELuoghi(ArrayList<Lettore> lettori, ArrayList<Luogo> luoghi) {
         this.lettori.clear();
@@ -288,9 +313,5 @@ public class EventoViewLettore {
             riga.setAlignment(Pos.CENTER_LEFT);
             scalettaBox.getChildren().add(riga);
         }
-
     }
-
-
-
 }

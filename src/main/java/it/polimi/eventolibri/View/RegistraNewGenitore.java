@@ -85,7 +85,7 @@ public class RegistraNewGenitore {
         contenuto.setPadding(new Insets(20));
         ScrollPane scrollPane = new ScrollPane(contenuto);
         scrollPane.setFitToWidth(true);
-        Scene scene = new Scene(scrollPane, 500, 800);
+        Scene scene = new Scene(scrollPane, 700, 700);
         Platform.runLater(() -> {
             stage.setTitle("Registra Nuovo Genitore");
             stage.setScene(scene);
