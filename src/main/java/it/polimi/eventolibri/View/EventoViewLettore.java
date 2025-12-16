@@ -126,7 +126,7 @@ public class EventoViewLettore {
         VBox scalettaBox = new VBox(6);
         scalettaBox.setPadding(new Insets(10));
         scalettaBox.setStyle("-fx-border-color: lightgray;");
-        ArrayList<LibroLettore> scaletta = new ArrayList<>();
+        ArrayList<LibroLettore> scaletta = evento.getScaletta();
         Label libroSelezionatoLabel = new Label("Nessun libro selezionato");
         Button scegliLibroBtn = new Button("Scegli libro");
         final Libro[] libroSelezionato = new Libro[1];

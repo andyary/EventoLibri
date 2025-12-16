@@ -52,7 +52,6 @@ public class Evento extends EventoAstratto implements Serializable {
         this.id = id;
     }
 
-
     public String getNome() {
         return nome;
     }
