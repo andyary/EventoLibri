@@ -3,20 +3,21 @@ package it.polimi.eventolibri.View;
 import it.polimi.eventolibri.Message.RichiestaDisiscrizioneEvento;
 import it.polimi.eventolibri.Message.RichiestaIscrittiEvento;
 import it.polimi.eventolibri.Message.RichiestaIscrizioneEvento;
+import it.polimi.eventolibri.Message.RichiestaLettoriELuoghi;
 import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.Network.Client;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
@@ -25,15 +26,28 @@ public class EventoViewLettore {
     private Stage stage;
     private Evento evento;
     private Lettore lettore;
+    private ArrayList<Luogo> luoghi = new ArrayList<>();
+    private ArrayList<Lettore> lettori = new ArrayList<>();
     private Runnable onBack;
     private Label messaggioerrore;
     private Label iscritti;
+    private ComboBox<Luogo> luogoCombo = new ComboBox<>();
+    private ComboBox<Lettore> lettoreCombo = new ComboBox<>();
+
 
     public EventoViewLettore(Client client) {
         this.client = client;
         this.messaggioerrore = new Label("");
         this.messaggioerrore.setStyle("-fx-text-fill: red;");
         this.iscritti = new Label("Iscritti: TBD");
+    }
+
+    public void setLuoghi(ArrayList<Luogo> luoghi) {
+        this.luoghi = luoghi;
+    }
+
+    public void setLettori(ArrayList<Lettore> lettori) {
+        this.lettori = lettori;
     }
 
     public Lettore getLettore() {
@@ -61,66 +75,151 @@ public class EventoViewLettore {
         this.lettore = lettore;
         this.onBack = onBack;
 
-        RichiestaIscrittiEvento richiestaIscritti = new RichiestaIscrittiEvento(evento);
+        RichiestaLettoriELuoghi richiestaLettoriELuoghi = new RichiestaLettoriELuoghi();
         try {
-            client.sendMessage(richiestaIscritti);
+            client.sendMessage(richiestaLettoriELuoghi);
         } catch (IOException e) {
-            System.out.println("Errore nel richiestaIscrittiEvento" + e.getMessage());
+            System.out.println("Errore nel richiestaLettoriELuoghi" + e.getMessage());
         }
 
-        Label titolo = new Label(evento.getNome());
-        titolo.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
+        if (evento == null) {
+            evento = new Evento(lettore, "", null, LocalDateTime.now());
+        }
 
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMMM yyyy 'alle' HH:mm");
-        Label data = new Label("Data: " + evento.getData().format(fmt));
-        Label luogo = new Label("Luogo: " + evento.getLuogo().getNome());
-        Label capienza = new Label("Capienza: " + evento.getLuogo().getCapienza());
-        iscritti.setText("Iscritti: " + evento.getIscritti());
+        /* ---------- TITOLO ---------- */
 
+        Label titoloLabel = new Label("Crea nuovo evento");
+        titoloLabel.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
+        TextField titoloField = new TextField(evento.getNome());
+        titoloField.setPromptText("Titolo evento");
+        /* ---------- LUOGO ---------- */
 
+        luogoCombo.getItems().addAll(luoghi);
+        luogoCombo.setPromptText("Luogo");
+        luogoCombo.setCellFactory(cb -> new ListCell<>() {
+            @Override
+            protected void updateItem(Luogo item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? "" : item.getNome());
+            }
+        });
+        luogoCombo.setButtonCell(luogoCombo.getCellFactory().call(null));
+        /* ---------- DATA / ORA ---------- */
+        DatePicker datePicker = new DatePicker(evento.getData().toLocalDate());
+        datePicker.setPromptText("Data evento");
+        Spinner<Integer> hourSpinner = new Spinner<>(0, 23, evento.getData().toLocalTime().getHour());
+        Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, evento.getData().toLocalTime().getMinute());
+        hourSpinner.setEditable(true);
+        minuteSpinner.setEditable(true);
+        HBox oraBox = new HBox(5,
+                new Label("Ora:"),
+                hourSpinner,
+                new Label(":"),
+                minuteSpinner
+        );
+        oraBox.setAlignment(Pos.CENTER_LEFT);
+        /* ---------- SCALETTA ---------- */
+        Label scalettaLabel = new Label("Scaletta");
+        scalettaLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+        VBox scalettaBox = new VBox(6);
+        scalettaBox.setPadding(new Insets(10));
+        scalettaBox.setStyle("-fx-border-color: lightgray;");
+        ArrayList<LibroLettore> scaletta = new ArrayList<>();
+        Label libroSelezionatoLabel = new Label("Nessun libro selezionato");
+        Button scegliLibroBtn = new Button("Scegli libro");
+        final Libro[] libroSelezionato = new Libro[1];
+        scegliLibroBtn.setOnAction(e -> {
+            // TODO finestra utility per scelta libro
+            // libroSelezionato[0] = libro;
+            // libroSelezionatoLabel.setText(libro.getTitolo());
+        });
 
-        Button backButton = new Button("Indietro");
-        backButton.setOnAction(e -> {
+        lettoreCombo.getItems().addAll(lettori);
+        lettoreCombo.setPromptText("Lettore (facoltativo)");
+        lettoreCombo.setCellFactory(cb -> new ListCell<>() {
+            @Override
+            protected void updateItem(Lettore item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? "" : item.getNome());
+            }
+        });
+        lettoreCombo.setButtonCell(lettoreCombo.getCellFactory().call(null));
+        Button aggiungiRigaBtn = new Button("Aggiungi riga");
+        aggiungiRigaBtn.setOnAction(e -> {
+            messaggioerrore.setText("");
+            if (libroSelezionato[0] == null) {
+                messaggioerrore.setText("Seleziona un libro");
+                return;
+            }
+            LibroLettore ll = new LibroLettore(
+                    libroSelezionato[0],
+                    lettoreCombo.getValue(),
+                    scaletta.size() + 1
+            );
+            scaletta.add(ll);
+            refreshScalettaUI(scalettaBox, scaletta);
+            libroSelezionato[0] = null;
+            libroSelezionatoLabel.setText("Nessun libro selezionato");
+            lettoreCombo.setValue(null);
+        });
+        /* ---------- BOTTONI ---------- */
+        Button salvaBtn = new Button("Salva evento");
+        Button annullaBtn = new Button("Annulla");
+        salvaBtn.setOnAction(e -> {
+            messaggioerrore.setText("");
+            if (titoloField.getText().isBlank()
+                    || luogoCombo.getValue() == null
+                    || datePicker.getValue() == null
+                    || scaletta.isEmpty()) {
+                messaggioerrore.setText("Compila tutti i campi obbligatori");
+                return;
+            }
+            LocalDateTime dataOra = LocalDateTime.of(
+                    datePicker.getValue(),
+                    LocalTime.of(hourSpinner.getValue(), minuteSpinner.getValue())
+            );
+            Evento eventoTemp = new Evento(
+                    lettore,
+                    titoloField.getText(),
+                    luogoCombo.getValue(),
+                    dataOra
+            );
+//            try {
+//                client.sendMessage(new RichiestaCreazioneEvento(eventoTemp));
+//            } catch (IOException ex) {
+//                messaggioerrore.setText("Errore durante il salvataggio");
+//            }
+        });
+        annullaBtn.setOnAction(e -> {
             if (onBack != null) onBack.run();
         });
 
-        VBox scalettaBox = new VBox(10);
-        scalettaBox.setPadding(new Insets(10));
-        Label titoloScaletta = new Label("Scaletta dell'evento:");
-        titoloScaletta.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-        scalettaBox.getChildren().add(titoloScaletta);
-        for (LibroLettore ll : evento.getScaletta()) {
-            String nomeLettore = "---------";
-            if (ll.getLettore().getNome()!=null) {nomeLettore = ll.getLettore().getNome();}
-            String titoloLibro = ll.getLibro().getTitolo();
-            HBox riga = new HBox(10);
-            riga.setAlignment(Pos.CENTER_LEFT);
-            Label lbl = new Label(ll.getProgressivo() + ") <" + titoloLibro + "> letto da <" + nomeLettore + "> durata " + ll.getLibro().getTempoLettura() +" minuti");
-            lbl.setStyle("-fx-font-size: 14px;");
-            riga.getChildren().add(lbl);
-            scalettaBox.getChildren().add(riga);
-        }
-
-
-        VBox layout = new VBox(15, titolo, data, luogo, capienza, iscritti, messaggioerrore, backButton, scalettaBox);
-        layout.setAlignment(Pos.TOP_CENTER);
+        /* ---------- LAYOUT ---------- */
+        VBox layout = new VBox(15,
+                titoloLabel,
+                titoloField,
+                luogoCombo,
+                datePicker,
+                oraBox,
+                scalettaLabel,
+                libroSelezionatoLabel,
+                scegliLibroBtn,
+                lettoreCombo,
+                aggiungiRigaBtn,
+                scalettaBox,
+                messaggioerrore,
+                salvaBtn,
+                annullaBtn
+        );
         layout.setPadding(new Insets(20));
-
-        System.out.println("dalla show contenuto di messaggio errore:" + messaggioerrore);
-
-        Scene scene = new Scene(layout, 500, 800);
-
-        Platform.runLater(() -> {
-            stage.setScene(scene);
-            stage.setTitle("Dettagli Evento");
-            stage.show();
-        });
+        layout.setAlignment(Pos.TOP_CENTER);
+        stage.setScene(new Scene(layout, 650, 900));
+        stage.setTitle("Crea Evento");
+        stage.show();
     }
 
     public void mostraErrore(String msgerrore) {
         Platform.runLater(()->{
-            System.out.println("dalla mostraerrore contenuto di this.messaggio errore:" + this.messaggioerrore);
-            System.out.println("dalla mostraerrore contenuto di messaggio errore:" + msgerrore);
             this.messaggioerrore.setText(msgerrore);
         });
     }
@@ -130,6 +229,66 @@ public class EventoViewLettore {
         Platform.runLater(() -> {
             iscritti.setText("Iscritti: " + evento.getIscritti());
         });
+    }
+
+    public void aggiornaLettoriELuoghi(ArrayList<Lettore> lettori, ArrayList<Luogo> luoghi) {
+        this.lettori.clear();
+        this.lettori.addAll(lettori);
+        this.luoghi.clear();
+        this.luoghi.addAll(luoghi);
+        Platform.runLater(() -> {
+            luogoCombo.getItems().clear();
+            luogoCombo.getItems().addAll(luoghi);
+            luogoCombo.setPromptText("Luogo");
+            luogoCombo.setCellFactory(cb -> new ListCell<>() {
+                @Override
+                protected void updateItem(Luogo item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty || item == null ? "" : item.getNome());
+                }
+            });
+            luogoCombo.setButtonCell(luogoCombo.getCellFactory().call(null));
+
+            lettoreCombo.getItems().clear();
+            lettoreCombo.getItems().addAll(lettori);
+            lettoreCombo.setPromptText("Lettore (facoltativo)");
+            lettoreCombo.setCellFactory(cb -> new ListCell<>() {
+                @Override
+                protected void updateItem(Lettore item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty || item == null ? "" : item.getNome());
+                }
+            });
+            lettoreCombo.setButtonCell(lettoreCombo.getCellFactory().call(null));
+        });
+    }
+
+    private void refreshScalettaUI(VBox scalettaBox, ArrayList<LibroLettore> scaletta) {
+        scalettaBox.getChildren().clear();
+        for (int i = 0; i < scaletta.size(); i++) {
+            LibroLettore ll = scaletta.get(i);
+            ll.setProgressivo(i + 1);
+            Label titolo = new Label(ll.getLibro().getTitolo());
+            Label durata = new Label("(" + ll.getLibro().getTempoLettura() + " min)");
+            Label lettore = new Label(
+                    ll.getLettore() != null ? ll.getLettore().getNome() : ""
+            );
+            Button eliminaBtn = new Button("❌");
+            eliminaBtn.setOnAction(e -> {
+                scaletta.remove(ll);
+                refreshScalettaUI(scalettaBox, scaletta);
+            });
+            HBox riga = new HBox(10,
+                    new Label((i + 1) + ")"),
+                    titolo,
+                    durata,
+                    lettore,
+                    eliminaBtn
+            );
+            riga.setAlignment(Pos.CENTER_LEFT);
+            scalettaBox.getChildren().add(riga);
+        }
+
     }
 
 

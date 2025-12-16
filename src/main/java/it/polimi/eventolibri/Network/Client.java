@@ -226,6 +226,17 @@ public class Client {
             }
         }
 
+        if (msg instanceof RispostaLettoriELuoghi) {
+            if (((RispostaLettoriELuoghi) msg).isSuccesso()) {
+                eventoViewLettore.aggiornaLettoriELuoghi(((RispostaLettoriELuoghi) msg).getLettori(), ((RispostaLettoriELuoghi) msg).getLuoghi());
+            }
+            else {
+                System.out.println("Messaggio di errore ricevuto : " + ((RispostaLettoriELuoghi) msg).getMessaggioerrore());
+                eventoViewLettore.mostraErrore(((RispostaLettoriELuoghi) msg).getMessaggioerrore());
+            }
+
+        }
+
     }
 
     private void close() {

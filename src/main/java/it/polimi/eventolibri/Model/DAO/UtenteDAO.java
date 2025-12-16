@@ -3,6 +3,7 @@ package it.polimi.eventolibri.Model.DAO;
 import it.polimi.eventolibri.Model.*;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class UtenteDAO {
 
@@ -119,4 +120,30 @@ public class UtenteDAO {
         }
     }
 
+    public ArrayList<Lettore> getLettori() {
+        String query = "SELECT * FROM utenti WHERE tipo = 'Lettore'";
+        ArrayList<Lettore> lettori = new ArrayList<>();
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            try (ResultSet result = pstatement.executeQuery();) {
+                if (!result.isBeforeFirst()) // no risultati, non esistono lettori
+                    return lettori;
+                else {
+                    while (result.next()) {
+                        CreaUtente<Lettore> creaLettore = new CreaLettore();
+                        Lettore lettore = creaLettore.nuovoUtente(result.getInt("id"), result.getString("nome"), result.getString("cognome"), result.getString("username"));
+                        lettori.add(lettore);
+                    }
+                    return lettori;
+                }
+            } catch (SQLException ex) {
+                System.out.println("Errore Query Get Lettori" + ex.getMessage());
+                return null;
+            }
+        } catch (SQLException ex) {
+            System.out.println("Errore Query Get Lettori" + ex.getMessage());
+            return null;
+        }
+
+
+    }
 }

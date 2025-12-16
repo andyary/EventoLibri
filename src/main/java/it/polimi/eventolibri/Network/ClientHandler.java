@@ -109,6 +109,13 @@ public class ClientHandler extends Thread {
             out.reset();
         }
 
+        if (msg instanceof RichiestaLettoriELuoghi) {
+            RispostaLettoriELuoghi risposta = controller.richiestaLettoriELuoghi();
+            out.writeObject(risposta);
+            out.flush();
+            out.reset();
+        }
+
         // QUI CONTINUI AD AGGIUNGERE I MESSAGGI
     }
 

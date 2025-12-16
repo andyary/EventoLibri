@@ -169,4 +169,16 @@ public class Controller {
         return risposta;
     }
 
+    public RispostaLettoriELuoghi richiestaLettoriELuoghi() {
+        RispostaLettoriELuoghi risposta = new RispostaLettoriELuoghi();
+        try {
+            risposta.setLuoghi(luogoDAO.getLuoghi());
+            risposta.setLettori(utenteDAO.getLettori());
+            risposta.setSuccesso(true);
+        } catch (Exception e) {
+            risposta.setSuccesso(false);
+            e.printStackTrace();
+        }
+        return risposta;
+    }
 }

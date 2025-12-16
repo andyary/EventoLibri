@@ -34,4 +34,8 @@ public class LibroLettore  implements Serializable {
     public int getProgressivo() {
         return progressivo;
     }
+
+    public void setProgressivo(int progressivo) {
+        this.progressivo = progressivo;
+    }
 }
