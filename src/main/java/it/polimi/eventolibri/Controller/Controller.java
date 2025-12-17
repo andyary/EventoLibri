@@ -1,11 +1,8 @@
 package it.polimi.eventolibri.Controller;
 
 import it.polimi.eventolibri.Message.*;
+import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.Model.DAO.*;
-import it.polimi.eventolibri.Model.DBGestore;
-import it.polimi.eventolibri.Model.Evento;
-import it.polimi.eventolibri.Model.Figlio;
-import it.polimi.eventolibri.Model.Genitore;
 
 import java.sql.Connection;
 import java.time.LocalDateTime;
@@ -181,4 +178,24 @@ public class Controller {
         }
         return risposta;
     }
+
+    public RispostaAggiornaLettore aggiornaLettore(Lettore lettore) {
+        RispostaAggiornaLettore risposta = new RispostaAggiornaLettore();
+        try {
+            if (utenteDAO.aggiornaLettore(lettore)==1) {
+                risposta.setSuccesso(true);
+                risposta.setLettore(lettore);
+            }
+            else {
+                risposta.setSuccesso(false);
+                risposta.setMessaggioErrore("Errore aggiornamento lettore su DB");
+            }
+        } catch (Exception e) {
+            risposta.setSuccesso(false);
+            risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
+            e.printStackTrace();
+        }
+        return risposta;
+    }
+
 }

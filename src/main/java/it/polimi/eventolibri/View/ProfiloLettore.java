@@ -1,7 +1,6 @@
 package it.polimi.eventolibri.View;
 
-import it.polimi.eventolibri.Message.RichiestaAggiornaGenitore;
-import it.polimi.eventolibri.Message.RichiestaAggiungiFiglio;
+import it.polimi.eventolibri.Message.RichiestaAggiornaLettore;
 import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.Network.Client;
 import javafx.application.Platform;
@@ -21,23 +20,12 @@ public class ProfiloLettore {
     private Stage stage;
     private Lettore lettore;
     private Label messaggioerrore;
-    private Label messaggioerrore2;
-    private Label noFigliLabel;
-    private VBox figliBox;
-    private TextField nomeFiglioField;
-    private DatePicker dataNascitaPicker;
 
 
     public ProfiloLettore(Client client) {
         this.client = client;
         this.messaggioerrore = new Label("");
         this.messaggioerrore.setStyle("-fx-text-fill: red;");
-        this.messaggioerrore2 = new Label("");
-        this.messaggioerrore2.setStyle("-fx-text-fill: red;");
-        this.figliBox = new VBox(10);
-        this.nomeFiglioField = new TextField();
-        this.dataNascitaPicker = new DatePicker();
-        this.noFigliLabel = new Label("Nessun figlio registrato.");
     }
 
     public Lettore getLettore() {
@@ -73,10 +61,10 @@ public class ProfiloLettore {
         salvaDati.setOnAction(e -> {
             if (!lettore.getNome().equals(nomeField.getText()) || !lettore.getCognome().equals(cognomeField.getText())) {
                 this.messaggioerrore.setText("");
-                CreaUtente<Genitore> creaGenitore = new CreaGenitore();
-                Genitore genitoreTemp = creaGenitore.nuovoUtente(lettore.getId(), nomeField.getText(), cognomeField.getText(), lettore.getUserName());
+                CreaUtente<Lettore> creaLettore = new CreaLettore();
+                Lettore lettoreTemp = creaLettore.nuovoUtente(lettore.getId(), nomeField.getText(), cognomeField.getText(), lettore.getUserName());
                 try {
-                    client.sendMessage(new RichiestaAggiornaGenitore(genitoreTemp));
+                    client.sendMessage(new RichiestaAggiornaLettore(lettoreTemp));
                 } catch (IOException ex) {
                     System.out.println(ex.getMessage());
                 }
@@ -85,9 +73,6 @@ public class ProfiloLettore {
         datiBox.getChildren().add(salvaDati);
         datiBox.getChildren().add(messaggioerrore);
 
-
-        VBox aggiungiBox = new VBox(10, nomeFiglioField, dataNascitaPicker, messaggioerrore2);
-        aggiungiBox.setPadding(new Insets(10));
         // ===========================
         // INDIETRO
         // ===========================
@@ -99,44 +84,22 @@ public class ProfiloLettore {
         // ===========================
         // LAYOUT COMPLETO
         // ===========================
-        VBox contenuto = new VBox(25, backBox, title, datiBox, figliBox, aggiungiBox);
+        VBox contenuto = new VBox(25, backBox, title, datiBox);
         contenuto.setPadding(new Insets(20));
         ScrollPane scrollPane = new ScrollPane(contenuto);
         scrollPane.setFitToWidth(true);
         Scene scene = new Scene(scrollPane, 500, 800);
         Platform.runLater(() -> {
-            stage.setTitle("Profilo Genitore");
+            stage.setTitle("Profilo Lettore");
             stage.setScene(scene);
             stage.show();
         });
     }
 
-    // ======================================================
-    //      RIGA FIGLIO (nome + data nascita + "Rimuovi")
-    // ======================================================
-    private HBox creaRigaFiglio(Genitore genitore, Figlio figlio, VBox container) {
-        Label label = new Label(figlio.getNome() + " - nato il " + figlio.getDataNascita());
-//        Button eliminaButton = new Button("Rimuovi");
-//        eliminaButton.setOnAction(e -> {
-//            genitore.getFigli().remove(figlio);
-//            container.getChildren().remove(eliminaButton.getParent());
-//            // TODO: client.sendMessage(new RichiestaRimuoviFiglio(genitore, figlio));
-//        });
-        HBox riga = new HBox(20, label /*, eliminaButton*/);
-        riga.setAlignment(Pos.CENTER_LEFT);
-        return riga;
-
-    }
 
     public void mostraErrore(String msgerrore) {
         Platform.runLater(() -> {
             this.messaggioerrore.setText(msgerrore);
-        });
-    }
-
-    public void mostraErrore2(String msgerrore) {
-        Platform.runLater(() -> {
-            this.messaggioerrore2.setText(msgerrore);
         });
     }
 

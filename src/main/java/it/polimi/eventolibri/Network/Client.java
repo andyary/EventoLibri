@@ -24,6 +24,7 @@ public class Client {
     private EventoView eventoView;
     private EventoViewLettore eventoViewLettore;
     private ProfiloGenitore profiloGenitore;
+    private ProfiloLettore profiloLettore;
     private RegistraNewGenitore registraNewGenitore;
     // add altre viste qui
     private ArrayList<Evento> eventi;
@@ -31,7 +32,7 @@ public class Client {
 
 
 
-    public void start(LoginView loginView, HomeGenitore homeGenitore, EventoView eventoView, HomeLettore homeLettore, EventoViewLettore eventoViewLettore, ProfiloGenitore profiloGenitore, RegistraNewGenitore registraNewGenitore) throws Exception {
+    public void start(LoginView loginView, HomeGenitore homeGenitore, EventoView eventoView, HomeLettore homeLettore, EventoViewLettore eventoViewLettore, ProfiloGenitore profiloGenitore, ProfiloLettore profiloLettore, RegistraNewGenitore registraNewGenitore) throws Exception {
         socket = new Socket("localhost", 5000);
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
@@ -41,6 +42,7 @@ public class Client {
         this.homeLettore = homeLettore;
         this.eventoViewLettore = eventoViewLettore;
         this.profiloGenitore = profiloGenitore;
+        this.profiloLettore = profiloLettore;
         this.registraNewGenitore = registraNewGenitore;
 
     }
@@ -232,6 +234,26 @@ public class Client {
                 eventoViewLettore.mostraErrore(((RispostaLettoriELuoghi) msg).getMessaggioerrore());
             }
 
+        }
+
+        if (msg instanceof RispostaAggiornaLettore) {
+            if (((RispostaAggiornaLettore) msg).isSuccesso()) {
+                profiloLettore.getLettore().setNome(((RispostaAggiornaLettore) msg).getLettore().getNome());
+                profiloLettore.getLettore().setCognome(((RispostaAggiornaLettore) msg).getLettore().getCognome());
+
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION,"", ButtonType.OK);
+                    alert.setTitle("Aggiornamento Lettore");
+                    alert.setHeaderText("Dati Lettore aggiornati!");
+                    alert.setContentText(null);
+                    alert.showAndWait();
+                });
+
+            }
+            else {
+                System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiornaLettore) msg).getMessaggioErrore());
+                profiloLettore.mostraErrore(((RispostaAggiornaLettore) msg).getMessaggioErrore());
+            }
         }
 
     }

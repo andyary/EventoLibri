@@ -120,6 +120,16 @@ public class UtenteDAO {
         }
     }
 
+    public int aggiornaLettore(Lettore lettore) throws SQLException {
+        String query = "UPDATE utenti SET nome = ? , cognome = ? WHERE id = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
+            pstatement.setString(1, lettore.getNome());
+            pstatement.setString(2, lettore.getCognome());
+            pstatement.setInt(3, lettore.getId());
+            return pstatement.executeUpdate();
+        }
+    }
+
     public ArrayList<Lettore> getLettori() {
         String query = "SELECT * FROM utenti WHERE tipo = 'Lettore'";
         ArrayList<Lettore> lettori = new ArrayList<>();

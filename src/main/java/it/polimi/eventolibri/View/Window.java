@@ -21,7 +21,7 @@ public class Window extends Application {
 
 
         try {
-            client.start(loginView, homeGenitore, eventoView, homeLettore, eventoViewLettore, profiloGenitore, registraNewGenitore);
+            client.start(loginView, homeGenitore, eventoView, homeLettore, eventoViewLettore, profiloGenitore, profiloLettore, registraNewGenitore);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
