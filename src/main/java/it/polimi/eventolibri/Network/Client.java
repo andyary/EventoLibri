@@ -21,18 +21,25 @@ public class Client {
     private LoginView loginView;
     private HomeGenitore homeGenitore;
     private HomeLettore homeLettore;
+    private HomeAmministratore homeAmministratore;
     private EventoView eventoView;
     private EventoViewLettore eventoViewLettore;
     private ProfiloGenitore profiloGenitore;
     private ProfiloLettore profiloLettore;
+    private ProfiloAmministratore profiloAmministratore;
     private RegistraNewGenitore registraNewGenitore;
+    private RegistraNewLettore registraNewLettore;
     // add altre viste qui
     private ArrayList<Evento> eventi;
     private Utente utente;
 
 
 
-    public void start(LoginView loginView, HomeGenitore homeGenitore, EventoView eventoView, HomeLettore homeLettore, EventoViewLettore eventoViewLettore, ProfiloGenitore profiloGenitore, ProfiloLettore profiloLettore, RegistraNewGenitore registraNewGenitore) throws Exception {
+    public void start(LoginView loginView, HomeGenitore homeGenitore, HomeAmministratore homeAmministratore,
+                      EventoView eventoView, HomeLettore homeLettore, EventoViewLettore eventoViewLettore,
+                      ProfiloGenitore profiloGenitore, ProfiloLettore profiloLettore,
+                      ProfiloAmministratore profiloAmministratore,
+                      RegistraNewGenitore registraNewGenitore, RegistraNewLettore registraNewLettore) throws Exception {
         socket = new Socket("localhost", 5000);
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
@@ -40,10 +47,13 @@ public class Client {
         this.homeGenitore = homeGenitore;
         this.eventoView = eventoView;
         this.homeLettore = homeLettore;
+        this.homeAmministratore = homeAmministratore;
         this.eventoViewLettore = eventoViewLettore;
         this.profiloGenitore = profiloGenitore;
         this.profiloLettore = profiloLettore;
+        this.profiloAmministratore = profiloAmministratore;
         this.registraNewGenitore = registraNewGenitore;
+        this.registraNewLettore = registraNewLettore;
 
     }
 
@@ -87,6 +97,14 @@ public class Client {
                         utente = lettore;
                         homeLettore.show(loginView.getStage(), lettore, ((RispostaLogin) msg).getProssimiEventi());
                     }
+
+                    case Amministratore amm -> {
+                        CreaUtente<Amministratore> creaAmministratore = new CreaAmministratore();
+                        Amministratore amministratore = creaAmministratore.nuovoUtente(amm.getId(), amm.getNome(),amm.getCognome(), amm.getUserName());
+                        utente = amministratore;
+                        homeAmministratore.show(loginView.getStage(), amministratore);
+                    }
+
                     default -> {
                         System.out.println("Tipo di utente non gestito.");
                     }
@@ -220,8 +238,29 @@ public class Client {
                 registraNewGenitore.mostraSuccesso("Nuovo genitore registrato!");
             }
             else {
-                System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiungiFiglio) msg).getMessaggioErrore());
-                registraNewGenitore.mostraErrore(((RispostaAggiungiFiglio) msg).getMessaggioErrore());
+                System.out.println("Messaggio di errore ricevuto : " + ((RispostaNuovoGenitore) msg).getMessaggioErrore());
+                registraNewGenitore.mostraErrore(((RispostaNuovoGenitore) msg).getMessaggioErrore());
+            }
+        }
+
+        if (msg instanceof RispostaLettoriELuoghi) {
+            if (((RispostaLettoriELuoghi) msg).isSuccesso()) {
+                eventoViewLettore.aggiornaLettoriELuoghi(((RispostaLettoriELuoghi) msg).getLettori(), ((RispostaLettoriELuoghi) msg).getLuoghi());
+            }
+            else {
+                System.out.println("Messaggio di errore ricevuto : " + ((RispostaLettoriELuoghi) msg).getMessaggioerrore());
+                eventoViewLettore.mostraErrore(((RispostaLettoriELuoghi) msg).getMessaggioerrore());
+            }
+
+        }
+
+        if (msg instanceof RispostaNuovoLettore) {
+            if (((RispostaNuovoLettore) msg).isSuccesso()) {
+                registraNewLettore.mostraSuccesso("Nuovo lettore registrato!");
+            }
+            else {
+                System.out.println("Messaggio di errore ricevuto : " + ((RispostaNuovoLettore) msg).getMessaggioErrore());
+                registraNewGenitore.mostraErrore(((RispostaNuovoLettore) msg).getMessaggioErrore());
             }
         }
 
@@ -253,6 +292,26 @@ public class Client {
             else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiornaLettore) msg).getMessaggioErrore());
                 profiloLettore.mostraErrore(((RispostaAggiornaLettore) msg).getMessaggioErrore());
+            }
+        }
+
+        if (msg instanceof RispostaAggiornaAmministratore) {
+            if (((RispostaAggiornaAmministratore) msg).isSuccesso()) {
+                profiloAmministratore.getAmministratore().setNome(((RispostaAggiornaAmministratore) msg).getAmministratore().getNome());
+                profiloAmministratore.getAmministratore().setCognome(((RispostaAggiornaAmministratore) msg).getAmministratore().getCognome());
+
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION,"", ButtonType.OK);
+                    alert.setTitle("Aggiornamento Amministratore");
+                    alert.setHeaderText("Dati Amministratore aggiornati!");
+                    alert.setContentText(null);
+                    alert.showAndWait();
+                });
+
+            }
+            else {
+                System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiornaAmministratore) msg).getMessaggioErrore());
+                profiloAmministratore.mostraErrore(((RispostaAggiornaAmministratore) msg).getMessaggioErrore());
             }
         }
 

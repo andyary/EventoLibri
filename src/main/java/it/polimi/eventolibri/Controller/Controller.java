@@ -166,6 +166,28 @@ public class Controller {
         return risposta;
     }
 
+    public RispostaNuovoLettore registraNuovoLettore(Lettore nuovoLettore, String psw) {
+        RispostaNuovoLettore risposta = new RispostaNuovoLettore();
+        try {
+            int id = utenteDAO.creaLettore(nuovoLettore.getNome(), nuovoLettore.getCognome(),
+                    nuovoLettore.getUserName(), psw);
+            if (id !=-1) {
+                nuovoLettore.setId(id);
+                risposta.setSuccesso(true);
+                risposta.setNuovoLettore(nuovoLettore);
+            }
+            else {
+                risposta.setSuccesso(false);
+                risposta.setMessaggioErrore("Errore creazione nuovo lettore su DB");
+            }
+        } catch (Exception e) {
+            risposta.setSuccesso(false);
+            risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
+            e.printStackTrace();
+        }
+        return risposta;
+    }
+
     public RispostaLettoriELuoghi richiestaLettoriELuoghi() {
         RispostaLettoriELuoghi risposta = new RispostaLettoriELuoghi();
         try {
@@ -185,6 +207,25 @@ public class Controller {
             if (utenteDAO.aggiornaLettore(lettore)==1) {
                 risposta.setSuccesso(true);
                 risposta.setLettore(lettore);
+            }
+            else {
+                risposta.setSuccesso(false);
+                risposta.setMessaggioErrore("Errore aggiornamento lettore su DB");
+            }
+        } catch (Exception e) {
+            risposta.setSuccesso(false);
+            risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
+            e.printStackTrace();
+        }
+        return risposta;
+    }
+
+    public RispostaAggiornaAmministratore aggiornaAmministratore(Amministratore amministratore) {
+        RispostaAggiornaAmministratore risposta = new RispostaAggiornaAmministratore();
+        try {
+            if (utenteDAO.aggiornaAmministratore(amministratore)==1) {
+                risposta.setSuccesso(true);
+                risposta.setAmministratore(amministratore);
             }
             else {
                 risposta.setSuccesso(false);

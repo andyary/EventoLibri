@@ -150,7 +150,7 @@ public class HomeLettore {
         Platform.runLater(() -> {;
             stage.setScene(scene);
             // stage.setMaximized(true);
-            stage.setTitle("Home");
+            stage.setTitle("Home Lettore");
             stage.show();
         });
 
