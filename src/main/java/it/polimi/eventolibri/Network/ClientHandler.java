@@ -114,6 +114,14 @@ public class ClientHandler extends Thread {
             out.reset();
         }
 
+        if (msg instanceof RichiestaNuovoAmministratore) {
+            Amministratore nuovoAmministratore = ((RichiestaNuovoAmministratore) msg).getNuovoAmministratore();
+            RispostaNuovoAmministratore risposta = controller.registraNuovoAmministratore(nuovoAmministratore, ((RichiestaNuovoAmministratore) msg).getPassword());
+            out.writeObject(risposta);
+            out.flush();
+            out.reset();
+        }
+
         if (msg instanceof RichiestaLettoriELuoghi) {
             RispostaLettoriELuoghi risposta = controller.richiestaLettoriELuoghi();
             out.writeObject(risposta);

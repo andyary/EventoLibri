@@ -188,6 +188,28 @@ public class Controller {
         return risposta;
     }
 
+    public RispostaNuovoAmministratore registraNuovoAmministratore(Amministratore nuovoAmministratore, String psw) {
+        RispostaNuovoAmministratore risposta = new RispostaNuovoAmministratore();
+        try {
+            int id = utenteDAO.creaAmministratore(nuovoAmministratore.getNome(), nuovoAmministratore.getCognome(),
+                    nuovoAmministratore.getUserName(), psw);
+            if (id !=-1) {
+                nuovoAmministratore.setId(id);
+                risposta.setSuccesso(true);
+                risposta.setNuovoAmministratore(nuovoAmministratore);
+            }
+            else {
+                risposta.setSuccesso(false);
+                risposta.setMessaggioErrore("Errore creazione nuovo amministratore su DB");
+            }
+        } catch (Exception e) {
+            risposta.setSuccesso(false);
+            risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
+            e.printStackTrace();
+        }
+        return risposta;
+    }
+
     public RispostaLettoriELuoghi richiestaLettoriELuoghi() {
         RispostaLettoriELuoghi risposta = new RispostaLettoriELuoghi();
         try {

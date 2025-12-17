@@ -140,7 +140,7 @@ public class HomeGenitore {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // scroll verticale solo se serve
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        Scene scene = new Scene(scrollPane, 500, 800);
+        Scene scene = new Scene(scrollPane, 700, 700);
         Platform.runLater(() -> {;
             stage.setScene(scene);
             // stage.setMaximized(true);

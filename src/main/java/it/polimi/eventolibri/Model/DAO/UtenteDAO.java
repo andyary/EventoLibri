@@ -90,6 +90,23 @@ public class UtenteDAO {
         }
     }
 
+    public int creaAmministratore(String nome, String cognome, String username, String psw) throws SQLException {
+        String query = "INSERT into utenti (nome, cognome, username, psw, tipo)   VALUES(?, ?, ?, ?, ?)";
+        try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
+            pstatement.setString(1, nome);
+            pstatement.setString(2, cognome);
+            pstatement.setString(3, username);
+            pstatement.setString(4, psw);
+            pstatement.setString(5, "Amministratore");
+            pstatement.executeUpdate();
+            ResultSet rs = pstatement.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            return -1;
+        }
+    }
+
     public void cancellaGenitore(Genitore genitore) throws SQLException {
         //cancella figli di genitore
         FiglioDAO figlioDAO = new FiglioDAO(connection);

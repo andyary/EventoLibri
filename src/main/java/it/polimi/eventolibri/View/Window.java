@@ -12,6 +12,7 @@ public class Window extends Application {
         Client client = new Client();
         RegistraNewGenitore registraNewGenitore = new RegistraNewGenitore(client);
         RegistraNewLettore registraNewLettore = new RegistraNewLettore(client);
+        RegistraNewAmministratore registraNewAmministratore = new RegistraNewAmministratore(client);
         LoginView loginView = new LoginView(client, registraNewGenitore);
         EventoView eventoView = new EventoView(client);
         EventoViewLettore eventoViewLettore = new EventoViewLettore(client);
@@ -20,12 +21,13 @@ public class Window extends Application {
         ProfiloAmministratore profiloAmministratore = new ProfiloAmministratore(client);
         HomeGenitore homeGenitore = new HomeGenitore(client, eventoView, profiloGenitore);
         HomeLettore homeLettore = new HomeLettore(client, eventoViewLettore, profiloLettore);
-        HomeAmministratore homeAmministratore = new HomeAmministratore(client, profiloAmministratore, registraNewLettore);
+        HomeAmministratore homeAmministratore = new HomeAmministratore(client, profiloAmministratore, registraNewLettore, registraNewAmministratore);
 
 
         try {
             client.start(loginView, homeGenitore, homeAmministratore, eventoView, homeLettore, eventoViewLettore,
-                    profiloGenitore, profiloLettore, profiloAmministratore, registraNewGenitore, registraNewLettore);
+                    profiloGenitore, profiloLettore, profiloAmministratore,
+                    registraNewGenitore, registraNewLettore, registraNewAmministratore);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }

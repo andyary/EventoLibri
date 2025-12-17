@@ -29,6 +29,7 @@ public class Client {
     private ProfiloAmministratore profiloAmministratore;
     private RegistraNewGenitore registraNewGenitore;
     private RegistraNewLettore registraNewLettore;
+    private RegistraNewAmministratore registraNewAmministratore;
     // add altre viste qui
     private ArrayList<Evento> eventi;
     private Utente utente;
@@ -39,7 +40,8 @@ public class Client {
                       EventoView eventoView, HomeLettore homeLettore, EventoViewLettore eventoViewLettore,
                       ProfiloGenitore profiloGenitore, ProfiloLettore profiloLettore,
                       ProfiloAmministratore profiloAmministratore,
-                      RegistraNewGenitore registraNewGenitore, RegistraNewLettore registraNewLettore) throws Exception {
+                      RegistraNewGenitore registraNewGenitore, RegistraNewLettore registraNewLettore,
+                      RegistraNewAmministratore registraNewAmministratore) throws Exception {
         socket = new Socket("localhost", 5000);
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
@@ -54,6 +56,7 @@ public class Client {
         this.profiloAmministratore = profiloAmministratore;
         this.registraNewGenitore = registraNewGenitore;
         this.registraNewLettore = registraNewLettore;
+        this.registraNewAmministratore = registraNewAmministratore;
 
     }
 
@@ -261,6 +264,16 @@ public class Client {
             else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaNuovoLettore) msg).getMessaggioErrore());
                 registraNewGenitore.mostraErrore(((RispostaNuovoLettore) msg).getMessaggioErrore());
+            }
+        }
+
+        if (msg instanceof RispostaNuovoAmministratore) {
+            if (((RispostaNuovoAmministratore) msg).isSuccesso()) {
+                registraNewAmministratore.mostraSuccesso("Nuovo amministratore registrato!");
+            }
+            else {
+                System.out.println("Messaggio di errore ricevuto : " + ((RispostaNuovoAmministratore) msg).getMessaggioErrore());
+                registraNewAmministratore.mostraErrore(((RispostaNuovoAmministratore) msg).getMessaggioErrore());
             }
         }
 

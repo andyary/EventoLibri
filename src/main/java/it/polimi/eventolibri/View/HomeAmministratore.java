@@ -29,12 +29,15 @@ public class HomeAmministratore {
     private Amministratore amministratore;
     private ProfiloAmministratore profiloAmministratore;
     private RegistraNewLettore registraNewLettore;
+    private RegistraNewAmministratore registraNewAmministratore;
 
 
-    public HomeAmministratore(Client client, ProfiloAmministratore profiloAmministratore, RegistraNewLettore registraNewLettore) {
+    public HomeAmministratore(Client client, ProfiloAmministratore profiloAmministratore,
+                              RegistraNewLettore registraNewLettore, RegistraNewAmministratore registraNewAmministratore) {
         this.client = client;
         this.profiloAmministratore = profiloAmministratore;
         this.registraNewLettore = registraNewLettore;
+        this.registraNewAmministratore = registraNewAmministratore;
     }
 
     public void show(Stage stage, Amministratore amministratore) {
@@ -60,7 +63,16 @@ public class HomeAmministratore {
 
         });
 
-        HBox topBar = new HBox(new Label("  Benvenuto, " + amministratore.getNome() + "!          "), profiloButton, newLettoreButton);
+        Button newAmministratoreButton = new Button("Crea Nuovo Amministratore");
+        newAmministratoreButton.setOnAction(e -> {
+            System.out.println("Apertura schermata crea nuovo Amministratore...");
+            registraNewAmministratore.show(stage, () -> {
+                this.show(stage, amministratore);
+            });
+
+        });
+
+        HBox topBar = new HBox(new Label("  Benvenuto, " + amministratore.getNome() + "!          "), profiloButton, newLettoreButton, newAmministratoreButton);
         topBar.setPadding(new Insets(20));
         topBar.setAlignment(Pos.TOP_RIGHT);
 
@@ -74,7 +86,7 @@ public class HomeAmministratore {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // scroll verticale solo se serve
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        Scene scene = new Scene(scrollPane, 500, 800);
+        Scene scene = new Scene(scrollPane, 700, 700);
         Platform.runLater(() -> {;
             stage.setScene(scene);
             stage.setTitle("Home Amministratore");
