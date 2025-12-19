@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 
 public class ClientHandler extends Thread {
 
@@ -122,8 +121,8 @@ public class ClientHandler extends Thread {
             out.reset();
         }
 
-        if (msg instanceof RichiestaLettoriELuoghi) {
-            RispostaLettoriELuoghi risposta = controller.richiestaLettoriELuoghi();
+        if (msg instanceof RichiestaLettoriELuoghiELibri) {
+            RispostaLettoriELuoghiELibri risposta = controller.richiestaLettoriELuoghiELibri();
             out.writeObject(risposta);
             out.flush();
             out.reset();

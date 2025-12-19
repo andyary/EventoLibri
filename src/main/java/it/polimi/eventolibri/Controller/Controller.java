@@ -210,11 +210,12 @@ public class Controller {
         return risposta;
     }
 
-    public RispostaLettoriELuoghi richiestaLettoriELuoghi() {
-        RispostaLettoriELuoghi risposta = new RispostaLettoriELuoghi();
+    public RispostaLettoriELuoghiELibri richiestaLettoriELuoghiELibri() {
+        RispostaLettoriELuoghiELibri risposta = new RispostaLettoriELuoghiELibri();
         try {
             risposta.setLuoghi(luogoDAO.getLuoghi());
             risposta.setLettori(utenteDAO.getLettori());
+            risposta.setElencolibri(libroDAO.getLibri());
             risposta.setSuccesso(true);
         } catch (Exception e) {
             risposta.setSuccesso(false);

@@ -195,7 +195,7 @@ class ControllerTest {
     }
 
     @Test
-    void richiestaLettoriELuoghi_successo_e_exception() throws Exception {
+    void richiestaLettoriELuoghi_successo_e_exceptionELibri() throws Exception {
         ArrayList<Luogo> luoghi = new ArrayList<>();
         ArrayList<Lettore> lettori = new ArrayList<>();
         luoghi.add(new Luogo("Sala A", 15, 2));
@@ -206,7 +206,7 @@ class ControllerTest {
         when(luogoDAO.getLuoghi()).thenReturn(luoghi);
         when(utenteDAO.getLettori()).thenReturn(lettori);
 
-        RispostaLettoriELuoghi resp = controller.richiestaLettoriELuoghi();
+        RispostaLettoriELuoghiELibri resp = controller.richiestaLettoriELuoghiELibri();
         assertTrue(resp.isSuccesso());
         assertEquals(1, resp.getLuoghi().size());
         assertEquals(1, resp.getLettori().size());
@@ -214,7 +214,7 @@ class ControllerTest {
         verify(utenteDAO).getLettori();
 
         when(luogoDAO.getLuoghi()).thenThrow(new SQLException("fail"));
-        RispostaLettoriELuoghi respErr = controller.richiestaLettoriELuoghi();
+        RispostaLettoriELuoghiELibri respErr = controller.richiestaLettoriELuoghiELibri();
         assertFalse(respErr.isSuccesso());
     }
 

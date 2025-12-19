@@ -246,13 +246,14 @@ public class Client {
             }
         }
 
-        if (msg instanceof RispostaLettoriELuoghi) {
-            if (((RispostaLettoriELuoghi) msg).isSuccesso()) {
-                eventoViewLettore.aggiornaLettoriELuoghi(((RispostaLettoriELuoghi) msg).getLettori(), ((RispostaLettoriELuoghi) msg).getLuoghi());
+        if (msg instanceof RispostaLettoriELuoghiELibri) {
+            if (((RispostaLettoriELuoghiELibri) msg).isSuccesso()) {
+                eventoViewLettore.aggiornaLettoriELuoghiELibri(((RispostaLettoriELuoghiELibri) msg).getLettori(),
+                        ((RispostaLettoriELuoghiELibri) msg).getLuoghi(), ((RispostaLettoriELuoghiELibri) msg).getElencolibri());
             }
             else {
-                System.out.println("Messaggio di errore ricevuto : " + ((RispostaLettoriELuoghi) msg).getMessaggioerrore());
-                eventoViewLettore.mostraErrore(((RispostaLettoriELuoghi) msg).getMessaggioerrore());
+                System.out.println("Messaggio di errore ricevuto : " + ((RispostaLettoriELuoghiELibri) msg).getMessaggioerrore());
+                eventoViewLettore.mostraErrore(((RispostaLettoriELuoghiELibri) msg).getMessaggioerrore());
             }
 
         }
@@ -275,17 +276,6 @@ public class Client {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaNuovoAmministratore) msg).getMessaggioErrore());
                 registraNewAmministratore.mostraErrore(((RispostaNuovoAmministratore) msg).getMessaggioErrore());
             }
-        }
-
-        if (msg instanceof RispostaLettoriELuoghi) {
-            if (((RispostaLettoriELuoghi) msg).isSuccesso()) {
-                eventoViewLettore.aggiornaLettoriELuoghi(((RispostaLettoriELuoghi) msg).getLettori(), ((RispostaLettoriELuoghi) msg).getLuoghi());
-            }
-            else {
-                System.out.println("Messaggio di errore ricevuto : " + ((RispostaLettoriELuoghi) msg).getMessaggioerrore());
-                eventoViewLettore.mostraErrore(((RispostaLettoriELuoghi) msg).getMessaggioerrore());
-            }
-
         }
 
         if (msg instanceof RispostaAggiornaLettore) {

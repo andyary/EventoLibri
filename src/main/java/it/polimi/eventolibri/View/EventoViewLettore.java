@@ -1,9 +1,6 @@
 package it.polimi.eventolibri.View;
 
-import it.polimi.eventolibri.Message.RichiestaDisiscrizioneEvento;
-import it.polimi.eventolibri.Message.RichiestaIscrittiEvento;
-import it.polimi.eventolibri.Message.RichiestaIscrizioneEvento;
-import it.polimi.eventolibri.Message.RichiestaLettoriELuoghi;
+import it.polimi.eventolibri.Message.RichiestaLettoriELuoghiELibri;
 import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.Network.Client;
 import javafx.application.Platform;
@@ -18,7 +15,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class EventoViewLettore {
@@ -28,6 +24,7 @@ public class EventoViewLettore {
     private Lettore lettore;
     private ArrayList<Luogo> luoghi = new ArrayList<>();
     private ArrayList<Lettore> lettori = new ArrayList<>();
+    private ArrayList<Libro> elencoLibri = new ArrayList<>();
     private Runnable onBack;
     private Label messaggioerrore;
     private Label iscritti;
@@ -48,6 +45,10 @@ public class EventoViewLettore {
 
     public void setLettori(ArrayList<Lettore> lettori) {
         this.lettori = lettori;
+    }
+
+    public void setElencoLibri(ArrayList<Libro> elencoLibri) {
+        this.elencoLibri = elencoLibri;
     }
 
     public Lettore getLettore() {
@@ -75,11 +76,11 @@ public class EventoViewLettore {
         this.lettore = lettore;
         this.onBack = onBack;
 
-        RichiestaLettoriELuoghi richiestaLettoriELuoghi = new RichiestaLettoriELuoghi();
+        RichiestaLettoriELuoghiELibri richiestaLettoriELuoghiELibri = new RichiestaLettoriELuoghiELibri();
         try {
-            client.sendMessage(richiestaLettoriELuoghi);
+            client.sendMessage(richiestaLettoriELuoghiELibri);
         } catch (IOException e) {
-            System.out.println("Errore nel richiestaLettoriELuoghi" + e.getMessage());
+            System.out.println("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage());
         }
 
         /* ---------- TITOLO ---------- */
@@ -90,17 +91,15 @@ public class EventoViewLettore {
         titoloField.setAlignment(Pos.CENTER_LEFT);
         /* ---------- LUOGO ---------- */
 
-        luogoCombo.getItems().addAll(luoghi);
-        luogoCombo.setPromptText("Luogo");
-        luogoCombo.setCellFactory(cb -> new ListCell<>() {
-            @Override
-            protected void updateItem(Luogo item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? "" : item.getNome());
-                setAlignment(Pos.CENTER_LEFT);
-            }
-        });
-        luogoCombo.setButtonCell(luogoCombo.getCellFactory().call(null));;
+        if (evento.getLuogo() == null) {
+            luogoCombo.setPromptText("Scegli luogo");
+        } else {
+            luogoCombo.setPromptText(evento.getLuogo().getNome());
+        }
+        HBox luogoBox = new HBox(5,
+                new Label("Luogo:"),
+                luogoCombo
+        );
         /* ---------- DATA / ORA ---------- */
         DatePicker datePicker = new DatePicker(evento.getData().toLocalDate());
         datePicker.setPromptText("Data evento");
@@ -130,24 +129,20 @@ public class EventoViewLettore {
         Label libroSelezionatoLabel = new Label("Nessun libro selezionato");
         Button scegliLibroBtn = new Button("Scegli libro");
         final Libro[] libroSelezionato = new Libro[1];
+
         scegliLibroBtn.setOnAction(e -> {
             messaggioerrore.setText("");
-            // TODO finestra utility per scelta libro
-            // libroSelezionato[0] = libro;
-            // libroSelezionatoLabel.setText(libro.getTitolo());
+                LibroView dialog = new LibroView();
+                Libro libro = dialog.show(stage, elencoLibri);
+                if (libro != null) {
+                    libroSelezionatoLabel.setText(
+                            libro.getTitolo() + " (" + libro.getTempoLettura() + " min)"
+                    );
+                    libroSelezionato[0] = libro;
+                }
         });
 
-        lettoreCombo.getItems().addAll(lettori);
         lettoreCombo.setPromptText("Lettore (facoltativo)");
-        lettoreCombo.setCellFactory(cb -> new ListCell<>() {
-            @Override
-            protected void updateItem(Lettore item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? "" : item.getNome());
-                setAlignment(Pos.CENTER_LEFT);
-            }
-        });
-        lettoreCombo.setButtonCell(lettoreCombo.getCellFactory().call(null));
 
         Button cancellaRigaBtn = new Button("Cancella riga");
         cancellaRigaBtn.setOnAction(e -> {
@@ -234,7 +229,7 @@ public class EventoViewLettore {
                 messaggioerrore,
                 titoloLabel,
                 titoloField,
-                luogoCombo,
+                luogoBox,
                 dataBox,
                 oraBox,
                 scalettaLabel,
@@ -256,7 +251,7 @@ public class EventoViewLettore {
     }
 
 
-    public void aggiornaLettoriELuoghi(ArrayList<Lettore> lettori, ArrayList<Luogo> luoghi) {
+    public void aggiornaLettoriELuoghiELibri(ArrayList<Lettore> lettori, ArrayList<Luogo> luoghi, ArrayList<Libro> elencolibri) {
         this.lettori.clear();
         this.lettori.addAll(lettori);
         this.luoghi.clear();
@@ -264,7 +259,6 @@ public class EventoViewLettore {
         Platform.runLater(() -> {
             luogoCombo.getItems().clear();
             luogoCombo.getItems().addAll(luoghi);
-            luogoCombo.setPromptText("Luogo");
             luogoCombo.setCellFactory(cb -> new ListCell<>() {
                 @Override
                 protected void updateItem(Luogo item, boolean empty) {
@@ -276,7 +270,6 @@ public class EventoViewLettore {
 
             lettoreCombo.getItems().clear();
             lettoreCombo.getItems().addAll(lettori);
-            lettoreCombo.setPromptText("Lettore (facoltativo)");
             lettoreCombo.setCellFactory(cb -> new ListCell<>() {
                 @Override
                 protected void updateItem(Lettore item, boolean empty) {
@@ -285,6 +278,9 @@ public class EventoViewLettore {
                 }
             });
             lettoreCombo.setButtonCell(lettoreCombo.getCellFactory().call(null));
+
+            this.elencoLibri = elencolibri;
+
         });
     }
 
