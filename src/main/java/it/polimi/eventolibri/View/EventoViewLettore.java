@@ -8,6 +8,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -30,6 +31,7 @@ public class EventoViewLettore {
     private Label iscritti;
     private ComboBox<Luogo> luogoCombo = new ComboBox<>();
     private ComboBox<Lettore> lettoreCombo = new ComboBox<>();
+    private ComboBox<Lettore> lettoreScalettaCombo = new ComboBox<>();
 
 
     public EventoViewLettore(Client client) {
@@ -193,7 +195,8 @@ public class EventoViewLettore {
             if (titoloField.getText().isBlank()
                     || luogoCombo.getValue() == null
                     || datePicker.getValue() == null
-                    || scaletta.isEmpty()) {
+//                    || scaletta.isEmpty()
+            ) {
                 messaggioerrore.setText("Compila tutti i campi obbligatori");
                 return;
             }
@@ -207,6 +210,7 @@ public class EventoViewLettore {
                     luogoCombo.getValue(),
                     dataOra
             );
+            eventoTemp.setScaletta(scaletta);
 //            try {
 //                client.sendMessage(new RichiestaCreazioneEvento(eventoTemp));
 //            } catch (IOException ex) {
@@ -239,9 +243,26 @@ public class EventoViewLettore {
         );
         layout.setPadding(new Insets(20));
         layout.setAlignment(Pos.TOP_LEFT);
-        stage.setScene(new Scene(layout, 700, 700));
-        stage.setTitle("Crea Evento");
-        stage.show();
+
+        BorderPane root = new BorderPane();
+        root.setTop(layout);
+
+        ScrollPane scrollPane = new ScrollPane(root);
+        scrollPane.setFitToWidth(true);  // adatta la larghezza del contenuto alla finestra
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // scroll verticale solo se serve
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+//        stage.setScene(new Scene(layout, 700, 700));
+//        stage.setTitle("Crea Evento");
+//        stage.show();
+        refreshScalettaUI(scalettaBox, scaletta);
+
+        Platform.runLater(() -> {;
+            stage.setScene(new Scene(scrollPane, 700, 700));
+            stage.setTitle("Crea Evento");
+            stage.show();
+        });
+
     }
 
     public void mostraErrore(String msgerrore) {
@@ -279,6 +300,19 @@ public class EventoViewLettore {
             });
             lettoreCombo.setButtonCell(lettoreCombo.getCellFactory().call(null));
 
+            lettoreScalettaCombo.getItems().clear();
+            Lettore lettorevuoto = null;
+            lettoreScalettaCombo.getItems().addAll(lettorevuoto);
+            lettoreScalettaCombo.getItems().addAll(lettori);
+            lettoreScalettaCombo.setCellFactory(cb -> new ListCell<>() {
+                @Override
+                protected void updateItem(Lettore item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty || item == null ? "" : item.getNome());
+                }
+            });
+            lettoreScalettaCombo.setButtonCell(lettoreCombo.getCellFactory().call(null));
+
             this.elencoLibri = elencolibri;
 
         });
@@ -286,25 +320,55 @@ public class EventoViewLettore {
 
     private void refreshScalettaUI(VBox scalettaBox, ArrayList<LibroLettore> scaletta) {
         scalettaBox.getChildren().clear();
+
+        // menu a tendina per cambiare il lettore
+        lettoreScalettaCombo.setPromptText("");
+        HBox rigaScaletta = new HBox(10,
+                new Label("Selezione lettore per modifica:"),
+                lettoreScalettaCombo
+        );
+        rigaScaletta.setAlignment(Pos.CENTER_RIGHT);
+        scalettaBox.getChildren().add(rigaScaletta);
+
+        LocalTime tempoinizio= evento.getData().toLocalTime();
+        LocalTime tempofine;
+
         for (int i = 0; i < scaletta.size(); i++) {
             LibroLettore ll = scaletta.get(i);
             ll.setProgressivo(i + 1);
+            tempofine = tempoinizio.plusMinutes(ll.getLibro().getTempoLettura());
+            Label orario = new Label(
+                    "[" + tempoinizio + " - " + tempofine + "]"
+            );
+            tempoinizio = tempofine;
             Label titolo = new Label(ll.getLibro().getTitolo());
             Label durata = new Label("(" + ll.getLibro().getTempoLettura() + " min)");
             Label lettore = new Label(
                     ll.getLettore() != null ? ll.getLettore().getNome() : ""
             );
-            Button eliminaBtn = new Button("❌");
+            Button eliminaBtn = new Button("Cancella Riga");
             eliminaBtn.setOnAction(e -> {
                 scaletta.remove(ll);
                 refreshScalettaUI(scalettaBox, scaletta);
             });
+
+            Button cambiaLettoreBtn = new Button("Modifica lettore");
+            final int[] progressivoTemp = new int[1];
+            progressivoTemp[0] = i;
+            cambiaLettoreBtn.setOnAction(e -> {
+                ll.modificaLettore(lettoreScalettaCombo.getSelectionModel().getSelectedItem());
+                scaletta.set(progressivoTemp[0],ll);
+                refreshScalettaUI(scalettaBox, scaletta);
+            });
+
             HBox riga = new HBox(10,
+                    eliminaBtn,
+                    cambiaLettoreBtn,
                     new Label((i + 1) + ")"),
+                    orario,
                     titolo,
                     durata,
-                    lettore,
-                    eliminaBtn
+                    lettore
             );
             riga.setAlignment(Pos.CENTER_LEFT);
             scalettaBox.getChildren().add(riga);
