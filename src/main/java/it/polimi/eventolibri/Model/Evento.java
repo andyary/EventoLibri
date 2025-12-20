@@ -14,6 +14,22 @@ public class Evento extends EventoAstratto implements Serializable {
     private Lettore creatore;
     private int iscritti;
 
+
+    // costruttore senza creatore (usato per creare eventi temporanei prima di assegnarli a un creatore), impostato Id a 0
+    public Evento(String nome, Luogo luogo, LocalDateTime data) {
+        this.id = 0;
+        this.creatore = null;
+        this.nome  = nome;
+        this.luogo = luogo;
+        this.data = data;
+        this.scaletta = new ArrayList<>();
+    }
+
+    // setter per il creatore (usato per assegnare il creatore dopo aver creato l'evento temporaneo)
+    public void setCreatore(Lettore creatore) {
+        this.creatore = creatore;
+    }
+
     public Evento(Lettore creatore, String nome, Luogo luogo, LocalDateTime data) {
         this.creatore = creatore;
         this.nome  = nome;
@@ -22,6 +38,7 @@ public class Evento extends EventoAstratto implements Serializable {
         this.scaletta = new ArrayList<>();
         creatore.aggiungiEventiCreati(this);
     }
+
 
     public Evento(Lettore creatore, String nome, Luogo luogo, LocalDateTime data, ArrayList<LibroLettore> scaletta) {
         this.creatore = creatore;

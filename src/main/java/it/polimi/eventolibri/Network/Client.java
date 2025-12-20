@@ -318,6 +318,22 @@ public class Client {
             }
         }
 
+        if (msg instanceof RispostaSalvaEvento) {
+            if (((RispostaSalvaEvento) msg).isSuccesso()) {
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION,"", ButtonType.OK);
+                    alert.setTitle("Salvataggio Evento");
+                    alert.setHeaderText("Evento salvato con successo!");
+                    alert.setContentText(null);
+                    alert.showAndWait();
+                });
+                eventoViewLettore.setEvento(((RispostaSalvaEvento) msg).getEvento());
+            }
+            else {
+                System.out.println("Messaggio di errore ricevuto : " + ((RispostaSalvaEvento) msg).getMessaggioErrore());
+                eventoViewLettore.mostraErrore(((RispostaSalvaEvento) msg).getMessaggioErrore());
+            }
+        }
     }
 
     private void close() {

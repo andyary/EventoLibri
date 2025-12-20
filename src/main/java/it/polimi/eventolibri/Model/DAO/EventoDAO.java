@@ -42,7 +42,6 @@ public class EventoDAO {
         }
     }
 
-
     public ArrayList<Evento> getNextEventi(LocalDateTime data) throws SQLException {
         ArrayList<Evento> nextEventi = new ArrayList<>();
         String query = "SELECT * FROM eventi e JOIN luoghi l JOIN utenti u " +

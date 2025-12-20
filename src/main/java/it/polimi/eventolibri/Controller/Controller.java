@@ -6,6 +6,7 @@ import it.polimi.eventolibri.Model.DAO.*;
 
 import java.sql.Connection;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class Controller {
 
@@ -262,4 +263,41 @@ public class Controller {
         return risposta;
     }
 
+    public RispostaSalvaEvento salvaEvento(Evento evento) {
+        RispostaSalvaEvento risposta = new RispostaSalvaEvento();
+        try {
+            ArrayList<Evento> eventiInConflitto = eventoDAO.eventiInConflitto(evento);
+            if (!eventiInConflitto.isEmpty()) {
+                risposta.setSuccesso(false);
+                String eventiConflittoStr = "";
+                for (Evento ev : eventiInConflitto) {
+                    eventiConflittoStr += "- " + ev.getNome() + " dalle " + ev.getData().toLocalTime().toString() + " alle " + ev.calcolaOraFine().toLocalTime().toString() + "\n";
+                }
+                risposta.setMessaggioErrore("Conflitto di orario con altri eventi: \n" + eventiConflittoStr);
+            } else {
+                // Nessun conflitto, procedi con il salvataggio
+                if (evento.getId() != 0) {
+                    eventoDAO.modificaEvento(evento);
+                    risposta.setSuccesso(true);
+                    risposta.setEvento(evento);
+                } else {
+                    int id = eventoDAO.creaEvento(evento.getCreatore(), evento.getNome(), evento.getLuogo(), evento.getData());
+                    if (id == -1) {
+                        risposta.setSuccesso(false);
+                        risposta.setMessaggioErrore("Errore salvataggio evento su DB");
+                    } else {
+                    evento.setId(id);
+                    libroLettoreDAO.creaScaletta(evento);
+                    risposta.setSuccesso(true);
+                    risposta.setEvento(evento);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            risposta.setSuccesso(false);
+            risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
+            e.printStackTrace();
+        }
+        return risposta;
+    }
 }

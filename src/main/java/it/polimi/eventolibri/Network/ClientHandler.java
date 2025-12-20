@@ -144,6 +144,14 @@ public class ClientHandler extends Thread {
             out.reset();
         }
 
+        if (msg instanceof RichiestaSalvaEvento) {
+            Evento evento = ((RichiestaSalvaEvento) msg).getEvento();
+            RispostaSalvaEvento risposta = controller.salvaEvento(evento);
+            out.writeObject(risposta);
+            out.flush();
+            out.reset();
+        }
+
         // QUI CONTINUI AD AGGIUNGERE I MESSAGGI
     }
 

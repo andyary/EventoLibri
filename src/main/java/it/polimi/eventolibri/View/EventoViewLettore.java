@@ -1,6 +1,7 @@
 package it.polimi.eventolibri.View;
 
 import it.polimi.eventolibri.Message.RichiestaLettoriELuoghiELibri;
+import it.polimi.eventolibri.Message.RichiestaSalvaEvento;
 import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.Network.Client;
 import javafx.application.Platform;
@@ -12,10 +13,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class EventoViewLettore {
@@ -77,6 +80,7 @@ public class EventoViewLettore {
         this.evento = evento;
         this.lettore = lettore;
         this.onBack = onBack;
+        this.messaggioerrore.setText("");
 
         RichiestaLettoriELuoghiELibri richiestaLettoriELuoghiELibri = new RichiestaLettoriELuoghiELibri();
         try {
@@ -96,7 +100,24 @@ public class EventoViewLettore {
         if (evento.getLuogo() == null) {
             luogoCombo.setPromptText("Scegli luogo");
         } else {
-            luogoCombo.setPromptText(evento.getLuogo().getNome());
+            luogoCombo.setValue(evento.getLuogo());
+            luogoCombo.setCellFactory(cb -> new ListCell<>() {
+                @Override
+                protected void updateItem(Luogo item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty || item == null ? "" : item.getNome());
+                }
+            });
+            luogoCombo.setConverter(new StringConverter<>() {
+                @Override
+                public String toString(Luogo luogo) {
+                    return luogo == null ? "" : luogo.getNome();
+                }
+                @Override
+                public Luogo fromString(String s) {
+                    return null;
+                }
+            });
         }
         HBox luogoBox = new HBox(5,
                 new Label("Luogo:"),
@@ -113,7 +134,9 @@ public class EventoViewLettore {
         Spinner<Integer> hourSpinner = new Spinner<>(0, 23, evento.getData().toLocalTime().getHour());
         Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, evento.getData().toLocalTime().getMinute());
         hourSpinner.setEditable(true);
+        // hourSpinner.getEditor().setPrefColumnCount(2);
         minuteSpinner.setEditable(true);
+        // minuteSpinner.getEditor().setPrefColumnCount(2);
         HBox oraBox = new HBox(5,
                 new Label("Ora:"),
                 hourSpinner,
@@ -146,16 +169,16 @@ public class EventoViewLettore {
 
         lettoreCombo.setPromptText("Lettore (facoltativo)");
 
-        Button cancellaRigaBtn = new Button("Cancella riga");
-        cancellaRigaBtn.setOnAction(e -> {
-            messaggioerrore.setText("");
-            if (scaletta.isEmpty()) {
-                messaggioerrore.setText("Nessuna riga da cancellare");
-                return;
-            }
-            scaletta.remove(scaletta.size() - 1);
-            refreshScalettaUI(scalettaBox, scaletta);
-        });
+//        Button cancellaRigaBtn = new Button("Cancella riga");
+//        cancellaRigaBtn.setOnAction(e -> {
+//            messaggioerrore.setText("");
+//            if (scaletta.isEmpty()) {
+//                messaggioerrore.setText("Nessuna riga da cancellare");
+//                return;
+//            }
+//            scaletta.remove(scaletta.size() - 1);
+//            refreshScalettaUI(scalettaBox, scaletta);
+//        });
 
 
         Button aggiungiRigaBtn = new Button("Aggiungi riga");
@@ -182,7 +205,7 @@ public class EventoViewLettore {
                 scegliLibroBtn,
                 new Label("Lettore:"),
                 lettoreCombo,
-                cancellaRigaBtn,
+                /* cancellaRigaBtn, */
                 aggiungiRigaBtn
         );
         libroLettoreBox.setAlignment(Pos.CENTER_LEFT);
@@ -195,7 +218,6 @@ public class EventoViewLettore {
             if (titoloField.getText().isBlank()
                     || luogoCombo.getValue() == null
                     || datePicker.getValue() == null
-//                    || scaletta.isEmpty()
             ) {
                 messaggioerrore.setText("Compila tutti i campi obbligatori");
                 return;
@@ -205,17 +227,20 @@ public class EventoViewLettore {
                     LocalTime.of(hourSpinner.getValue(), minuteSpinner.getValue())
             );
             Evento eventoTemp = new Evento(
-                    lettore,
                     titoloField.getText(),
                     luogoCombo.getValue(),
                     dataOra
             );
             eventoTemp.setScaletta(scaletta);
-//            try {
-//                client.sendMessage(new RichiestaCreazioneEvento(eventoTemp));
-//            } catch (IOException ex) {
-//                messaggioerrore.setText("Errore durante il salvataggio");
-//            }
+            eventoTemp.setCreatore(lettore);
+            if (evento.getId() != 0) {
+                eventoTemp.setId(evento.getId());
+            }
+            try {
+                client.sendMessage(new RichiestaSalvaEvento(eventoTemp));
+            } catch (IOException ex) {
+                messaggioerrore.setText("Errore durante il salvataggio evento");
+            }
         });
         annullaBtn.setOnAction(e -> {
             if (onBack != null) onBack.run();
@@ -252,9 +277,6 @@ public class EventoViewLettore {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // scroll verticale solo se serve
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-//        stage.setScene(new Scene(layout, 700, 700));
-//        stage.setTitle("Crea Evento");
-//        stage.show();
         refreshScalettaUI(scalettaBox, scaletta);
 
         Platform.runLater(() -> {;
@@ -337,8 +359,9 @@ public class EventoViewLettore {
             LibroLettore ll = scaletta.get(i);
             ll.setProgressivo(i + 1);
             tempofine = tempoinizio.plusMinutes(ll.getLibro().getTempoLettura());
+            DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
             Label orario = new Label(
-                    "[" + tempoinizio + " - " + tempofine + "]"
+                    "[" + tempoinizio.format(formato) + " - " + tempofine.format(formato) + "]"
             );
             tempoinizio = tempofine;
             Label titolo = new Label(ll.getLibro().getTitolo());

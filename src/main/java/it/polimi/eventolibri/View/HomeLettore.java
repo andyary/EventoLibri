@@ -57,10 +57,9 @@ public class HomeLettore {
         Button newEventoButton = new Button("Crea Nuovo Evento");
         newEventoButton.setOnAction(e -> {
             System.out.println("Apertura schermata crea nuovo evento...");
-            eventoView.show(stage, new Evento(lettore, "", null, LocalDateTime.now()), lettore, () -> {
+            eventoView.show(stage, new Evento("", null, LocalDateTime.now()), lettore, () -> {
                 this.show(stage, lettore, eventiProssimi);
             });
-
         });
 
         HBox topBar = new HBox(new Label("  Benvenuto, " + lettore.getNome() + "!          "), profiloButton, newEventoButton);

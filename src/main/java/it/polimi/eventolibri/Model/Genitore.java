@@ -20,7 +20,9 @@ public class Genitore extends Utente implements Listener, Serializable {
         figli.add(figlio);
 	}
 
-
+    public void addFiglio(Figlio figlio) {
+        this.figli.add(figlio);
+    }
 
     public void setFigli(ArrayList<Figlio> figli) {
         this.figli = figli;
