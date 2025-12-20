@@ -90,7 +90,9 @@ public class Client {
                         Genitore genitore = creaGenitore.nuovoUtente(gen.getId(), gen.getNome(),gen.getCognome(), gen.getUserName());
                         genitore.setFigli(gen.getFigli());
                         utente = genitore;
-                        homeGenitore.show(loginView.getStage(), genitore, ((RispostaLogin) msg).getProssimiEventi());
+                        homeGenitore.show(loginView.getStage(), genitore, ((RispostaLogin) msg).getProssimiEventi(),
+                                () -> {loginView.show(loginView.getStage());
+                        });
                     }
                     case Lettore let -> {
                         CreaUtente<Lettore> creaLettore = new CreaLettore();

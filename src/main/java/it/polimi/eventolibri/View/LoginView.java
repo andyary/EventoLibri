@@ -20,9 +20,11 @@ public class LoginView {
     private Label messaggioerrore;
     private Stage stage;
     private final RegistraNewGenitore registraNewGenitore;
+    private final HomeGenitore homeGenitore;
 
-    public LoginView(Client client, RegistraNewGenitore registraNewGenitore) {
+    public LoginView(Client client, RegistraNewGenitore registraNewGenitore, HomeGenitore homeGenitore) {
         this.registraNewGenitore = registraNewGenitore;
+        this.homeGenitore = homeGenitore;
         this.client = client;
     }
 
@@ -90,7 +92,8 @@ public class LoginView {
     }
 
     public Stage getStage() {
-        return (Stage) layout.getScene().getWindow();
+        // return (Stage) layout.getScene().getWindow();
+        return stage;
     }
 
 }

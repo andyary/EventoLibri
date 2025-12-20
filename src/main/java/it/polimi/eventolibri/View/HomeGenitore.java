@@ -33,6 +33,7 @@ public class HomeGenitore {
     private Button nextEventiButton;
     private EventoView eventoView;
     private ProfiloGenitore profiloGenitore;
+    private Runnable onBack;
 
     public HomeGenitore(Client client, EventoView eventoView, ProfiloGenitore profiloGenitore) {
         this.eventoView = eventoView;
@@ -40,25 +41,29 @@ public class HomeGenitore {
         this.profiloGenitore = profiloGenitore;
     }
 
-    public void show(Stage stage, Genitore genitore, ArrayList<Evento> eventiProssimi) {
+    public void show(Stage stage, Genitore genitore, ArrayList<Evento> eventiProssimi, Runnable onBack) {
         this.stage = stage;
         this.genitore = genitore;
         this.eventiProssimi = eventiProssimi;
+        this.onBack = onBack;
 
         // ---------- TOP BAR CON PROFILO ----------
         Button profiloButton = new Button("Profilo e figli");
         profiloButton.setOnAction(e -> {
             System.out.println("Apertura schermata profilo...");
             profiloGenitore.show(stage, genitore, () -> {
-                this.show(stage, genitore, eventiProssimi);
+                this.show(stage, genitore, eventiProssimi, onBack);
             });
-
         });
 
-        HBox topBar = new HBox(new Label("  Benvenuto, " + genitore.getNome() + "!          "), profiloButton);
+        Button backButton = new Button("Logout");
+        backButton.setOnAction(e -> {
+            if (onBack != null) onBack.run();
+        });
+
+        HBox topBar = new HBox(new Label("  Benvenuto, " + genitore.getNome() + "!          "), profiloButton, backButton);
         topBar.setPadding(new Insets(20));
         topBar.setAlignment(Pos.TOP_RIGHT);
-
 
         // ---------- EVENTI FIGLI ----------
         Map<Figlio, ArrayList<Evento>> eventiPerFiglio = new HashMap<>();
@@ -158,7 +163,7 @@ public class HomeGenitore {
 
     public void aggiornaEventi(ArrayList<Evento> prossimiEventi) {
         eventiProssimi.addAll(prossimiEventi);
-        this.show(stage, genitore, eventiProssimi);
+        this.show(stage, genitore, eventiProssimi, onBack);
     }
 
 
@@ -171,7 +176,7 @@ public class HomeGenitore {
             System.out.println("Apro dettagli evento: " + evento.getNome());
 
             eventoView.show(stage, evento, genitore, () -> {
-                this.show(stage, genitore, eventiProssimi);
+                this.show(stage, genitore, eventiProssimi, onBack);
             });
         });
 

@@ -13,7 +13,6 @@ public class Window extends Application {
         RegistraNewGenitore registraNewGenitore = new RegistraNewGenitore(client);
         RegistraNewLettore registraNewLettore = new RegistraNewLettore(client);
         RegistraNewAmministratore registraNewAmministratore = new RegistraNewAmministratore(client);
-        LoginView loginView = new LoginView(client, registraNewGenitore);
         EventoView eventoView = new EventoView(client);
         EventoViewLettore eventoViewLettore = new EventoViewLettore(client);
         ProfiloGenitore profiloGenitore = new ProfiloGenitore(client);
@@ -22,7 +21,7 @@ public class Window extends Application {
         HomeGenitore homeGenitore = new HomeGenitore(client, eventoView, profiloGenitore);
         HomeLettore homeLettore = new HomeLettore(client, eventoViewLettore, profiloLettore);
         HomeAmministratore homeAmministratore = new HomeAmministratore(client, profiloAmministratore, registraNewLettore, registraNewAmministratore);
-
+        LoginView loginView = new LoginView(client, registraNewGenitore, homeGenitore);
 
         try {
             client.start(loginView, homeGenitore, homeAmministratore, eventoView, homeLettore, eventoViewLettore,
