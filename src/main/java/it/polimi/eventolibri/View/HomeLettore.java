@@ -32,6 +32,7 @@ public class HomeLettore {
     private Button nextEventiButton;
     private EventoViewLettore eventoView;
     private ProfiloLettore profiloLettore;
+    private Runnable onBack;
 
     public HomeLettore(Client client, EventoViewLettore eventoView, ProfiloLettore profiloLettore) {
         this.client = client;
@@ -39,17 +40,18 @@ public class HomeLettore {
         this.profiloLettore = profiloLettore;
     }
 
-    public void show(Stage stage, Lettore lettore, ArrayList<Evento> eventiProssimi) {
+    public void show(Stage stage, Lettore lettore, ArrayList<Evento> eventiProssimi, Runnable onBack) {
         this.stage = stage;
         this.lettore = lettore;
         this.eventiProssimi = eventiProssimi;
+        this.onBack = onBack;
 
         // ---------- TOP BAR CON PROFILO ----------
         Button profiloButton = new Button("Profilo lettore");
         profiloButton.setOnAction(e -> {
             System.out.println("Apertura schermata profilo...");
             profiloLettore.show(stage, lettore, () -> {
-                this.show(stage, lettore, eventiProssimi);
+                this.show(stage, lettore, eventiProssimi, onBack);
             });
 
         });
@@ -58,11 +60,16 @@ public class HomeLettore {
         newEventoButton.setOnAction(e -> {
             System.out.println("Apertura schermata crea nuovo evento...");
             eventoView.show(stage, new Evento("", null, LocalDateTime.now()), lettore, () -> {
-                this.show(stage, lettore, eventiProssimi);
+                this.show(stage, lettore, eventiProssimi, onBack);
             });
         });
 
-        HBox topBar = new HBox(new Label("  Benvenuto, " + lettore.getNome() + "!          "), profiloButton, newEventoButton);
+        Button backButton = new Button("Logout");
+        backButton.setOnAction(e -> {
+            if (onBack != null) onBack.run();
+        });
+
+        HBox topBar = new HBox(new Label("  Benvenuto, " + lettore.getNome() + "!          "), profiloButton, newEventoButton, backButton);
         topBar.setPadding(new Insets(20));
         topBar.setAlignment(Pos.TOP_RIGHT);
 
@@ -163,7 +170,7 @@ public class HomeLettore {
 
     public void aggiornaEventi(ArrayList<Evento> prossimiEventi) {
         eventiProssimi.addAll(prossimiEventi);
-        this.show(stage, lettore, eventiProssimi);
+        this.show(stage, lettore, eventiProssimi, onBack);
     }
 
 
@@ -176,7 +183,7 @@ public class HomeLettore {
             System.out.println("Apro dettagli evento: " + evento.getNome());
 
             eventoView.show(stage, evento, lettore, () -> {
-                this.show(stage, lettore, eventiProssimi);
+                this.show(stage, lettore, eventiProssimi, onBack);
             });
         });
 

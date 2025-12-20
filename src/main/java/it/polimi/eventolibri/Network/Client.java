@@ -100,14 +100,18 @@ public class Client {
                         lettore.setIscrizioniLettura(let.getIscrizioniLettura());
                         lettore.setEventiCreati(let.getEventiCreati());
                         utente = lettore;
-                        homeLettore.show(loginView.getStage(), lettore, ((RispostaLogin) msg).getProssimiEventi());
+                        homeLettore.show(loginView.getStage(), lettore, ((RispostaLogin) msg).getProssimiEventi(),
+                        () -> {loginView.show(loginView.getStage());
+                        });
                     }
 
                     case Amministratore amm -> {
                         CreaUtente<Amministratore> creaAmministratore = new CreaAmministratore();
                         Amministratore amministratore = creaAmministratore.nuovoUtente(amm.getId(), amm.getNome(),amm.getCognome(), amm.getUserName());
                         utente = amministratore;
-                        homeAmministratore.show(loginView.getStage(), amministratore);
+                        homeAmministratore.show(loginView.getStage(), amministratore,
+                                () -> {loginView.show(loginView.getStage());
+                                });
                     }
 
                     default -> {

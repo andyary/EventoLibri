@@ -30,6 +30,7 @@ public class HomeAmministratore {
     private ProfiloAmministratore profiloAmministratore;
     private RegistraNewLettore registraNewLettore;
     private RegistraNewAmministratore registraNewAmministratore;
+    private Runnable onBack;
 
 
     public HomeAmministratore(Client client, ProfiloAmministratore profiloAmministratore,
@@ -40,16 +41,17 @@ public class HomeAmministratore {
         this.registraNewAmministratore = registraNewAmministratore;
     }
 
-    public void show(Stage stage, Amministratore amministratore) {
+    public void show(Stage stage, Amministratore amministratore, Runnable onBack) {
         this.stage = stage;
         this.amministratore = amministratore;
+        this.onBack = onBack;
 
         // ---------- TOP BAR CON PROFILO ----------
         Button profiloButton = new Button("Profilo amministratore");
         profiloButton.setOnAction(e -> {
             System.out.println("Apertura schermata profilo...");
             profiloAmministratore.show(stage, amministratore, () -> {
-                this.show(stage, amministratore);
+                this.show(stage, amministratore, onBack);
             });
 
         });
@@ -58,7 +60,7 @@ public class HomeAmministratore {
         newLettoreButton.setOnAction(e -> {
             System.out.println("Apertura schermata crea nuovo Lettore...");
             registraNewLettore.show(stage, () -> {
-                this.show(stage, amministratore);
+                this.show(stage, amministratore, onBack);
             });
 
         });
@@ -67,12 +69,17 @@ public class HomeAmministratore {
         newAmministratoreButton.setOnAction(e -> {
             System.out.println("Apertura schermata crea nuovo Amministratore...");
             registraNewAmministratore.show(stage, () -> {
-                this.show(stage, amministratore);
+                this.show(stage, amministratore, onBack);
             });
 
         });
 
-        HBox topBar = new HBox(new Label("  Benvenuto, " + amministratore.getNome() + "!          "), profiloButton, newLettoreButton, newAmministratoreButton);
+        Button backButton = new Button("Logout");
+        backButton.setOnAction(e -> {
+            if (onBack != null) onBack.run();
+        });
+
+        HBox topBar = new HBox(new Label("  Benvenuto, " + amministratore.getNome() + "!          "), profiloButton, newLettoreButton, newAmministratoreButton, backButton);
         topBar.setPadding(new Insets(20));
         topBar.setAlignment(Pos.TOP_RIGHT);
 

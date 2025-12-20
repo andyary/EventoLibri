@@ -21,10 +21,14 @@ public class LoginView {
     private Stage stage;
     private final RegistraNewGenitore registraNewGenitore;
     private final HomeGenitore homeGenitore;
+    private final HomeLettore homeLettore;
+    private final HomeAmministratore homeAmministratore;
 
-    public LoginView(Client client, RegistraNewGenitore registraNewGenitore, HomeGenitore homeGenitore) {
+    public LoginView(Client client, RegistraNewGenitore registraNewGenitore, HomeGenitore homeGenitore, HomeLettore homeLettore, HomeAmministratore homeAmministratore) {
         this.registraNewGenitore = registraNewGenitore;
         this.homeGenitore = homeGenitore;
+        this.homeLettore = homeLettore;
+        this.homeAmministratore = homeAmministratore;
         this.client = client;
     }
 
@@ -48,7 +52,10 @@ public class LoginView {
             this.messaggioerrore.setText("");
 
             if (username.isEmpty() || password.isEmpty()) {
-                System.out.println("Missing fields");
+                System.out.println("Campi mancanti.");
+
+                this.messaggioerrore.setText("Campi mancanti.");
+
                 return;
             }
 
