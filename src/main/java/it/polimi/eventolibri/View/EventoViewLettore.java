@@ -90,13 +90,12 @@ public class EventoViewLettore {
         }
 
         /* ---------- TITOLO ---------- */
-        Label titoloLabel = new Label("Crea nuovo evento");
+        Label titoloLabel = new Label("Gestione evento");
         titoloLabel.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
         TextField titoloField = new TextField(evento.getNome());
         titoloField.setPromptText("Titolo evento");
         titoloField.setAlignment(Pos.CENTER_LEFT);
         /* ---------- LUOGO ---------- */
-
         if (evento.getLuogo() == null) {
             luogoCombo.setPromptText("Scegli luogo");
         } else {
