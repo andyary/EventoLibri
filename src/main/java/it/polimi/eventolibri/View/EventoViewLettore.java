@@ -95,6 +95,11 @@ public class EventoViewLettore {
         TextField titoloField = new TextField(evento.getNome());
         titoloField.setPromptText("Titolo evento");
         titoloField.setAlignment(Pos.CENTER_LEFT);
+        HBox titoloBox = new HBox(5,
+                new Label("Titolo:"),
+                titoloField
+        );
+
         /* ---------- LUOGO ---------- */
         if (evento.getLuogo() == null) {
             luogoCombo.setPromptText("Scegli luogo");
@@ -156,29 +161,17 @@ public class EventoViewLettore {
 
         scegliLibroBtn.setOnAction(e -> {
             messaggioerrore.setText("");
-                LibroView dialog = new LibroView();
-                Libro libro = dialog.show(stage, elencoLibri);
-                if (libro != null) {
-                    libroSelezionatoLabel.setText(
-                            libro.getTitolo() + " (" + libro.getTempoLettura() + " min)"
-                    );
-                    libroSelezionato[0] = libro;
-                }
+            LibroView dialog = new LibroView();
+            Libro libro = dialog.show(stage, elencoLibri);
+            if (libro != null) {
+                libroSelezionatoLabel.setText(
+                        libro.getTitolo() + " (" + libro.getTempoLettura() + " min)"
+                );
+                libroSelezionato[0] = libro;
+            }
         });
 
         lettoreCombo.setPromptText("Lettore (facoltativo)");
-
-//        Button cancellaRigaBtn = new Button("Cancella riga");
-//        cancellaRigaBtn.setOnAction(e -> {
-//            messaggioerrore.setText("");
-//            if (scaletta.isEmpty()) {
-//                messaggioerrore.setText("Nessuna riga da cancellare");
-//                return;
-//            }
-//            scaletta.remove(scaletta.size() - 1);
-//            refreshScalettaUI(scalettaBox, scaletta);
-//        });
-
 
         Button aggiungiRigaBtn = new Button("Aggiungi riga");
         aggiungiRigaBtn.setOnAction(e -> {
@@ -204,7 +197,6 @@ public class EventoViewLettore {
                 scegliLibroBtn,
                 new Label("Lettore:"),
                 lettoreCombo,
-                /* cancellaRigaBtn, */
                 aggiungiRigaBtn
         );
         libroLettoreBox.setAlignment(Pos.CENTER_LEFT);
@@ -256,7 +248,7 @@ public class EventoViewLettore {
                 mainBtnBox,
                 messaggioerrore,
                 titoloLabel,
-                titoloField,
+                titoloBox,
                 luogoBox,
                 dataBox,
                 oraBox,
@@ -342,14 +334,26 @@ public class EventoViewLettore {
     private void refreshScalettaUI(VBox scalettaBox, ArrayList<LibroLettore> scaletta) {
         scalettaBox.getChildren().clear();
 
-        // menu a tendina per cambiare il lettore
-        lettoreScalettaCombo.setPromptText("");
-        HBox rigaScaletta = new HBox(10,
-                new Label("Selezione lettore per modifica:"),
-                lettoreScalettaCombo
-        );
-        rigaScaletta.setAlignment(Pos.CENTER_RIGHT);
-        scalettaBox.getChildren().add(rigaScaletta);
+        // controllo se il lettore corrente è il creatore dell'evento
+        boolean isCreator = false;
+        if (evento != null && evento.getCreatore() != null && lettore != null) {
+            try {
+                isCreator = evento.getCreatore().getId() == lettore.getId();
+            } catch (Exception ignored) {
+                isCreator = evento.getCreatore().equals(lettore);
+            }
+        }
+
+        // menù a tendina per cambiare il lettore: mostrato solo al creatore
+        if (isCreator) {
+            lettoreScalettaCombo.setPromptText("");
+            HBox rigaScaletta = new HBox(10,
+                    new Label("Selezione lettore per modifica:"),
+                    lettoreScalettaCombo
+            );
+            rigaScaletta.setAlignment(Pos.CENTER_RIGHT);
+            scalettaBox.getChildren().add(rigaScaletta);
+        }
 
         LocalTime tempoinizio= evento.getData().toLocalTime();
         LocalTime tempofine;
@@ -365,32 +369,65 @@ public class EventoViewLettore {
             tempoinizio = tempofine;
             Label titolo = new Label(ll.getLibro().getTitolo());
             Label durata = new Label("(" + ll.getLibro().getTempoLettura() + " min)");
-            Label lettore = new Label(
+            Label lettoreLabel = new Label(
                     ll.getLettore() != null ? ll.getLettore().getNome() : ""
             );
-            Button eliminaBtn = new Button("Cancella Riga");
-            eliminaBtn.setOnAction(e -> {
-                scaletta.remove(ll);
-                refreshScalettaUI(scalettaBox, scaletta);
-            });
 
-            Button cambiaLettoreBtn = new Button("Modifica lettore");
-            final int[] progressivoTemp = new int[1];
-            progressivoTemp[0] = i;
-            cambiaLettoreBtn.setOnAction(e -> {
-                ll.modificaLettore(lettoreScalettaCombo.getSelectionModel().getSelectedItem());
-                scaletta.set(progressivoTemp[0],ll);
-                refreshScalettaUI(scalettaBox, scaletta);
-            });
+            // Bottone cancella riga: solo se creatore e la riga non ha lettore assegnato
+            Button eliminaBtn = null;
+            if (isCreator && ll.getLettore() == null) {
+                eliminaBtn = new Button("Cancella Riga");
+                eliminaBtn.setOnAction(e -> {
+                    scaletta.remove(ll);
+                    refreshScalettaUI(scalettaBox, scaletta);
+                });
+            }
 
-            HBox riga = new HBox(10,
-                    eliminaBtn,
-                    cambiaLettoreBtn,
+            // Bottone modifica lettore: solo se creatore
+            Button cambiaLettoreBtn = null;
+            if (isCreator) {
+                cambiaLettoreBtn = new Button("Modifica lettore");
+                final int progressivoTemp = i;
+                cambiaLettoreBtn.setOnAction(e -> {
+                    Lettore selezionato = lettoreScalettaCombo.getSelectionModel().getSelectedItem();
+                    ll.modificaLettore(selezionato);
+                    scaletta.set(progressivoTemp,ll);
+                    refreshScalettaUI(scalettaBox, scaletta);
+                });
+            }
+
+            // Bottone iscrivi/disiscrivi: solo se NON creatore e la riga non è già associata ad un altro lettore non null
+            Button iscriviBtn = null;
+            if (!isCreator) {
+                boolean rigaLiberaOPropria = (ll.getLettore() == null) || (lettore != null && ll.getLettore() != null && ll.getLettore().getId() == lettore.getId());
+                if (rigaLiberaOPropria) {
+                    iscriviBtn = new Button(ll.getLettore() == null ? "Iscrivi" : "Disiscrivi");
+                    iscriviBtn.setOnAction(e -> {
+                        if (ll.getLettore() == null) {
+                            ll.modificaLettore(lettore);
+                        } else {
+                            // se era il lettore corrente, si disiscrive; se era qualcun altro (non previsto dalla condizione) non tocca
+                            if (lettore != null && ll.getLettore().getId() == lettore.getId()) {
+                                ll.modificaLettore(null);
+                            }
+                        }
+                        refreshScalettaUI(scalettaBox, scaletta);
+                    });
+                }
+            }
+
+            HBox riga = new HBox(10);
+            // Aggiungi i pulsanti nell'ordine richiesto
+            if (eliminaBtn != null) riga.getChildren().add(eliminaBtn);
+            if (cambiaLettoreBtn != null) riga.getChildren().add(cambiaLettoreBtn);
+            if (iscriviBtn != null) riga.getChildren().add(iscriviBtn);
+
+            riga.getChildren().addAll(
                     new Label((i + 1) + ")"),
                     orario,
                     titolo,
                     durata,
-                    lettore
+                    lettoreLabel
             );
             riga.setAlignment(Pos.CENTER_LEFT);
             scalettaBox.getChildren().add(riga);

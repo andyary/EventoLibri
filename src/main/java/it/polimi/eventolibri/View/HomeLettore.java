@@ -2,7 +2,6 @@ package it.polimi.eventolibri.View;
 
 import it.polimi.eventolibri.Message.RichiestaNextEventi;
 import it.polimi.eventolibri.Model.Evento;
-import it.polimi.eventolibri.Model.Figlio;
 import it.polimi.eventolibri.Model.Lettore;
 import it.polimi.eventolibri.Network.Client;
 import javafx.application.Platform;
@@ -20,8 +19,6 @@ import javafx.stage.Stage;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class HomeLettore {
 
@@ -49,18 +46,16 @@ public class HomeLettore {
         // ---------- TOP BAR CON PROFILO ----------
         Button profiloButton = new Button("Profilo lettore");
         profiloButton.setOnAction(e -> {
-            System.out.println("Apertura schermata profilo...");
             profiloLettore.show(stage, lettore, () -> {
                 this.show(stage, lettore, eventiProssimi, onBack);
             });
-
         });
 
         Button newEventoButton = new Button("Crea Nuovo Evento");
         newEventoButton.setOnAction(e -> {
-            System.out.println("Apertura schermata crea nuovo evento...");
+            // passare onBack che ricarica gli eventi dal server
             eventoView.show(stage, new Evento("", null, LocalDateTime.now()), lettore, () -> {
-                this.show(stage, lettore, eventiProssimi, onBack);
+                reloadEventiFromServer();
             });
         });
 
@@ -173,6 +168,27 @@ public class HomeLettore {
         this.show(stage, lettore, eventiProssimi, onBack);
     }
 
+    /**
+     * Richiama il server per ricaricare gli eventi e mostra la schermata.
+     * Nota: usa RichiestaNextEventi con null per indicare la prima pagina.
+     * Se esiste una request specifica per il caricamento iniziale, sostituirla qui.
+     */
+    public void reloadEventiFromServer() {
+        if (eventiProssimi == null) eventiProssimi = new ArrayList<>();
+        eventiProssimi.clear();
+
+        // mostra subito la schermata con lista vuota / stato di caricamento
+        this.show(stage, lettore, eventiProssimi, onBack);
+
+        try {
+            // Optionale: se il server supporta null come "prima pagina"
+            client.sendMessage(new RichiestaNextEventi(null));
+            // Se esiste una RichiestaEventiIniziali, usarla al suo posto.
+        } catch (Exception ex) {
+            System.out.println("Errore richiesta eventi: " + ex.getMessage());
+        }
+    }
+
 
     private HBox creaRigaEvento(Evento evento) {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMMM yyyy 'alle' HH:mm");
@@ -180,18 +196,18 @@ public class HomeLettore {
         Button apri = new Button("Apri");
 
         apri.setOnAction(e -> {
-            System.out.println("Apro dettagli evento: " + evento.getNome());
-
             eventoView.show(stage, evento, lettore, () -> {
-                this.show(stage, lettore, eventiProssimi, onBack);
+                // quando si torna dall'evento, ricaricare gli eventi dal server
+                reloadEventiFromServer();
             });
         });
 
-        HBox riga = new HBox(20, nome, apri);
+        HBox riga = new HBox(20, apri,nome);
         riga.setAlignment(Pos.CENTER_LEFT);
 
         return riga;
     }
 
 }
+
 
