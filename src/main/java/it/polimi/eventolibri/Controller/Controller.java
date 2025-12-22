@@ -5,6 +5,7 @@ import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.Model.DAO.*;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -55,7 +56,11 @@ public class Controller {
     public RispostaNextEventi getNextEventi(Evento ultimoEvento) {
         RispostaNextEventi risposta = new RispostaNextEventi();
         try {
-            risposta.setProssimiEventi(eventoDAO.getNextEventi(ultimoEvento));
+            if (ultimoEvento == null)
+                risposta.setProssimiEventi(eventoDAO.getNextEventi(LocalDateTime.now()));
+            else {
+                risposta.setProssimiEventi(eventoDAO.getNextEventi(ultimoEvento));
+            }
             risposta.setSuccesso(true);
         } catch (Exception e) {
             risposta.setSuccesso(false);

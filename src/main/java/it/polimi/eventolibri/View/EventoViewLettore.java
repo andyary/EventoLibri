@@ -154,7 +154,10 @@ public class EventoViewLettore {
         VBox scalettaBox = new VBox(6);
         scalettaBox.setPadding(new Insets(10));
         scalettaBox.setStyle("-fx-border-color: lightgray;");
-        ArrayList<LibroLettore> scaletta = evento.getScaletta();
+        ArrayList<LibroLettore> scalettaTemp = new ArrayList<>();
+        for (LibroLettore l : evento.getScaletta()) {
+            scalettaTemp.add(new LibroLettore(l.getLibro(), l.getLettore(), l.getProgressivo()));
+        }
         Label libroSelezionatoLabel = new Label("Nessun libro selezionato");
         Button scegliLibroBtn = new Button("Scegli libro");
         final Libro[] libroSelezionato = new Libro[1];
@@ -183,10 +186,10 @@ public class EventoViewLettore {
             LibroLettore ll = new LibroLettore(
                     libroSelezionato[0],
                     lettoreCombo.getValue(),
-                    scaletta.size() + 1
+                    scalettaTemp.size() + 1
             );
-            scaletta.add(ll);
-            refreshScalettaUI(scalettaBox, scaletta);
+            scalettaTemp.add(ll);
+            refreshScalettaUI(scalettaBox, scalettaTemp);
             libroSelezionato[0] = null;
             libroSelezionatoLabel.setText("Nessun libro selezionato");
             lettoreCombo.setValue(null);
@@ -222,7 +225,7 @@ public class EventoViewLettore {
                     luogoCombo.getValue(),
                     dataOra
             );
-            eventoTemp.setScaletta(scaletta);
+            eventoTemp.setScaletta(scalettaTemp);
             eventoTemp.setCreatore(lettore);
             if (evento.getId() != 0) {
                 eventoTemp.setId(evento.getId());
@@ -268,7 +271,7 @@ public class EventoViewLettore {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // scroll verticale solo se serve
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        refreshScalettaUI(scalettaBox, scaletta);
+        refreshScalettaUI(scalettaBox, scalettaTemp);
 
         Platform.runLater(() -> {;
             stage.setScene(new Scene(scrollPane, 700, 700));

@@ -54,7 +54,9 @@ public class HomeLettore {
         Button newEventoButton = new Button("Crea Nuovo Evento");
         newEventoButton.setOnAction(e -> {
             // passare onBack che ricarica gli eventi dal server
-            eventoView.show(stage, new Evento("", null, LocalDateTime.now()), lettore, () -> {
+            Evento eventoTemp = new Evento( "", null, LocalDateTime.now());
+            eventoTemp.setCreatore(lettore);
+            eventoView.show(stage, eventoTemp , lettore, () -> {
                 reloadEventiFromServer();
             });
         });
@@ -177,9 +179,6 @@ public class HomeLettore {
         if (eventiProssimi == null) eventiProssimi = new ArrayList<>();
         eventiProssimi.clear();
 
-        // mostra subito la schermata con lista vuota / stato di caricamento
-        this.show(stage, lettore, eventiProssimi, onBack);
-
         try {
             // Optionale: se il server supporta null come "prima pagina"
             client.sendMessage(new RichiestaNextEventi(null));
@@ -187,6 +186,9 @@ public class HomeLettore {
         } catch (Exception ex) {
             System.out.println("Errore richiesta eventi: " + ex.getMessage());
         }
+
+        // mostra subito la schermata con lista vuota / stato di caricamento
+        this.show(stage, lettore, eventiProssimi, onBack);
     }
 
 

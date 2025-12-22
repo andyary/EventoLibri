@@ -144,4 +144,14 @@ public class Evento extends EventoAstratto implements Serializable {
     public void setScaletta(ArrayList<LibroLettore> scaletta) {
         this.scaletta = scaletta;
     }
+
+    public boolean isIscritto(Lettore lettore) {
+        for (LibroLettore ll : scaletta) {
+            if (ll.getLettore() == null) continue;
+            if (ll.getLettore().getId() == lettore.getId()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

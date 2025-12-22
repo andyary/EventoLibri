@@ -36,19 +36,46 @@ public class Lettore extends Utente implements Listener, Serializable {
     }
 
     public void aggiungiEventiCreati(Evento eventoCreato) {
-        this.eventiCreati.add(eventoCreato);
+        int i;
+        for (i = 0; i < eventiCreati.size(); i++) {
+            if (eventiCreati.get(i).getId() == eventoCreato.getId()) {
+                eventiCreati.get(i).removeListener(this);
+                eventiCreati.set(i, eventoCreato);
+                eventoCreato.addListener(this);
+                eventiCreati.sort((e1, e2) -> e1.getData().compareTo(e2.getData()));
+                return;
+            }
+        }
+        eventiCreati.add(eventoCreato);
+        eventiCreati.sort((e1, e2) -> e1.getData().compareTo(e2.getData()));
         eventoCreato.addListener(this);
     }
 
     public void aggiungiIscrizioneLettura(Evento eventoIscritto) {
-        this.iscrizioniLettura.add(eventoIscritto);
+        int i;
+        for (i = 0; i < iscrizioniLettura.size(); i++) {
+            if (iscrizioniLettura.get(i).getId() == eventoIscritto.getId()) {
+                iscrizioniLettura.get(i).removeListener(this);
+                iscrizioniLettura.set(i, eventoIscritto);
+                eventoIscritto.addListener(this);
+                iscrizioniLettura.sort((e1, e2) -> e1.getData().compareTo(e2.getData()));
+                return;
+            }
+        }
+        iscrizioniLettura.add(eventoIscritto);
+        iscrizioniLettura.sort((e1, e2) -> e1.getData().compareTo(e2.getData()));
         eventoIscritto.addListener(this);
     }
 
     public void rimuoviIscrizioneLettura(Evento eventoIscritto) {
-        this.iscrizioniLettura.remove(eventoIscritto);
-        if (!this.equals(eventoIscritto.getCreatore()) && !iscrizioniLettura.contains(eventoIscritto)) {
-            eventoIscritto.removeListener(this);}
+        int i;
+        for (i = 0; i < iscrizioniLettura.size(); i++) {
+            if (iscrizioniLettura.get(i).getId() == eventoIscritto.getId()) {
+                iscrizioniLettura.get(i).removeListener(this);
+                iscrizioniLettura.remove(i);
+                return;
+            }
+        }
     }
 
     public void update(Evento eventoAggiornato) {

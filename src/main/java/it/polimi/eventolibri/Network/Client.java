@@ -333,6 +333,15 @@ public class Client {
                     alert.setContentText(null);
                     alert.showAndWait();
                 });
+                if (eventoViewLettore.getLettore().getId() == (((RispostaSalvaEvento) msg).getEvento().getCreatore().getId())) {
+                    eventoViewLettore.getLettore().aggiungiEventiCreati(((RispostaSalvaEvento) msg).getEvento());
+                }
+                if (((RispostaSalvaEvento) msg).getEvento().isIscritto(eventoViewLettore.getLettore())) {
+                    eventoViewLettore.getLettore().aggiungiIscrizioneLettura(((RispostaSalvaEvento) msg).getEvento());
+                }
+                if (!((RispostaSalvaEvento) msg).getEvento().isIscritto(eventoViewLettore.getLettore())) {
+                    eventoViewLettore.getLettore().rimuoviIscrizioneLettura(((RispostaSalvaEvento) msg).getEvento());
+                }
                 eventoViewLettore.setEvento(((RispostaSalvaEvento) msg).getEvento());
             }
             else {

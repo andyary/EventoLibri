@@ -83,7 +83,11 @@ public class LibroLettoreDAO {
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
             pstatement.setInt(1, evento.getId());
             pstatement.setInt(2, libro.getId());
-            pstatement.setInt(3, lettore.getId());
+            if (lettore == null) {
+                pstatement.setNull(3, java.sql.Types.INTEGER);
+            } else {
+                pstatement.setInt(3, lettore.getId());
+            }
             pstatement.setInt(4, progressivo);
             pstatement.executeUpdate();
             }
