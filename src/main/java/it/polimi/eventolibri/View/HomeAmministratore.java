@@ -93,7 +93,7 @@ public class HomeAmministratore {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // scroll verticale solo se serve
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        Scene scene = new Scene(scrollPane, 700, 700);
+        Scene scene = new Scene(scrollPane, 700, 750);
         Platform.runLater(() -> {;
             stage.setScene(scene);
             stage.setTitle("Home Amministratore");

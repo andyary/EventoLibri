@@ -1,18 +1,19 @@
 package it.polimi.eventolibri.View;
 
-import it.polimi.eventolibri.Message.Messaggio;
 import it.polimi.eventolibri.Message.RichiestaNextEventi;
 import it.polimi.eventolibri.Model.Evento;
 import it.polimi.eventolibri.Model.Figlio;
 import it.polimi.eventolibri.Model.Genitore;
 import it.polimi.eventolibri.Network.Client;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -21,8 +22,8 @@ import javafx.stage.Stage;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
 
 public class HomeGenitore {
 
@@ -44,7 +45,7 @@ public class HomeGenitore {
     public void show(Stage stage, Genitore genitore, ArrayList<Evento> eventiProssimi, Runnable onBack) {
         this.stage = stage;
         this.genitore = genitore;
-        this.eventiProssimi = eventiProssimi;
+        this.eventiProssimi = eventiProssimi != null ? eventiProssimi : new ArrayList<>();
         this.onBack = onBack;
 
         // ---------- TOP BAR CON PROFILO ----------
@@ -52,7 +53,7 @@ public class HomeGenitore {
         profiloButton.setOnAction(e -> {
             System.out.println("Apertura schermata profilo...");
             profiloGenitore.show(stage, genitore, () -> {
-                this.show(stage, genitore, eventiProssimi, onBack);
+                this.show(stage, genitore, this.eventiProssimi, onBack);
             });
         });
 
@@ -65,127 +66,179 @@ public class HomeGenitore {
         topBar.setPadding(new Insets(20));
         topBar.setAlignment(Pos.TOP_RIGHT);
 
-        // ---------- EVENTI FIGLI ----------
-        Map<Figlio, ArrayList<Evento>> eventiPerFiglio = new HashMap<>();
+        // formatter per colonne
+        DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formatoOra = DateTimeFormatter.ofPattern("HH:mm");
 
-        for (Figlio f : genitore.getFigli()) {
-            ArrayList<Evento> eventi = f.getIscrizioni();
-            eventiPerFiglio.put(f, eventi);
-        }
-
+        // ---------- EVENTI FIGLI: usa TableView per ciascun figlio ----------
         VBox figliSection = new VBox(25);
         figliSection.setPadding(new Insets(10));
         Label titoloFigli = new Label("Eventi a cui sono iscritti i tuoi figli:");
         titoloFigli.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
         figliSection.getChildren().add(titoloFigli);
-        if (eventiPerFiglio.isEmpty()) {
+
+        if (genitore.getFigli().isEmpty()) {
             figliSection.getChildren().add(new Label("Nessun figlio oppure nessuna iscrizione."));
         } else {
-            eventiPerFiglio.forEach((figlio, listaEventi) -> {
+            for (Figlio f : genitore.getFigli()) {
+                List<Evento> listaEventi = f.getIscrizioni();
                 VBox boxFiglio = new VBox(10);
                 boxFiglio.setPadding(new Insets(5, 0, 5, 10));
-                // usa figlio.getNome() per il titolo
-                Label titoloFiglio = new Label("Eventi di " + figlio.getNome() + ":");
+                Label titoloFiglio = new Label("Eventi di " + f.getNome() + ":");
                 titoloFiglio.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
                 boxFiglio.getChildren().add(titoloFiglio);
-                if (listaEventi.isEmpty()) {
+                if (listaEventi == null || listaEventi.isEmpty()) {
                     boxFiglio.getChildren().add(new Label("Nessun evento iscritto."));
                 } else {
-                    for (Evento evento : listaEventi) {
-                        boxFiglio.getChildren().add(creaRigaEvento(evento));
-                    }
+                    TableView<Evento> tableFiglio = createEventoTableView(listaEventi, 3, formatoData, formatoOra);
+                    boxFiglio.getChildren().add(tableFiglio);
                 }
                 figliSection.getChildren().add(boxFiglio);
-            });
+            }
         }
-
-
 
         // ---------- EVENTI PROSSIMI ----------
         VBox eventiProssimiBox = new VBox(10);
         eventiProssimiBox.getChildren().add(new Label("Prossimi eventi disponibili:"));
         eventiProssimiBox.setPadding(new Insets(10));
 
-        if (eventiProssimi.isEmpty()) {
+        if (this.eventiProssimi == null || this.eventiProssimi.isEmpty()) {
             eventiProssimiBox.getChildren().add(new Label("Nessun evento disponibile."));
         } else {
-            for (Evento evento : eventiProssimi) {
-                HBox riga = creaRigaEvento(evento);
-                eventiProssimiBox.getChildren().add(riga);
-            }
+            TableView<Evento> tableProssimi = createEventoTableView(this.eventiProssimi, 5, formatoData, formatoOra);
+            eventiProssimiBox.getChildren().add(tableProssimi);
         }
 
-        nextEventiButton = new Button("Carica Eventi Successivi");
-        nextEventiButton.setOnAction(e -> {
-            RichiestaNextEventi req = new RichiestaNextEventi(eventiProssimi.getLast());
-            try {
-                client.sendMessage(req);
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-            }
-
-        });
-        eventiProssimiBox.getChildren().add(nextEventiButton);
-
+        // pulsante "Carica Eventi Successivi" - come in HomeLettore
+        if (this.eventiProssimi != null && this.eventiProssimi.size() >= 10) {
+            nextEventiButton = new Button("Carica Eventi Successivi");
+            nextEventiButton.setOnAction(e -> {
+                Evento last = this.eventiProssimi.isEmpty() ? null : this.eventiProssimi.get(this.eventiProssimi.size() - 1);
+                RichiestaNextEventi req = new RichiestaNextEventi(last);
+                try {
+                    client.sendMessage(req);
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                }
+            });
+            eventiProssimiBox.getChildren().add(nextEventiButton);
+        }
 
         // ---------- CONTENUTO CENTRALE ----------
-        VBox centro = new VBox(30, figliSection, eventiProssimiBox);
+        VBox centro = new VBox(20, figliSection, eventiProssimiBox);
         centro.setAlignment(Pos.TOP_CENTER);
         centro.setPadding(new Insets(20));
 
-
         // ---------- LAYOUT FINALE ----------
-
         BorderPane root = new BorderPane();
         root.setTop(topBar);
         root.setCenter(centro);
 
         ScrollPane scrollPane = new ScrollPane(root);
-        scrollPane.setFitToWidth(true);  // adatta la larghezza del contenuto alla finestra
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // scroll verticale solo se serve
+        scrollPane.setFitToWidth(true);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        Scene scene = new Scene(scrollPane, 700, 700);
-        Platform.runLater(() -> {;
+        Scene scene = new Scene(scrollPane, 700, 750);
+        Platform.runLater(() -> {
             stage.setScene(scene);
-            // stage.setMaximized(true);
             stage.setTitle("Home Genitore");
             stage.show();
         });
-
     }
-
 
     public void nascondiBottoneNextEventi() {
-        nextEventiButton.setVisible(false);
+        if (nextEventiButton != null) nextEventiButton.setVisible(false);
     }
-
 
     public void aggiornaEventi(ArrayList<Evento> prossimiEventi) {
-        eventiProssimi.addAll(prossimiEventi);
-        this.show(stage, genitore, eventiProssimi, onBack);
+        if (this.eventiProssimi == null) this.eventiProssimi = new ArrayList<>();
+        this.eventiProssimi.addAll(prossimiEventi);
+        this.show(stage, genitore, this.eventiProssimi, onBack);
     }
 
+    /**
+     * Crea TableView<Evento> con colonne: Data, Ora inizio, Ora fine (calcolaOraFine), Titolo.
+     * visibleRows indica il numero di righe visibili. TableView gestisce lo scrolling interno se ci sono più righe.
+     */
+    private TableView<Evento> createEventoTableView(List<Evento> eventi, int visibleRows, DateTimeFormatter formatoData, DateTimeFormatter formatoOra) {
+        TableView<Evento> table = new TableView<>();
 
-    private HBox creaRigaEvento(Evento evento) {
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMMM yyyy 'alle' HH:mm");
-        Label nome = new Label(evento.getNome() + " del " + evento.getData().format(fmt));
-        Button apri = new Button("Apri");
+        TableColumn<Evento, String> dataCol = new TableColumn<>("Data");
+        dataCol.setCellValueFactory(cell -> {
+            Evento ev = cell.getValue();
+            String val = (ev != null && ev.getData() != null) ? ev.getData().toLocalDate().format(formatoData) : "";
+            return new SimpleStringProperty(val);
+        });
+        dataCol.setSortable(true);
+        dataCol.setPrefWidth(90);
+        dataCol.setMinWidth(70);
+        dataCol.setMaxWidth(120);
+        dataCol.setStyle("-fx-alignment: CENTER;");
 
-        apri.setOnAction(e -> {
-            System.out.println("Apro dettagli evento: " + evento.getNome());
+        TableColumn<Evento, String> oraInizioCol = new TableColumn<>("Ora inizio");
+        oraInizioCol.setCellValueFactory(cell -> {
+            Evento ev = cell.getValue();
+            String val = (ev != null && ev.getData() != null) ? ev.getData().toLocalTime().format(formatoOra) : "";
+            return new SimpleStringProperty(val);
+        });
+        oraInizioCol.setSortable(true);
+        oraInizioCol.setPrefWidth(70);
+        oraInizioCol.setMinWidth(50);
+        oraInizioCol.setMaxWidth(90);
+        oraInizioCol.setStyle("-fx-alignment: CENTER;");
 
-            eventoView.show(stage, evento, genitore, () -> {
-                this.show(stage, genitore, eventiProssimi, onBack);
+        TableColumn<Evento, String> oraFineCol = new TableColumn<>("Ora fine");
+        oraFineCol.setCellValueFactory(cell -> {
+            Evento ev = cell.getValue();
+            String val = "";
+            try {
+                if (ev != null && ev.calcolaOraFine() != null) {
+                    val = ev.calcolaOraFine().format(formatoOra);
+                }
+            } catch (Exception ignored) {}
+            return new SimpleStringProperty(val);
+        });
+        oraFineCol.setSortable(true);
+        oraFineCol.setPrefWidth(70);
+        oraFineCol.setMinWidth(50);
+        oraFineCol.setMaxWidth(90);
+        oraFineCol.setStyle("-fx-alignment: CENTER;");
+
+        TableColumn<Evento, String> titoloCol = new TableColumn<>("Titolo evento");
+        titoloCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue() != null ? cell.getValue().getNome() : ""));
+        titoloCol.setSortable(true);
+
+        table.getColumns().addAll(dataCol, oraInizioCol, oraFineCol, titoloCol);
+
+        ObservableList<Evento> items = FXCollections.observableArrayList(eventi);
+        table.setItems(items);
+
+        // Altezza preferita: approssimazione riga 25px + header 30px
+        double rowHeight = 25;
+        double headerHeight = 30;
+        table.setPrefHeight(visibleRows * rowHeight + headerHeight);
+
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        // doppio clic su riga per aprire l'evento
+        table.setRowFactory(tv -> {
+            TableRow<Evento> row = new TableRow<>();
+            row.setOnMouseClicked(ev -> {
+                if (!row.isEmpty() && ev.getButton() == MouseButton.PRIMARY && ev.getClickCount() == 2) {
+                    Evento selected = row.getItem();
+                    eventoView.show(stage, selected, genitore, () -> this.show(stage, genitore, this.eventiProssimi, onBack));
+                }
             });
+            return row;
         });
 
-        HBox riga = new HBox(20, nome, apri);
-        riga.setAlignment(Pos.CENTER_LEFT);
+        if (items.isEmpty()) {
+            table.setPlaceholder(new Label("Nessun evento."));
+        }
 
-        return riga;
+        return table;
     }
 
-
-
 }
+

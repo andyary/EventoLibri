@@ -150,7 +150,7 @@ public class ProfiloGenitore {
         contenuto.setPadding(new Insets(20));
         ScrollPane scrollPane = new ScrollPane(contenuto);
         scrollPane.setFitToWidth(true);
-        Scene scene = new Scene(scrollPane, 500, 800);
+        Scene scene = new Scene(scrollPane, 700, 750);
         Platform.runLater(() -> {
             stage.setTitle("Profilo Genitore");
             stage.setScene(scene);

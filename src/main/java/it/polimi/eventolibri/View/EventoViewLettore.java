@@ -274,7 +274,7 @@ public class EventoViewLettore {
         refreshScalettaUI(scalettaBox, scalettaTemp);
 
         Platform.runLater(() -> {;
-            stage.setScene(new Scene(scrollPane, 700, 700));
+            stage.setScene(new Scene(scrollPane, 700, 750));
             stage.setTitle("Crea Evento");
             stage.show();
         });

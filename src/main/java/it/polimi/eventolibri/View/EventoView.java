@@ -159,7 +159,7 @@ public class EventoView {
 
         System.out.println("dalla show contenuto di messaggio errore:" + messaggioerrore);
 
-        Scene scene = new Scene(layout, 500, 800);
+        Scene scene = new Scene(layout, 700, 750);
 
         Platform.runLater(() -> {
             stage.setScene(scene);
