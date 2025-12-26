@@ -154,6 +154,11 @@ public class Controller {
     public RispostaNuovoGenitore registraNuovoGenitore(Genitore nuovoGenitore, String psw) {
         RispostaNuovoGenitore risposta = new RispostaNuovoGenitore();
         try {
+            if (utenteDAO.checkUserName(nuovoGenitore.getUserName())!=-1) {
+                risposta.setSuccesso(false);
+                risposta.setMessaggioErrore("Username già esistente. Scegliere un altro username.");
+                return risposta;
+            }
             int id = utenteDAO.creaGenitore(nuovoGenitore.getNome(), nuovoGenitore.getCognome(), nuovoGenitore.getUserName(), psw);
             if (id !=-1) {
                 nuovoGenitore.setId(id);
@@ -175,8 +180,14 @@ public class Controller {
     public RispostaNuovoLettore registraNuovoLettore(Lettore nuovoLettore, String psw) {
         RispostaNuovoLettore risposta = new RispostaNuovoLettore();
         try {
+            if (utenteDAO.checkUserName(nuovoLettore.getUserName())!=-1) {
+                risposta.setSuccesso(false);
+                risposta.setMessaggioErrore("Username già esistente. Scegliere un altro username.");
+                return risposta;
+            }
+
             int id = utenteDAO.creaLettore(nuovoLettore.getNome(), nuovoLettore.getCognome(),
-                    nuovoLettore.getUserName(), psw);
+            nuovoLettore.getUserName(), psw);
             if (id !=-1) {
                 nuovoLettore.setId(id);
                 risposta.setSuccesso(true);
@@ -197,6 +208,12 @@ public class Controller {
     public RispostaNuovoAmministratore registraNuovoAmministratore(Amministratore nuovoAmministratore, String psw) {
         RispostaNuovoAmministratore risposta = new RispostaNuovoAmministratore();
         try {
+            if (utenteDAO.checkUserName(nuovoAmministratore.getUserName())!=-1) {
+                risposta.setSuccesso(false);
+                risposta.setMessaggioErrore("Username già esistente. Scegliere un altro username.");
+                return risposta;
+            }
+
             int id = utenteDAO.creaAmministratore(nuovoAmministratore.getNome(), nuovoAmministratore.getCognome(),
                     nuovoAmministratore.getUserName(), psw);
             if (id !=-1) {

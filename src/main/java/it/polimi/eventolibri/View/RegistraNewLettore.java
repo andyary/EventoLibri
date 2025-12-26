@@ -89,7 +89,7 @@ public class RegistraNewLettore {
         scrollPane.setFitToWidth(true);
         Scene scene = new Scene(scrollPane, 700, 750);
         Platform.runLater(() -> {
-            stage.setTitle("Registra Nuovo Genitore");
+            stage.setTitle("Registra Nuovo Lettore");
             stage.setScene(scene);
             stage.show();
         });

@@ -270,7 +270,7 @@ public class Client {
             }
             else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaNuovoLettore) msg).getMessaggioErrore());
-                registraNewGenitore.mostraErrore(((RispostaNuovoLettore) msg).getMessaggioErrore());
+                registraNewLettore.mostraErrore(((RispostaNuovoLettore) msg).getMessaggioErrore());
             }
         }
 

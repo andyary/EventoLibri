@@ -107,6 +107,28 @@ public class UtenteDAO {
         }
     }
 
+    public int checkUserName (String username) throws SQLException {
+        String query = "SELECT * FROM utenti WHERE username = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setString(1, username);
+            try (ResultSet result = pstatement.executeQuery();) {
+                if (!result.isBeforeFirst()) // no risultati, non esiste utente con questo username
+                    return -1;
+                else {
+                    result.next();
+                    return result.getInt("id");
+                }
+
+            } catch (SQLException ex) {
+                System.out.println("Errore Query Check Username" + ex.getMessage());
+                return -1;
+            }
+        } catch (SQLException ex) {
+            System.out.println("Errore Query Check Username" + ex.getMessage());
+            return -1;
+        }
+    }
+
     public void cancellaGenitore(Genitore genitore) throws SQLException {
         //cancella figli di genitore
         FiglioDAO figlioDAO = new FiglioDAO(connection);
