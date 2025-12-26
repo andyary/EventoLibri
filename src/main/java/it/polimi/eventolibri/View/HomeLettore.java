@@ -68,7 +68,7 @@ public class HomeLettore {
             if (onBack != null) onBack.run();
         });
 
-        HBox topRow = new HBox(10, new Label("  Benvenuto, " + lettore.getNome() + "!          "), profiloButton, newEventoButton, backButton);
+        HBox topRow = new HBox(10, new Label("  Benvenuto, (lettore) " + lettore.getNome() + "!          "), profiloButton, newEventoButton, backButton);
         topRow.setAlignment(Pos.TOP_RIGHT);
         VBox topBar = new VBox(topRow);
         topBar.setPadding(new Insets(20));

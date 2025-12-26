@@ -152,7 +152,7 @@ public class EventoView {
             scalettaBox.getChildren().add(riga);
         }
 
-        HBox mainBtnBox = new HBox(5, new Label("  Benvenuto, " + genitore.getNome() + "!          "), backButton);
+        HBox mainBtnBox = new HBox(5, new Label("  Benvenuto, (genitore) " + genitore.getNome() + "!          "), backButton);
         mainBtnBox.setAlignment(Pos.CENTER_RIGHT);
 
         VBox layout = new VBox(15, mainBtnBox, titolo, data, luogo, capienza, iscritti, figliBox, aggiornaButton, messaggioerrore, scalettaBox);

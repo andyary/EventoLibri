@@ -1,6 +1,8 @@
 package it.polimi.eventolibri.View;
+
 import it.polimi.eventolibri.Network.Client;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -37,14 +39,19 @@ public class LoginView {
 
         TextField usernameField = new TextField();
         usernameField.setPromptText("username");
+        usernameField.setMaxWidth(320);
 
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Password");
+        passwordField.setMaxWidth(320);
 
         Label title = new Label("Login");
         title.setStyle("-fx-font-size: 22px;");
+        title.setMaxWidth(320);
+        title.setAlignment(Pos.CENTER);
 
         Button loginButton = new Button("Login");
+        loginButton.setMaxWidth(160);
         loginButton.setOnAction(e -> {
 
             String username = usernameField.getText().trim();
@@ -71,10 +78,11 @@ public class LoginView {
 
         messaggioerrore = new Label("");
         messaggioerrore.setStyle("-fx-text-fill: red;");
-
+        messaggioerrore.setMaxWidth(320);
 
         // ---------- REGISTRA NUOVO GENITORE BUTTON ----------
         Button newGenitoreButton = new Button("Registra nuovo genitore");
+        newGenitoreButton.setMaxWidth(220);
         newGenitoreButton.setOnAction(e -> {
             System.out.println("Apertura schermata registra nuovo genitore...");
             registraNewGenitore.show(stage, () -> {
@@ -83,8 +91,9 @@ public class LoginView {
 
         });
 
-        layout = new VBox(15, title, usernameField, passwordField, loginButton, messaggioerrore, newGenitoreButton);
-        layout.setAlignment(Pos.CENTER);
+        layout = new VBox(12, title, usernameField, passwordField, loginButton, messaggioerrore, newGenitoreButton);
+        layout.setAlignment(Pos.TOP_CENTER); // centra orizzontalmente ma posiziona in alto
+        layout.setPadding(new Insets(40, 40, 20, 40)); // margini: top, right, bottom, left
 
         Scene scene = new Scene(layout, 800, 750);
         stage.setScene(scene);
@@ -93,13 +102,12 @@ public class LoginView {
     }
 
     public void mostraErrore(String messaggioerrore) {
-              Platform.runLater(()->{
-           this.messaggioerrore.setText(messaggioerrore);
-       });
+        Platform.runLater(() -> {
+            this.messaggioerrore.setText(messaggioerrore);
+        });
     }
 
     public Stage getStage() {
-        // return (Stage) layout.getScene().getWindow();
         return stage;
     }
 

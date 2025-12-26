@@ -141,7 +141,7 @@ public class ProfiloGenitore {
         Button back = new Button("Indietro");
         back.setOnAction(e -> onBack.run());
         HBox backBox = new HBox(
-                new Label("  Benvenuto, " + genitore.getNome() + "!          "),
+                new Label("  Benvenuto, (genitore) " + genitore.getNome() + "!          "),
                 back);
         backBox.setAlignment(Pos.TOP_RIGHT);
         backBox.setPadding(new Insets(10));

@@ -241,7 +241,7 @@ public class EventoViewLettore {
         });
 
         HBox mainBtnBox = new HBox(5,
-                new Label("  Benvenuto, " + lettore.getNome() + "!          "),
+                new Label("  Benvenuto, (lettore) " + lettore.getNome() + "!          "),
                 salvaBtn,
                 annullaBtn
         );

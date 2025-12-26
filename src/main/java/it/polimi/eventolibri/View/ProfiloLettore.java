@@ -78,7 +78,7 @@ public class ProfiloLettore {
         // ===========================
         Button back = new Button("Indietro");
         back.setOnAction(e -> onBack.run());
-        HBox backBox = new HBox(back);
+        HBox backBox = new HBox(new Label("  Benvenuto, (lettore) " + lettore.getNome() + "!          "),back);
         backBox.setAlignment(Pos.TOP_RIGHT);
         backBox.setPadding(new Insets(10));
         // ===========================
