@@ -152,14 +152,16 @@ public class EventoView {
             scalettaBox.getChildren().add(riga);
         }
 
+        HBox mainBtnBox = new HBox(5, new Label("  Benvenuto, " + genitore.getNome() + "!          "), backButton);
+        mainBtnBox.setAlignment(Pos.CENTER_RIGHT);
 
-        VBox layout = new VBox(15, titolo, data, luogo, capienza, iscritti, figliBox, aggiornaButton, messaggioerrore, backButton, scalettaBox);
+        VBox layout = new VBox(15, mainBtnBox, titolo, data, luogo, capienza, iscritti, figliBox, aggiornaButton, messaggioerrore, scalettaBox);
         layout.setAlignment(Pos.TOP_CENTER);
         layout.setPadding(new Insets(20));
 
         System.out.println("dalla show contenuto di messaggio errore:" + messaggioerrore);
 
-        Scene scene = new Scene(layout, 700, 750);
+        Scene scene = new Scene(layout, 800, 750);
 
         Platform.runLater(() -> {
             stage.setScene(scene);

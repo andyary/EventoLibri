@@ -28,7 +28,9 @@ public class LibroLettore  implements Serializable {
     }
 
     public Lettore getLettore() {
-        return lettore;
+        if (lettore == null) return null;
+        if (lettore.getId() == 0) return null;
+        else return lettore;
     }
 
     public int getProgressivo() {

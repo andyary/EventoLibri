@@ -59,7 +59,7 @@ public class HomeAmministratore {
         Button newLettoreButton = new Button("Crea Nuovo Lettore");
         newLettoreButton.setOnAction(e -> {
             System.out.println("Apertura schermata crea nuovo Lettore...");
-            registraNewLettore.show(stage, () -> {
+            registraNewLettore.show(stage, amministratore, () -> {
                 this.show(stage, amministratore, onBack);
             });
 
@@ -68,7 +68,7 @@ public class HomeAmministratore {
         Button newAmministratoreButton = new Button("Crea Nuovo Amministratore");
         newAmministratoreButton.setOnAction(e -> {
             System.out.println("Apertura schermata crea nuovo Amministratore...");
-            registraNewAmministratore.show(stage, () -> {
+            registraNewAmministratore.show(stage, amministratore,() -> {
                 this.show(stage, amministratore, onBack);
             });
 
@@ -79,7 +79,7 @@ public class HomeAmministratore {
             if (onBack != null) onBack.run();
         });
 
-        HBox topBar = new HBox(new Label("  Benvenuto, " + amministratore.getNome() + "!          "), profiloButton, newLettoreButton, newAmministratoreButton, backButton);
+        HBox topBar = new HBox(new Label("  Benvenuto, (admin) " + amministratore.getNome() + "!          "), profiloButton, newLettoreButton, newAmministratoreButton, backButton);
         topBar.setPadding(new Insets(20));
         topBar.setAlignment(Pos.TOP_RIGHT);
 
@@ -93,7 +93,7 @@ public class HomeAmministratore {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // scroll verticale solo se serve
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        Scene scene = new Scene(scrollPane, 700, 750);
+        Scene scene = new Scene(scrollPane, 800, 750);
         Platform.runLater(() -> {;
             stage.setScene(scene);
             stage.setTitle("Home Amministratore");

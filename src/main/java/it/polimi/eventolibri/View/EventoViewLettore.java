@@ -241,6 +241,7 @@ public class EventoViewLettore {
         });
 
         HBox mainBtnBox = new HBox(5,
+                new Label("  Benvenuto, " + lettore.getNome() + "!          "),
                 salvaBtn,
                 annullaBtn
         );
@@ -274,7 +275,7 @@ public class EventoViewLettore {
         refreshScalettaUI(scalettaBox, scalettaTemp);
 
         Platform.runLater(() -> {;
-            stage.setScene(new Scene(scrollPane, 700, 750));
+            stage.setScene(new Scene(scrollPane, 800, 750));
             stage.setTitle("Crea Evento");
             stage.show();
         });
@@ -340,11 +341,7 @@ public class EventoViewLettore {
         // controllo se il lettore corrente è il creatore dell'evento
         boolean isCreator = false;
         if (evento != null && evento.getCreatore() != null && lettore != null) {
-            try {
-                isCreator = evento.getCreatore().getId() == lettore.getId();
-            } catch (Exception ignored) {
-                isCreator = evento.getCreatore().equals(lettore);
-            }
+            isCreator = evento.getCreatore().getId() == lettore.getId();
         }
 
         // menù a tendina per cambiare il lettore: mostrato solo al creatore
@@ -402,9 +399,9 @@ public class EventoViewLettore {
             // Bottone iscrivi/disiscrivi: solo se NON creatore e la riga non è già associata ad un altro lettore non null
             Button iscriviBtn = null;
             if (!isCreator) {
-                boolean rigaLiberaOPropria = (ll.getLettore() == null) || (lettore != null && ll.getLettore() != null && ll.getLettore().getId() == lettore.getId());
+                boolean rigaLiberaOPropria = (ll.getLettore() == null) || (lettore != null && (ll.getLettore() != null) && ll.getLettore().getId() == lettore.getId());
                 if (rigaLiberaOPropria) {
-                    iscriviBtn = new Button(ll.getLettore() == null ? "Iscrivi" : "Disiscrivi");
+                    iscriviBtn = new Button((ll.getLettore() == null)? "Iscrivi" : "Disiscrivi");
                     iscriviBtn.setOnAction(e -> {
                         if (ll.getLettore() == null) {
                             ll.modificaLettore(lettore);

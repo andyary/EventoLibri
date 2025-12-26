@@ -140,7 +140,9 @@ public class ProfiloGenitore {
         // ===========================
         Button back = new Button("Indietro");
         back.setOnAction(e -> onBack.run());
-        HBox backBox = new HBox(back);
+        HBox backBox = new HBox(
+                new Label("  Benvenuto, " + genitore.getNome() + "!          "),
+                back);
         backBox.setAlignment(Pos.TOP_RIGHT);
         backBox.setPadding(new Insets(10));
         // ===========================
@@ -150,7 +152,7 @@ public class ProfiloGenitore {
         contenuto.setPadding(new Insets(20));
         ScrollPane scrollPane = new ScrollPane(contenuto);
         scrollPane.setFitToWidth(true);
-        Scene scene = new Scene(scrollPane, 700, 750);
+        Scene scene = new Scene(scrollPane, 800, 750);
         Platform.runLater(() -> {
             stage.setTitle("Profilo Genitore");
             stage.setScene(scene);

@@ -88,7 +88,7 @@ public class ProfiloLettore {
         contenuto.setPadding(new Insets(20));
         ScrollPane scrollPane = new ScrollPane(contenuto);
         scrollPane.setFitToWidth(true);
-        Scene scene = new Scene(scrollPane, 700, 750);
+        Scene scene = new Scene(scrollPane, 800, 750);
         Platform.runLater(() -> {
             stage.setTitle("Profilo Lettore");
             stage.setScene(scene);

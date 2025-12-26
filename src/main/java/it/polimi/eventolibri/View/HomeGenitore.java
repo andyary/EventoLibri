@@ -139,7 +139,7 @@ public class HomeGenitore {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        Scene scene = new Scene(scrollPane, 700, 750);
+        Scene scene = new Scene(scrollPane, 800, 750);
         Platform.runLater(() -> {
             stage.setScene(scene);
             stage.setTitle("Home Genitore");

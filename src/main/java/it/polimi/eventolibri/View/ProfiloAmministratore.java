@@ -81,7 +81,7 @@ public class ProfiloAmministratore {
         // ===========================
         Button back = new Button("Indietro");
         back.setOnAction(e -> onBack.run());
-        HBox backBox = new HBox(back);
+        HBox backBox = new HBox(new Label("  Benvenuto, (admin) " + amministratore.getNome() + "!          "),back);
         backBox.setAlignment(Pos.TOP_RIGHT);
         backBox.setPadding(new Insets(10));
         // ===========================
@@ -91,7 +91,7 @@ public class ProfiloAmministratore {
         contenuto.setPadding(new Insets(20));
         ScrollPane scrollPane = new ScrollPane(contenuto);
         scrollPane.setFitToWidth(true);
-        Scene scene = new Scene(scrollPane, 700, 750);
+        Scene scene = new Scene(scrollPane, 800, 750);
         Platform.runLater(() -> {
             stage.setTitle("Profilo Amministratore");
             stage.setScene(scene);

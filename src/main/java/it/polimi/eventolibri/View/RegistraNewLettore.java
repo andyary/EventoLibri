@@ -20,14 +20,16 @@ public class RegistraNewLettore {
     private final Client client;
     private Stage stage;
     private Label messaggioerrore;
+    private Amministratore amministratore;
 
     public RegistraNewLettore(Client client) {
         this.client = client;
         this.messaggioerrore = new Label("");
     }
 
-    public void show(Stage stage, Runnable onBack) {
+    public void show(Stage stage, Amministratore amministratore, Runnable onBack) {
         this.stage = stage;
+        this.amministratore = amministratore;
         // ===========================
         // TITOLO
         // ===========================
@@ -77,7 +79,7 @@ public class RegistraNewLettore {
         // ===========================
         Button back = new Button("Indietro");
         back.setOnAction(e -> onBack.run());
-        HBox backBox = new HBox(back);
+        HBox backBox = new HBox(new Label("  Benvenuto, (admin) " + amministratore.getNome() + "!          "), back);
         backBox.setAlignment(Pos.TOP_RIGHT);
         backBox.setPadding(new Insets(10));
         // ===========================
@@ -87,7 +89,7 @@ public class RegistraNewLettore {
         contenuto.setPadding(new Insets(20));
         ScrollPane scrollPane = new ScrollPane(contenuto);
         scrollPane.setFitToWidth(true);
-        Scene scene = new Scene(scrollPane, 700, 750);
+        Scene scene = new Scene(scrollPane, 800, 750);
         Platform.runLater(() -> {
             stage.setTitle("Registra Nuovo Lettore");
             stage.setScene(scene);
