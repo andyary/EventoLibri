@@ -22,4 +22,23 @@ public class Recensione  implements Serializable {
         this.libro = libro;
     }
 
+    public String getTesto() {
+        return testo;
+    }
+
+    public Genitore getGenitore() {
+        return genitore;
+    }
+
+    public void setGenitore(Genitore genitore) {
+        this.genitore = genitore;
+    }
+
+    public void setTesto(String testo) {
+        this.testo = testo;
+    }
+
+    public void setLibro(Libro libro) {
+        this.libro = libro;
+    }
 }

@@ -1,9 +1,8 @@
 package it.polimi.eventolibri.View;
 
+import it.polimi.eventolibri.Message.RichiestaLettoriELuoghiELibri;
 import it.polimi.eventolibri.Message.RichiestaNextEventi;
-import it.polimi.eventolibri.Model.Evento;
-import it.polimi.eventolibri.Model.Figlio;
-import it.polimi.eventolibri.Model.Genitore;
+import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.Network.Client;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -19,6 +18,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,10 +36,21 @@ public class HomeGenitore {
     private ProfiloGenitore profiloGenitore;
     private Runnable onBack;
 
-    public HomeGenitore(Client client, EventoView eventoView, ProfiloGenitore profiloGenitore) {
+    private LibroDetailedView libroDetailedView;
+    private ArrayList<Libro> elencoLibri = new ArrayList<>();
+    private Label messaggioerrore;
+
+
+    public HomeGenitore(Client client, EventoView eventoView, ProfiloGenitore profiloGenitore, LibroDetailedView libroDetailedView) {
         this.eventoView = eventoView;
         this.client = client;
         this.profiloGenitore = profiloGenitore;
+        this.libroDetailedView = libroDetailedView;
+        this.messaggioerrore = new Label("");
+        this.messaggioerrore.setStyle("-fx-text-fill: red;");
+    }
+    public void setElencoLibri(ArrayList<Libro> elencoLibri) {
+        this.elencoLibri = elencoLibri == null ? new ArrayList<>() : elencoLibri;
     }
 
     public void show(Stage stage, Genitore genitore, ArrayList<Evento> eventiProssimi, Runnable onBack) {
@@ -47,6 +58,13 @@ public class HomeGenitore {
         this.genitore = genitore;
         this.eventiProssimi = eventiProssimi != null ? eventiProssimi : new ArrayList<>();
         this.onBack = onBack;
+
+        RichiestaLettoriELuoghiELibri richiestaLettoriELuoghiELibri = new RichiestaLettoriELuoghiELibri();
+        try {
+            client.sendMessage(richiestaLettoriELuoghiELibri);
+        } catch (IOException e) {
+            System.out.println("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage());
+        }
 
         // ---------- TOP BAR CON PROFILO ----------
         Button profiloButton = new Button("Profilo e figli");
@@ -62,9 +80,45 @@ public class HomeGenitore {
             if (onBack != null) onBack.run();
         });
 
-        HBox topBar = new HBox(new Label("  Benvenuto, (genitore) " + genitore.getNome() + "!          "), profiloButton, backButton);
+        Label libroSelezionatoLabel = new Label("Seleziona libro (recensioni)");
+        Button scegliLibroBtn = new Button("Scegli libro");
+        final Libro[] libroSelezionato = new Libro[1];
+
+        scegliLibroBtn.setOnAction(e -> {
+            messaggioerrore.setText("");
+            LibroView dialog = new LibroView();
+            Libro libro = dialog.show(stage, elencoLibri);
+            if (libro != null) {
+                libroSelezionatoLabel.setText(
+                        libro.getTitolo() + " (" + libro.getTempoLettura() + " min)"
+                );
+                libroSelezionato[0] = libro;
+                // recupera recensioni libro
+                // recupera recensibilità
+                // apri dettaglio libro
+                libroDetailedView.show(
+                        stage,
+                        libro,
+                        null, // recensioni (da caricare dal server)
+                        genitore,
+                        null, // recensibilità (da caricare dal server)
+                        () -> {
+                            this.show(stage, genitore, this.eventiProssimi, onBack);
+                        },
+                        null,
+                        null
+                );
+            }
+        });
+
+
+        HBox topBar = new HBox(new Label("  Benvenuto, (genitore) " + genitore.getNome() + "!          "), profiloButton, scegliLibroBtn, backButton);
         topBar.setPadding(new Insets(20));
         topBar.setAlignment(Pos.TOP_RIGHT);
+
+        VBox topBox = new VBox(topBar, messaggioerrore);
+        topBox.setAlignment(Pos.CENTER);
+
 
         // formatter per colonne
         DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -131,7 +185,7 @@ public class HomeGenitore {
 
         // ---------- LAYOUT FINALE ----------
         BorderPane root = new BorderPane();
-        root.setTop(topBar);
+        root.setTop(topBox);
         root.setCenter(centro);
 
         ScrollPane scrollPane = new ScrollPane(root);
@@ -238,6 +292,16 @@ public class HomeGenitore {
         }
 
         return table;
+    }
+
+    public void aggiornaLibri(ArrayList<Libro> elencolibri) {
+        this.elencoLibri = elencolibri;
+    }
+
+    public void mostraErrore(String msgerrore) {
+        Platform.runLater(()->{
+            this.messaggioerrore.setText(msgerrore);
+        });
     }
 
 }

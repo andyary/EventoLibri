@@ -18,7 +18,8 @@ public class Window extends Application {
         ProfiloGenitore profiloGenitore = new ProfiloGenitore(client);
         ProfiloLettore profiloLettore = new ProfiloLettore(client);
         ProfiloAmministratore profiloAmministratore = new ProfiloAmministratore(client);
-        HomeGenitore homeGenitore = new HomeGenitore(client, eventoView, profiloGenitore);
+        LibroDetailedView libroDetailedView = new LibroDetailedView(client);
+        HomeGenitore homeGenitore = new HomeGenitore(client, eventoView, profiloGenitore, libroDetailedView);
         HomeLettore homeLettore = new HomeLettore(client, eventoViewLettore, profiloLettore);
         HomeAmministratore homeAmministratore = new HomeAmministratore(client, profiloAmministratore, registraNewLettore, registraNewAmministratore);
         LoginView loginView = new LoginView(client, registraNewGenitore, homeGenitore, homeLettore, homeAmministratore);

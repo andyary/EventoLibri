@@ -26,7 +26,7 @@ public class LibroDAO {
                     return null;
                 else {
                     result.next();
-                    Libro libro = new Libro(result.getString("titolo"), result.getInt("tempoLettura"), result.getString("link"), result.getString("autore"), result.getInt("id"));
+                    Libro libro = new Libro(result.getString("titolo"), result.getInt("tempoLettura"), result.getString("link"), result.getString("autore"), result.getInt("id"), result.getString("isbn"));
                     RecensioneDAO recensioneDAO = new RecensioneDAO(connection);
                     libro.aggiungiRecensioni(recensioneDAO.getRecensione(libro));
                     return libro;

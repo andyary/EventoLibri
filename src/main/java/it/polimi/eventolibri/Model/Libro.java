@@ -10,6 +10,7 @@ public class Libro  implements Serializable {
 	private String link;
 	private String autore;
 	private int id;
+    private String isbn;
 	private ArrayList<Recensione> recensioni;;
 
     public Libro(String titolo, int tempoLettura, String link, String autore, int id, ArrayList<Recensione> recensioni) {
@@ -23,6 +24,26 @@ public class Libro  implements Serializable {
 
     public Libro(String titolo, int tempoLettura, String link, String autore, int id) {
         this.titolo = titolo;
+        this.tempoLettura = tempoLettura;
+        this.link = link;
+        this.autore = autore;
+        this.id = id;
+        this.recensioni = new ArrayList<>();
+    }
+
+    public Libro(String titolo, int tempoLettura, String link, String autore, int id, String isbn, ArrayList<Recensione> recensioni) {
+        this.titolo = titolo;
+        this.isbn = isbn;
+        this.tempoLettura = tempoLettura;
+        this.link = link;
+        this.autore = autore;
+        this.id = id;
+        this.recensioni = recensioni;
+    }
+
+    public Libro(String titolo, int tempoLettura, String link, String autore, int id, String isbn) {
+        this.titolo = titolo;
+        this.isbn = isbn;
         this.tempoLettura = tempoLettura;
         this.link = link;
         this.autore = autore;
@@ -51,5 +72,17 @@ public class Libro  implements Serializable {
 
     public String getTitolo() {
         return titolo;
+    }
+
+    public String getAutore() {
+        return autore;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public String getLink() {
+        return link;
     }
 }
