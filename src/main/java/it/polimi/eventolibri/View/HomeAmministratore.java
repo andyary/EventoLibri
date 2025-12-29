@@ -85,6 +85,7 @@ public class HomeAmministratore {
             client.sendMessage(richiestaLettoriELuoghiELibri);
         } catch (IOException e) {
             System.out.println("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage());
+            messaggioerrore.setText("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage());
         }
 
 

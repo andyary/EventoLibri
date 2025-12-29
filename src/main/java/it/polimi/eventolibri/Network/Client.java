@@ -257,11 +257,13 @@ public class Client {
                         ((RispostaLettoriELuoghiELibri) msg).getLuoghi(), ((RispostaLettoriELuoghiELibri) msg).getElencolibri());
                 homeGenitore.aggiornaLibri(((RispostaLettoriELuoghiELibri) msg).getElencolibri());
                 homeAmministratore.aggiornaLibri(((RispostaLettoriELuoghiELibri) msg).getElencolibri());
+                homeLettore.aggiornaLibri(((RispostaLettoriELuoghiELibri) msg).getElencolibri());
             } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaLettoriELuoghiELibri) msg).getMessaggioerrore());
                 eventoViewLettore.mostraErrore(((RispostaLettoriELuoghiELibri) msg).getMessaggioerrore());
                 homeGenitore.mostraErrore(((RispostaLettoriELuoghiELibri) msg).getMessaggioerrore());
                 homeAmministratore.mostraErrore(((RispostaLettoriELuoghiELibri) msg).getMessaggioerrore());
+                homeLettore.mostraErrore(((RispostaLettoriELuoghiELibri) msg).getMessaggioerrore());
             }
 
         }
@@ -272,14 +274,18 @@ public class Client {
                 homeGenitore.setRecensioni(((RispostaRecensioniERecensibilita) msg).getRecensioni());
                 homeAmministratore.setRecensibile(((RispostaRecensioniERecensibilita) msg).isRecensibile());
                 homeAmministratore.setRecensioni(((RispostaRecensioniERecensibilita) msg).getRecensioni());
+                homeLettore.setRecensibile(((RispostaRecensioniERecensibilita) msg).isRecensibile());
+                homeLettore.setRecensioni(((RispostaRecensioniERecensibilita) msg).getRecensioni());
                 // Aggiorna le recensioni e la recensibilità nella vista
             } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaRecensioniERecensibilita) msg).getMessaggioerrore());
                 homeGenitore.mostraErrore(((RispostaRecensioniERecensibilita) msg).getMessaggioerrore());
                 homeAmministratore.mostraErrore(((RispostaRecensioniERecensibilita) msg).getMessaggioerrore());
+                homeLettore.mostraErrore(((RispostaRecensioniERecensibilita) msg).getMessaggioerrore());
             }
             homeGenitore.setAttendi(false);
             homeAmministratore.setAttendi(false);
+            homeLettore.setAttendi(false);
         }
 
         if (msg instanceof RispostaNuovoLettore) {
@@ -397,7 +403,6 @@ public class Client {
                 libroDetailedView.mostraErrore2(((RispostaCancellaRecensione) msg).getMessaggioErrore());
             }
             libroDetailedView.setAttendi(false);
-
         }
 
 

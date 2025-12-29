@@ -70,6 +70,10 @@ public class HomeGenitore {
         if (this.recensioni != null) this.recensioni.add(recensione);
     }
 
+    public void delRecensione(Recensione recensione) {
+        if (this.recensioni != null) this.recensioni.remove(recensione);
+    }
+
     public void setAttendi(boolean attendi) {
         this.attendi = attendi;
     }
@@ -86,6 +90,7 @@ public class HomeGenitore {
             client.sendMessage(richiestaLettoriELuoghiELibri);
         } catch (IOException e) {
             System.out.println("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage());
+            messaggioerrore.setText("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage());
         }
 
         // ---------- TOP BAR CON PROFILO ----------

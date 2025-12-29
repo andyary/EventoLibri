@@ -1,8 +1,12 @@
 package it.polimi.eventolibri.View;
 
+import it.polimi.eventolibri.Message.RichiestaLettoriELuoghiELibri;
 import it.polimi.eventolibri.Message.RichiestaNextEventi;
+import it.polimi.eventolibri.Message.RichiestaRecensioniERecensibilita;
 import it.polimi.eventolibri.Model.Evento;
 import it.polimi.eventolibri.Model.Lettore;
+import it.polimi.eventolibri.Model.Libro;
+import it.polimi.eventolibri.Model.Recensione;
 import it.polimi.eventolibri.Network.Client;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -18,6 +22,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,17 +39,63 @@ public class HomeLettore {
     private ProfiloLettore profiloLettore;
     private Runnable onBack;
 
-    public HomeLettore(Client client, EventoViewLettore eventoView, ProfiloLettore profiloLettore) {
+    private LibroDetailedView libroDetailedView;
+    private ArrayList<Libro> elencoLibri = new ArrayList<>();
+    private boolean recensibile;
+    private ArrayList<Recensione> recensioni = new ArrayList<>(); // da caricare dal server
+    private boolean attendi;
+
+    private Label messaggioerrore;
+
+    public HomeLettore(Client client, EventoViewLettore eventoView, ProfiloLettore profiloLettore, LibroDetailedView libroDetailedView) {
         this.client = client;
         this.eventoView = eventoView;
         this.profiloLettore = profiloLettore;
+        this.libroDetailedView = libroDetailedView;
+        this.messaggioerrore = new Label("");
+        this.messaggioerrore.setStyle("-fx-text-fill: red;");
     }
+
+    public void setElencoLibri(ArrayList<Libro> elencoLibri) {
+        this.elencoLibri = elencoLibri == null ? new ArrayList<>() : elencoLibri;
+    }
+
+    public void setRecensibile(boolean recensibile) {
+        this.recensibile = recensibile;
+    }
+
+    public void setRecensioni(ArrayList<Recensione> recensioni) {
+        this.recensioni = recensioni;
+    }
+
+    public void addRecensione(Recensione recensione) {
+        if (this.recensioni != null) this.recensioni.add(recensione);
+    }
+
+    public void delRecensione(Recensione recensione) {
+        if (this.recensioni != null) this.recensioni.remove(recensione);
+    }
+
+    public void setAttendi(boolean attendi) {
+        this.attendi = attendi;
+    }
+
 
     public void show(Stage stage, Lettore lettore, ArrayList<Evento> eventiProssimi, Runnable onBack) {
         this.stage = stage;
         this.lettore = lettore;
         this.eventiProssimi = eventiProssimi != null ? eventiProssimi : new ArrayList<>();
         this.onBack = onBack;
+
+        RichiestaLettoriELuoghiELibri richiestaLettoriELuoghiELibri = new RichiestaLettoriELuoghiELibri();
+        try {
+            client.sendMessage(richiestaLettoriELuoghiELibri);
+        } catch (IOException e) {
+            System.out.println("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage());
+            messaggioerrore.setText("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage());
+        }
+
+
 
         // ---------- TOP BAR CON PROFILO ----------
         Button profiloButton = new Button("Profilo lettore");
@@ -68,11 +119,59 @@ public class HomeLettore {
             if (onBack != null) onBack.run();
         });
 
-        HBox topRow = new HBox(10, new Label("  Benvenuto, (lettore) " + lettore.getNome() + "!          "), profiloButton, newEventoButton, backButton);
+        Label libroSelezionatoLabel = new Label("Seleziona libro (recensioni)");
+        Button scegliLibroBtn = new Button("Scegli libro");
+        final Libro[] libroSelezionato = new Libro[1];
+
+        scegliLibroBtn.setOnAction(e -> {
+            messaggioerrore.setText("");
+            LibroView dialog = new LibroView();
+            Libro libro = dialog.show(stage, elencoLibri);
+            if (libro != null) {
+                libroSelezionatoLabel.setText(
+                        libro.getTitolo() + " (" + libro.getTempoLettura() + " min)"
+                );
+                libroSelezionato[0] = libro;
+                // recupera recensioni libro
+                recensioni.clear();
+                recensibile = false;
+
+                // recupera recensibilità
+                RichiestaRecensioniERecensibilita richiesta = new RichiestaRecensioniERecensibilita(libro, lettore);
+                try {
+                    client.sendMessage(richiesta);
+                } catch (IOException ex) {
+                    messaggioerrore.setText("Errore nell'invio della richiesta recensioni e recensibilità: " + ex.getMessage());
+                }
+
+                this.attendi = true;
+                while (attendi) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                        System.out.println("Errore attesa recensioni: " + ex.getMessage());
+                    }
+                };
+
+                // apri dettaglio libro
+                libroDetailedView.show(
+                        stage,
+                        libroSelezionato[0],
+                        recensioni,
+                        lettore,
+                        recensibile,
+                        () -> {
+                            this.show(stage, lettore, this.eventiProssimi, onBack);
+                        }
+                );
+            }
+        });
+
+        HBox topRow = new HBox(10, new Label("  Benvenuto, (lettore) " + lettore.getNome() + "!          "), profiloButton, newEventoButton, scegliLibroBtn ,backButton);
         topRow.setAlignment(Pos.TOP_RIGHT);
-        VBox topBar = new VBox(topRow);
+        VBox topBar = new VBox(topRow, messaggioerrore);
         topBar.setPadding(new Insets(20));
-        topBar.setAlignment(Pos.TOP_RIGHT);
+        topBar.setAlignment(Pos.CENTER);
 
         // formatter per colonne
         DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -247,6 +346,16 @@ public class HomeLettore {
         }
 
         return table;
+    }
+
+    public void aggiornaLibri(ArrayList<Libro> elencolibri) {
+        this.elencoLibri = elencolibri;
+    }
+
+    public void mostraErrore(String msgerrore) {
+        Platform.runLater(()->{
+            this.messaggioerrore.setText(msgerrore);
+        });
     }
 
 }
