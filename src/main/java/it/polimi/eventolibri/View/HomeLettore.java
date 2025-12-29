@@ -311,12 +311,23 @@ public class HomeLettore {
         oraFineCol.setMaxWidth(90);
         oraFineCol.setStyle("-fx-alignment: CENTER;");
 
+        TableColumn<Evento, String> luogoCol = new TableColumn<>("Luogo evento");
+        luogoCol.setCellValueFactory(cell -> {
+            Evento ev = cell.getValue();
+            String val = (ev != null && ev.getLuogo() != null) ? ev.getLuogo().getNome() : "";
+            return new SimpleStringProperty(val);
+        });
+        luogoCol.setPrefWidth(70);
+        luogoCol.setMinWidth(50);
+        luogoCol.setMaxWidth(90);
+        luogoCol.setSortable(true);
+
         TableColumn<Evento, String> titoloCol = new TableColumn<>("Titolo evento");
         titoloCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue() != null ? cell.getValue().getNome() : ""));
         titoloCol.setSortable(true);
         // titoloCol rimane flessibile: non impostare maxWidth in modo che occupi lo spazio residuo
 
-        table.getColumns().addAll(dataCol, oraInizioCol, oraFineCol, titoloCol);
+        table.getColumns().addAll(dataCol, oraInizioCol, oraFineCol, luogoCol,titoloCol);
 
         ObservableList<Evento> items = FXCollections.observableArrayList(eventi);
         table.setItems(items);
