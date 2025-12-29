@@ -5,7 +5,6 @@ import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.Model.DAO.*;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -242,6 +241,20 @@ public class Controller {
             risposta.setSuccesso(true);
         } catch (Exception e) {
             risposta.setSuccesso(false);
+            e.printStackTrace();
+        }
+        return risposta;
+    }
+
+    public RispostaRecensioniERecensibilita richiestaRecensioniERecensibilita(Libro libro, Utente utente) {
+        RispostaRecensioniERecensibilita risposta = new RispostaRecensioniERecensibilita();
+        try {
+            risposta.setRecensioni(recensioneDAO.getRecensione(libro));
+            risposta.setRecensibile(recensioneDAO.getRecensibilita(libro, utente));
+            risposta.setSuccesso(true);
+        } catch (Exception e) {
+            risposta.setSuccesso(false);
+            risposta.setMessaggioerrore("Errore richiesta al server." + e.getMessage());
             e.printStackTrace();
         }
         return risposta;

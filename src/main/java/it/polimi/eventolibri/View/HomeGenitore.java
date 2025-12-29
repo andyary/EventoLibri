@@ -2,6 +2,7 @@ package it.polimi.eventolibri.View;
 
 import it.polimi.eventolibri.Message.RichiestaLettoriELuoghiELibri;
 import it.polimi.eventolibri.Message.RichiestaNextEventi;
+import it.polimi.eventolibri.Message.RichiestaRecensioniERecensibilita;
 import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.Network.Client;
 import javafx.application.Platform;
@@ -38,7 +39,10 @@ public class HomeGenitore {
 
     private LibroDetailedView libroDetailedView;
     private ArrayList<Libro> elencoLibri = new ArrayList<>();
+    private boolean recensibile;
+    private ArrayList<Recensione> recensioni = new ArrayList<>(); // da caricare dal server
     private Label messaggioerrore;
+    private boolean attendi;
 
 
     public HomeGenitore(Client client, EventoView eventoView, ProfiloGenitore profiloGenitore, LibroDetailedView libroDetailedView) {
@@ -53,11 +57,24 @@ public class HomeGenitore {
         this.elencoLibri = elencoLibri == null ? new ArrayList<>() : elencoLibri;
     }
 
+    public void setRecensibile(boolean recensibile) {
+        this.recensibile = recensibile;
+    }
+
+    public void setRecensioni(ArrayList<Recensione> recensioni) {
+        this.recensioni = recensioni;
+    }
+
+    public void setAttendi(boolean attendi) {
+        this.attendi = attendi;
+    }
+
     public void show(Stage stage, Genitore genitore, ArrayList<Evento> eventiProssimi, Runnable onBack) {
         this.stage = stage;
         this.genitore = genitore;
         this.eventiProssimi = eventiProssimi != null ? eventiProssimi : new ArrayList<>();
         this.onBack = onBack;
+
 
         RichiestaLettoriELuoghiELibri richiestaLettoriELuoghiELibri = new RichiestaLettoriELuoghiELibri();
         try {
@@ -94,19 +111,30 @@ public class HomeGenitore {
                 );
                 libroSelezionato[0] = libro;
                 // recupera recensioni libro
+                recensioni.clear();
+                recensibile = false;
+
                 // recupera recensibilità
+                RichiestaRecensioniERecensibilita richiesta = new RichiestaRecensioniERecensibilita(libro, genitore);
+                try {
+                    client.sendMessage(richiesta);
+                } catch (IOException ex) {
+                    messaggioerrore.setText("Errore nell'invio della richiesta recensioni e recensibilità: " + ex.getMessage());
+                }
+
+                this.attendi = true;
+                while (attendi) {};
+
                 // apri dettaglio libro
                 libroDetailedView.show(
                         stage,
-                        libro,
-                        null, // recensioni (da caricare dal server)
+                        libroSelezionato[0],
+                        recensioni,
                         genitore,
-                        null, // recensibilità (da caricare dal server)
+                        recensibile,
                         () -> {
                             this.show(stage, genitore, this.eventiProssimi, onBack);
-                        },
-                        null,
-                        null
+                        }
                 );
             }
         });

@@ -266,6 +266,19 @@ public class Client {
 
         }
 
+        if (msg instanceof RispostaRecensioniERecensibilita) {
+            if (((RispostaRecensioniERecensibilita) msg).isSuccesso()) {
+                homeGenitore.setRecensibile(((RispostaRecensioniERecensibilita) msg).isRecensibile());
+                homeGenitore.setRecensioni(((RispostaRecensioniERecensibilita) msg).getRecensioni());
+                // Aggiorna le recensioni e la recensibilità nella vista
+            }
+            else {
+                System.out.println("Messaggio di errore ricevuto : " + ((RispostaRecensioniERecensibilita) msg).getMessaggioerrore());
+                homeGenitore.mostraErrore(((RispostaRecensioniERecensibilita) msg).getMessaggioerrore());
+            }
+            homeGenitore.setAttendi(false);
+        }
+
         if (msg instanceof RispostaNuovoLettore) {
             if (((RispostaNuovoLettore) msg).isSuccesso()) {
                 registraNewLettore.mostraSuccesso("Nuovo lettore registrato!");

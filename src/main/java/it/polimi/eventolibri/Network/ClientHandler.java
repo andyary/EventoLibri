@@ -152,6 +152,16 @@ public class ClientHandler extends Thread {
             out.reset();
         }
 
+        if (msg instanceof RichiestaRecensioniERecensibilita) {
+            RispostaRecensioniERecensibilita risposta = controller.richiestaRecensioniERecensibilita(
+                    ((RichiestaRecensioniERecensibilita) msg).getLibro(),
+                    ((RichiestaRecensioniERecensibilita) msg).getUtente()
+            );
+            out.writeObject(risposta);
+            out.flush();
+            out.reset();
+        }
+
         // QUI CONTINUI AD AGGIUNGERE I MESSAGGI
     }
 

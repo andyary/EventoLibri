@@ -4,7 +4,6 @@ import it.polimi.eventolibri.Model.*;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class RecensioneDAO {
 
@@ -22,12 +21,13 @@ public class RecensioneDAO {
                 if (!result.isBeforeFirst()) // no risultati, non esiste utente con queste credenziali
                     return recensioni;
                 else {
-                    result.next();
-                    CreaUtente<Genitore> creaGenitore = new CreaGenitore();
-                    Genitore genitore = creaGenitore.nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
-                    FiglioDAO figlioDAO = new FiglioDAO(connection);
-                    genitore.setFigli(figlioDAO.getFigli(genitore));
-                    recensioni.add(new Recensione(result.getInt("id"), genitore, result.getString("testo"), libro));
+                    while (result.next()) {
+                        CreaUtente<Genitore> creaGenitore = new CreaGenitore();
+                        Genitore genitore = creaGenitore.nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
+                        FiglioDAO figlioDAO = new FiglioDAO(connection);
+                        genitore.setFigli(figlioDAO.getFigli(genitore));
+                        recensioni.add(new Recensione(result.getInt("id"), genitore, result.getString("testo"), libro));
+                    }
                     return recensioni;
                 }
             }catch (SQLException ex) {
@@ -64,4 +64,32 @@ public class RecensioneDAO {
         }
     }
 
+    public boolean getRecensibilita(Libro libro, Utente utente) {
+        if (!(utente instanceof Genitore)) return false;
+        Genitore genitore = (Genitore) utente;
+        String query = "" +
+                "SELECT * FROM iscrizioni i " +
+                "JOIN eventi e ON i.id_evento = e.id " +
+                "JOIN figli f ON i.id_figlio = f.id " +
+                "JOIN utenti u ON f.id_genitore = u.id " +
+                "JOIN librolettore ll ON e.id = ll.id_evento " +
+                "WHERE u.id = ? AND ll.id_libro = ?  AND e.data < current_date()";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, genitore.getId());
+            pstatement.setInt(2, libro.getId());
+            try (ResultSet result = pstatement.executeQuery();) {
+                if (result.next())
+                    return true;
+                else {
+                    return false;
+                }
+            }catch (SQLException ex) {
+                System.out.println("Errore recensioneDao.getRecensibilità: " + ex.getMessage());
+                return false;
+            }
+        }catch (SQLException ex) {
+            System.out.println("Errore recensioneDao.getRecensibilità: " + ex.getMessage());
+            return false;
+        }
+    }
 }
