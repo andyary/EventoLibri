@@ -335,4 +335,25 @@ public class Controller {
         }
         return risposta;
     }
+
+    public RispostaAggiungiRecensione aggiungiRecensione(Recensione recensione) {
+        RispostaAggiungiRecensione risposta = new RispostaAggiungiRecensione();
+        try {
+            int id = recensioneDAO.creaRecensione(recensione.getTesto(), recensione.getLibro(), recensione.getGenitore());
+            if (id !=-1) {
+                recensione.setId(id);
+                risposta.setSuccesso(true);
+                risposta.setRecensione(recensione);
+            }
+            else {
+                risposta.setSuccesso(false);
+                risposta.setMessaggioErrore("Errore creazione nuova recensione su DB");
+            }
+        } catch (Exception e) {
+            risposta.setSuccesso(false);
+            risposta.setMessaggioErrore("Errore richiesta nuova recensione al server." + e.getMessage());
+            e.printStackTrace();
+        }
+        return risposta;
+    }
 }

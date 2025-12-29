@@ -30,6 +30,10 @@ public class Recensione  implements Serializable {
         return genitore;
     }
 
+    public Libro getLibro() {
+        return libro;
+    }
+
     public void setGenitore(Genitore genitore) {
         this.genitore = genitore;
     }
@@ -40,5 +44,9 @@ public class Recensione  implements Serializable {
 
     public void setLibro(Libro libro) {
         this.libro = libro;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

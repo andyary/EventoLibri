@@ -1,5 +1,6 @@
 package it.polimi.eventolibri.View;
 
+import it.polimi.eventolibri.Message.RichiestaAggiungiRecensione;
 import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.Network.Client;
 import javafx.application.Platform;
@@ -22,6 +23,8 @@ import java.util.function.Consumer;
 
 public class LibroDetailedView {
     private final Client client;
+    private Label messaggioerrore;
+    private ArrayList<Recensione> recensioniAggiornate = new ArrayList<>();
 
     public LibroDetailedView(Client client) {
         this.client = client;
@@ -46,6 +49,14 @@ public class LibroDetailedView {
                      Boolean recensibile,
                      Runnable onBack) {
 
+        messaggioerrore = new Label(" ");
+        messaggioerrore.setStyle("-fx-text-fill: red;");
+
+        recensioniAggiornate.clear();
+        for (Recensione recensione : recensioni) {
+            recensioniAggiornate.add(recensione);
+        }
+
         // decidere permessi basati sulla gerarchia di Utente
         boolean canAdd = false;
         boolean canDelete = false;
@@ -59,8 +70,7 @@ public class LibroDetailedView {
             canDelete = false;
         }
         if (utente instanceof Genitore) {
-            //canAdd = recensibile;
-            canAdd = true;
+            canAdd = recensibile;
             canDelete = false;
         }
 
@@ -82,13 +92,13 @@ public class LibroDetailedView {
         Label autore = new Label("Autore: " + libro.getAutore());
         Label tempo = new Label("Tempo di lettura: " + libro.getTempoLettura() + " min");
         Label isbn = new Label("ISBN: " + libro.getIsbn());
-        Hyperlink link = new Hyperlink(libro.getLink() == null ? "" : libro.getLink());
-        link.setOnAction(ev -> {
-            if (link.getText() == null || link.getText().isBlank()) return;
+        Hyperlink hlink = new Hyperlink(libro.getLink() == null ? "" : libro.getLink());
+        hlink.setOnAction(ev -> {
+            if (hlink.getText() == null || hlink.getText().isBlank()) return;
             try {
-                if (Desktop.isDesktopSupported()) Desktop.getDesktop().browse(new URI(link.getText()));
+                if (Desktop.isDesktopSupported()) Desktop.getDesktop().browse(new URI(hlink.getText()));
             } catch (IOException | URISyntaxException ex) {
-                // TODO Gestire messaggio errore in UI
+                messaggioerrore.setText("Impossibile aprire il link");
                 System.out.println("Impossibile aprire il link: " + ex.getMessage());
             }
         });
@@ -98,21 +108,33 @@ public class LibroDetailedView {
         recLabel += (" , ");
         recLabel += (canDelete ? "puoi cancellare" : "non puoi cancellare");
 
-        VBox dettagliBox = new VBox(8, titolo, autore, tempo, isbn, new Label("Link:"), link, new Label(recLabel));
+        Label linkLabel = new Label("Link: ");
+        HBox link = new HBox(linkLabel, hlink);
+        link.setAlignment(Pos.CENTER_LEFT);
+
+        VBox dettagliBox = new VBox(8, titolo, autore, tempo, isbn, link, new Label(recLabel));
         dettagliBox.setPadding(new Insets(10));
 
         Button vediRecensioniBtn = new Button("Vedi recensioni");
         boolean finalCanDelete = canDelete;
-        vediRecensioniBtn.setOnAction(ev -> showRecensioniWindow(s, recensioni, finalCanDelete));
+        vediRecensioniBtn.setOnAction(ev -> showRecensioniWindow(s, recensioniAggiornate, finalCanDelete));
 
-        VBox centerBox = new VBox(10, dettagliBox, vediRecensioniBtn);
+
+        VBox centerBox = new VBox(10, dettagliBox);
         centerBox.setPadding(new Insets(10));
+
+        HBox buttonsBox = new HBox(10);
+        buttonsBox.setAlignment(Pos.CENTER);
+        buttonsBox.getChildren().add(vediRecensioniBtn);
 
         if (canAdd) {
             Button aggiungiRecBtn = new Button("Aggiungi recensione");
             aggiungiRecBtn.setOnAction(ev -> showAggiungiRecensioneDialog(s, libro, utente));
-            centerBox.getChildren().add(aggiungiRecBtn);
+            buttonsBox.getChildren().add(aggiungiRecBtn);
         }
+
+        centerBox.getChildren().add(buttonsBox);
+        centerBox.getChildren().add(messaggioerrore);
 
         BorderPane root = new BorderPane();
         root.setTop(topBar);
@@ -134,6 +156,15 @@ public class LibroDetailedView {
         VBox box = new VBox(8);
         box.setPadding(new Insets(10));
 
+        Button backBtn = new Button("Indietro");
+        backBtn.setOnAction(ev -> {
+            rStage.close();
+        });
+
+        HBox topBar = new HBox(backBtn);
+        topBar.setAlignment(Pos.CENTER_RIGHT);
+        box.getChildren().add(topBar);
+
         if (recensioni == null || recensioni.isEmpty()) {
             box.getChildren().add(new Label("Nessuna recensione disponibile"));
         } else {
@@ -141,8 +172,9 @@ public class LibroDetailedView {
                 Label testo = new Label("Testo: " + (r.getTesto() != null ? r.getTesto() : ""));
                 testo.setWrapText(true);
                 String autore = (r.getGenitore() != null) ? ((r.getGenitore().getNome()) + " " + r.getGenitore().getCognome()) : "autore sconosciuto";
-                Label autoreLbl = new Label("Di: " + autore);
-                VBox v = new VBox(4, testo, autoreLbl);
+                Label autoreLbl = new Label("Autore: " + autore);
+                VBox v = new VBox(4,testo, autoreLbl);
+                v.setMaxWidth(Double.MAX_VALUE);
                 if (canDelete) {
                     Button del = new Button("Elimina");
                     del.setOnAction(ev -> {
@@ -198,6 +230,12 @@ public class LibroDetailedView {
             r.setLibro(libro);
             r.setGenitore((Genitore) utente);
             // logica messaggio da aggiorngere
+            RichiestaAggiungiRecensione richiesta = new RichiestaAggiungiRecensione(r);
+            try {
+                client.sendMessage(richiesta);
+            } catch (IOException e) {
+                System.out.println("Errore invio recensione: " + e.getMessage());
+            }
             d.close();
         });
 
@@ -212,6 +250,16 @@ public class LibroDetailedView {
         Scene sc = new Scene(root, 520, 320);
         d.setScene(sc);
         d.show();
+    }
+
+    public void mostraErrore(String msgerrore) {
+        Platform.runLater(()->{
+            this.messaggioerrore.setText(msgerrore);
+        });
+    }
+
+    public void aggiornaRecensioni(Recensione nuovarecensione) {
+        recensioniAggiornate.add(nuovarecensione);
     }
 }
 

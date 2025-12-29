@@ -65,6 +65,11 @@ public class HomeGenitore {
         this.recensioni = recensioni;
     }
 
+    public void addRecensione(Recensione recensione) {
+        if (this.recensioni == null) this.recensioni = new ArrayList<>();
+        this.recensioni.add(recensione);
+    }
+
     public void setAttendi(boolean attendi) {
         this.attendi = attendi;
     }
@@ -123,7 +128,13 @@ public class HomeGenitore {
                 }
 
                 this.attendi = true;
-                while (attendi) {};
+                while (attendi) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                        System.out.println("Errore attesa recensioni: " + ex.getMessage());
+                    }
+                };
 
                 // apri dettaglio libro
                 libroDetailedView.show(

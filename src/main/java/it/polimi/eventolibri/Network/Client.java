@@ -30,6 +30,7 @@ public class Client {
     private RegistraNewGenitore registraNewGenitore;
     private RegistraNewLettore registraNewLettore;
     private RegistraNewAmministratore registraNewAmministratore;
+    private LibroDetailedView libroDetailedView;
     // add altre viste qui
     private ArrayList<Evento> eventi;
     private Utente utente;
@@ -41,7 +42,7 @@ public class Client {
                       ProfiloGenitore profiloGenitore, ProfiloLettore profiloLettore,
                       ProfiloAmministratore profiloAmministratore,
                       RegistraNewGenitore registraNewGenitore, RegistraNewLettore registraNewLettore,
-                      RegistraNewAmministratore registraNewAmministratore) throws Exception {
+                      RegistraNewAmministratore registraNewAmministratore, LibroDetailedView libroDetailedView) throws Exception {
         socket = new Socket("localhost", 5000);
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
@@ -57,6 +58,7 @@ public class Client {
         this.registraNewGenitore = registraNewGenitore;
         this.registraNewLettore = registraNewLettore;
         this.registraNewAmministratore = registraNewAmministratore;
+        this.libroDetailedView = libroDetailedView;
 
     }
 
@@ -364,6 +366,25 @@ public class Client {
                 eventoViewLettore.mostraErrore(((RispostaSalvaEvento) msg).getMessaggioErrore());
             }
         }
+
+        if (msg instanceof RispostaAggiungiRecensione) {
+            if (((RispostaAggiungiRecensione) msg).isSuccesso()) {
+                libroDetailedView.aggiornaRecensioni(((RispostaAggiungiRecensione) msg).getRecensione());
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION,"", ButtonType.OK);
+                    alert.setTitle("Aggiornamento Recensione");
+                    alert.setHeaderText("Aggiunto nuova recensione!");
+                    alert.setContentText(null);
+                    alert.showAndWait();
+                });
+
+            }
+            else {
+                System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiungiRecensione) msg).getMessaggioErrore());
+                libroDetailedView.mostraErrore(((RispostaAggiungiRecensione) msg).getMessaggioErrore());
+            }
+        }
+
     }
 
     private void close() {
