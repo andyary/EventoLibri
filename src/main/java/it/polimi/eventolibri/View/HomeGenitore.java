@@ -246,13 +246,9 @@ public class HomeGenitore {
     }
 
     public void nascondiBottoneNextEventi() {
-        if (nextEventiButton != null) nextEventiButton.setVisible(false);
-    }
-
-    public void aggiornaEventi(ArrayList<Evento> prossimiEventi) {
-        if (this.eventiProssimi == null) this.eventiProssimi = new ArrayList<>();
-        this.eventiProssimi.addAll(prossimiEventi);
-        this.show(stage, genitore, this.eventiProssimi, onBack);
+        Platform.runLater(() -> {
+            if (nextEventiButton != null) nextEventiButton.setVisible(false);
+        });
     }
 
     /**
@@ -349,8 +345,14 @@ public class HomeGenitore {
         return table;
     }
 
+    public void aggiornaEventi(ArrayList<Evento> prossimiEventi) {
+        if (this.eventiProssimi == null) this.eventiProssimi = new ArrayList<>();
+        this.eventiProssimi.addAll(prossimiEventi);
+        Platform.runLater(() -> this.show(stage, genitore, this.eventiProssimi, onBack));
+    }
+
     public void aggiornaLibri(ArrayList<Libro> elencolibri) {
-        this.elencoLibri = elencolibri;
+        Platform.runLater(() -> this.elencoLibri = elencolibri);
     }
 
     public void mostraErrore(String msgerrore) {

@@ -169,7 +169,8 @@ public class HomeLettore {
 
         HBox topRow = new HBox(10, new Label("  Benvenuto, (lettore) " + lettore.getNome() + "!          "), profiloButton, newEventoButton, scegliLibroBtn ,backButton);
         topRow.setAlignment(Pos.TOP_RIGHT);
-        VBox topBar = new VBox(topRow, messaggioerrore);
+        HBox topRow2 = new HBox(10, messaggioerrore);
+        VBox topBar = new VBox(topRow, topRow2);
         topBar.setPadding(new Insets(20));
         topBar.setAlignment(Pos.CENTER);
 
@@ -243,24 +244,7 @@ public class HomeLettore {
         if (nextEventiButton != null) nextEventiButton.setVisible(false);
     }
 
-    public void aggiornaEventi(ArrayList<Evento> prossimiEventi) {
-        if (this.eventiProssimi == null) this.eventiProssimi = new ArrayList<>();
-        this.eventiProssimi.addAll(prossimiEventi);
-        this.show(stage, lettore, this.eventiProssimi, onBack);
-    }
 
-    public void reloadEventiFromServer() {
-        if (eventiProssimi == null) eventiProssimi = new ArrayList<>();
-        eventiProssimi.clear();
-
-        try {
-            client.sendMessage(new RichiestaNextEventi(null));
-        } catch (Exception ex) {
-            System.out.println("Errore richiesta eventi: " + ex.getMessage());
-        }
-
-        this.show(stage, lettore, eventiProssimi, onBack);
-    }
 
     /**
      * Crea TableView<Evento> con colonne: Data, Ora inizio, Ora fine (calcolaOraFine), Titolo.
@@ -359,8 +343,28 @@ public class HomeLettore {
         return table;
     }
 
+
+    public void aggiornaEventi(ArrayList<Evento> prossimiEventi) {
+        if (this.eventiProssimi == null) this.eventiProssimi = new ArrayList<>();
+        this.eventiProssimi.addAll(prossimiEventi);
+        Platform.runLater(() -> this.show(stage, lettore, this.eventiProssimi, onBack));
+    }
+
     public void aggiornaLibri(ArrayList<Libro> elencolibri) {
-        this.elencoLibri = elencolibri;
+        Platform.runLater(() -> this.elencoLibri = elencolibri);
+    }
+
+    public void reloadEventiFromServer() {
+        if (eventiProssimi == null) eventiProssimi = new ArrayList<>();
+        eventiProssimi.clear();
+
+        try {
+            client.sendMessage(new RichiestaNextEventi(null));
+        } catch (Exception ex) {
+            System.out.println("Errore richiesta eventi: " + ex.getMessage());
+        }
+
+        Platform.runLater(() -> this.show(stage, lettore, eventiProssimi, onBack));
     }
 
     public void mostraErrore(String msgerrore) {

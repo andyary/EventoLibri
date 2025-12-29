@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 import javafx.scene.control.Label;
 
 import java.io.IOException;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
@@ -140,13 +141,20 @@ public class EventoView {
         Label titoloScaletta = new Label("Scaletta dell'evento:");
         titoloScaletta.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
         scalettaBox.getChildren().add(titoloScaletta);
+
+        LocalTime tempoinizio= evento.getData().toLocalTime();
+        LocalTime tempofine;
+
         for (LibroLettore ll : evento.getScaletta()) {
-            String nomeLettore = "---------";
-            if (ll.getLettore().getNome()!=null) {nomeLettore = ll.getLettore().getNome();}
+            tempofine = tempoinizio.plusMinutes(ll.getLibro().getTempoLettura());
+            String durata = new String("(" + ll.getLibro().getTempoLettura() + " minuti)");
+            DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
+            String orario = new String("[" + tempoinizio.format(formato) + " - " + tempofine.format(formato) + "]");
+            String nomeLettore = new String(ll.getLettore() != null ? ll.getLettore().getNome() : "---------");
             String titoloLibro = ll.getLibro().getTitolo();
             HBox riga = new HBox(10);
             riga.setAlignment(Pos.CENTER_LEFT);
-            Label lbl = new Label(ll.getProgressivo() + ") <" + titoloLibro + "> letto da <" + nomeLettore + "> durata " + ll.getLibro().getTempoLettura() +" minuti");
+            Label lbl = new Label(ll.getProgressivo() + ")   " + orario + "   " + titoloLibro + "   " + durata + "   " + nomeLettore);
             lbl.setStyle("-fx-font-size: 14px;");
             riga.getChildren().add(lbl);
             scalettaBox.getChildren().add(riga);

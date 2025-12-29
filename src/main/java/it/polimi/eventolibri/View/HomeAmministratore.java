@@ -205,7 +205,7 @@ public class HomeAmministratore {
     }
 
     public void aggiornaLibri(ArrayList<Libro> elencolibri) {
-        this.elencoLibri = elencolibri;
+        Platform.runLater(() -> this.elencoLibri = elencolibri);
     }
 
     public void mostraErrore(String msgerrore) {

@@ -1,5 +1,10 @@
 package it.polimi.eventolibri.View;
 
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+
 import it.polimi.eventolibri.Message.RichiestaAggiungiRecensione;
 import it.polimi.eventolibri.Message.RichiestaCancellaRecensione;
 import it.polimi.eventolibri.Message.RispostaCancellaRecensione;
@@ -161,41 +166,51 @@ public class LibroDetailedView {
         });
     }
 
+    // java
     private void showRecensioniWindow(Stage owner, ArrayList<Recensione> recensioni, boolean canDelete) {
         Stage rStage = new Stage();
         rStage.initOwner(owner);
         rStage.initModality(Modality.WINDOW_MODAL);
         rStage.setTitle("Recensioni");
 
-        VBox box = new VBox(8);
-        box.setPadding(new Insets(10));
-
-        Button backBtn = new Button("Indietro");
-        backBtn.setOnAction(ev -> {
-            rStage.close();
-        });
-
         messaggioerrore2 = new Label(" ");
         messaggioerrore2.setStyle("-fx-text-fill: red;");
 
-        HBox topBar = new HBox(messaggioerrore2, backBtn);
+        Button backBtn = new Button("Indietro");
+        backBtn.setOnAction(ev -> rStage.close());
+
+        Region spacer = new Region();
+        HBox topBar = new HBox(8, messaggioerrore2, spacer, backBtn);
+        topBar.setPadding(new Insets(10));
+        HBox.setHgrow(spacer, Priority.ALWAYS);
         topBar.setAlignment(Pos.CENTER_RIGHT);
-        box.getChildren().add(topBar);
+
+        VBox listBox = new VBox(8);
+        listBox.setPadding(new Insets(10));
 
         if (recensioni == null || recensioni.isEmpty()) {
-            box.getChildren().add(new Label("Nessuna recensione disponibile"));
+            listBox.getChildren().add(new Label("Nessuna recensione disponibile"));
         } else {
             for (Recensione r : recensioni) {
-                Label testo = new Label("Testo: " + (r.getTesto() != null ? r.getTesto() : ""));
-                testo.setWrapText(true);
-                String autore = (r.getGenitore() != null) ? ((r.getGenitore().getNome()) + " " + r.getGenitore().getCognome()) : "autore sconosciuto";
+                Text labelTesto = new Text("Testo: ");
+                Text contenuto = new Text(r.getTesto() != null ? r.getTesto() : "");
+                contenuto.setStyle("-fx-font-weight: bold;");
+
+                TextFlow tf = new TextFlow(labelTesto, contenuto);
+                tf.setLineSpacing(1.2);
+                tf.setMaxWidth(Double.MAX_VALUE);
+
+                String autore = (r.getGenitore() != null)
+                        ? (r.getGenitore().getNome() + " " + r.getGenitore().getCognome())
+                        : "autore sconosciuto";
                 Label autoreLbl = new Label("Autore: " + autore);
-                VBox v = new VBox(4,testo, autoreLbl);
+
+                VBox v = new VBox(4, tf, autoreLbl);
                 v.setMaxWidth(Double.MAX_VALUE);
+
                 if (canDelete) {
                     Button del = new Button("Elimina");
                     del.setOnAction(ev -> {
-                        //logica recensione per cancellare recensione
                         RichiestaCancellaRecensione richiesta = new RichiestaCancellaRecensione(r);
                         try {
                             client.sendMessage(richiesta);
@@ -212,24 +227,100 @@ public class LibroDetailedView {
                                 System.out.println("Errore attesa recensioni: " + ex.getMessage());
                                 messaggioerrore2.setText("Errore attesa recensioni: " + ex.getMessage());
                             }
-                        };
-
-                        // rStage.close();
-
+                        }
+                        rStage.close();
                     });
-                    HBox h = new HBox(8, v, del);
+
+                    HBox h = new HBox(8, del, v);
                     h.setAlignment(Pos.CENTER_LEFT);
-                    box.getChildren().addAll(h, new Separator());
+                    listBox.getChildren().addAll(h, new Separator());
                 } else {
-                    box.getChildren().addAll(v, new Separator());
+                    listBox.getChildren().addAll(v, new Separator());
                 }
             }
         }
 
-        Scene sc = new Scene(new ScrollPane(box), 540, 420);
-        rStage.setScene(sc);
+        ScrollPane sc = new ScrollPane(listBox);
+        sc.setFitToWidth(true);
+        sc.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+        BorderPane root = new BorderPane();
+        root.setTop(topBar);
+        root.setCenter(sc);
+
+        Scene scene = new Scene(root, 540, 420);
+        rStage.setScene(scene);
         rStage.show();
     }
+//
+//    private void showRecensioniWindow(Stage owner, ArrayList<Recensione> recensioni, boolean canDelete) {
+//        Stage rStage = new Stage();
+//        rStage.initOwner(owner);
+//        rStage.initModality(Modality.WINDOW_MODAL);
+//        rStage.setTitle("Recensioni");
+//
+//        VBox box = new VBox(8);
+//        box.setPadding(new Insets(10));
+//
+//        Button backBtn = new Button("Indietro");
+//        backBtn.setOnAction(ev -> {
+//            rStage.close();
+//        });
+//
+//        messaggioerrore2 = new Label(" ");
+//        messaggioerrore2.setStyle("-fx-text-fill: red;");
+//
+//        HBox topBar = new HBox(messaggioerrore2, backBtn);
+//        topBar.setAlignment(Pos.CENTER_RIGHT);
+//        box.getChildren().add(topBar);
+//
+//        if (recensioni == null || recensioni.isEmpty()) {
+//            box.getChildren().add(new Label("Nessuna recensione disponibile"));
+//        } else {
+//            for (Recensione r : recensioni) {
+//                Label testo = new Label("Testo: " + (r.getTesto() != null ? r.getTesto() : ""));
+//                testo.setWrapText(true);
+//                String autore = (r.getGenitore() != null) ? ((r.getGenitore().getNome()) + " " + r.getGenitore().getCognome()) : "autore sconosciuto";
+//                Label autoreLbl = new Label("Autore: " + autore);
+//                VBox v = new VBox(4,testo, autoreLbl);
+//                v.setMaxWidth(Double.MAX_VALUE);
+//                if (canDelete) {
+//                    Button del = new Button("Elimina");
+//                    del.setOnAction(ev -> {
+//                        //logica recensione per cancellare recensione
+//                        RichiestaCancellaRecensione richiesta = new RichiestaCancellaRecensione(r);
+//                        try {
+//                            client.sendMessage(richiesta);
+//                        } catch (IOException e) {
+//                            System.out.println("Errore invio cancellazione recensione: " + e.getMessage());
+//                            messaggioerrore2.setText("Errore invio cancellazione recensione: " + e.getMessage());
+//                        }
+//
+//                        this.attendi = true;
+//                        while (attendi) {
+//                            try {
+//                                Thread.sleep(100);
+//                            } catch (InterruptedException ex) {
+//                                System.out.println("Errore attesa recensioni: " + ex.getMessage());
+//                                messaggioerrore2.setText("Errore attesa recensioni: " + ex.getMessage());
+//                            }
+//                        };
+//                        rStage.close();
+//
+//                    });
+//                    HBox h = new HBox(8, del, v);
+//                    h.setAlignment(Pos.CENTER_LEFT);
+//                    box.getChildren().addAll(h, new Separator());
+//                } else {
+//                    box.getChildren().addAll(v, new Separator());
+//                }
+//            }
+//        }
+//
+//        Scene sc = new Scene(new ScrollPane(box), 540, 420);
+//        rStage.setScene(sc);
+//        rStage.show();
+//    }
 
     private void showAggiungiRecensioneDialog(Stage owner, Libro libro, Utente utente) {
         Stage d = new Stage();
