@@ -64,6 +64,14 @@ public class RecensioneDAO {
         }
     }
 
+    public void cancellaRecensione(Recensione recensione) throws SQLException {
+        String query = "DELETE FROM recensioni WHERE id = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, recensione.getId());
+            pstatement.executeUpdate();
+        }
+    }
+
     public boolean getRecensibilita(Libro libro, Utente utente) {
         if (!(utente instanceof Genitore)) return false;
         Genitore genitore = (Genitore) utente;

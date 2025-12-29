@@ -21,7 +21,7 @@ public class Window extends Application {
         LibroDetailedView libroDetailedView = new LibroDetailedView(client);
         HomeGenitore homeGenitore = new HomeGenitore(client, eventoView, profiloGenitore, libroDetailedView);
         HomeLettore homeLettore = new HomeLettore(client, eventoViewLettore, profiloLettore);
-        HomeAmministratore homeAmministratore = new HomeAmministratore(client, profiloAmministratore, registraNewLettore, registraNewAmministratore);
+        HomeAmministratore homeAmministratore = new HomeAmministratore(client, profiloAmministratore, registraNewLettore, registraNewAmministratore, libroDetailedView);
         LoginView loginView = new LoginView(client, registraNewGenitore, homeGenitore, homeLettore, homeAmministratore);
 
         try {

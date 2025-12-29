@@ -1,6 +1,8 @@
 package it.polimi.eventolibri.View;
 
 import it.polimi.eventolibri.Message.RichiestaAggiungiRecensione;
+import it.polimi.eventolibri.Message.RichiestaCancellaRecensione;
+import it.polimi.eventolibri.Message.RispostaCancellaRecensione;
 import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.Network.Client;
 import javafx.application.Platform;
@@ -24,10 +26,16 @@ import java.util.function.Consumer;
 public class LibroDetailedView {
     private final Client client;
     private Label messaggioerrore;
+    private Label messaggioerrore2;
     private ArrayList<Recensione> recensioniAggiornate = new ArrayList<>();
+    private boolean attendi;
 
     public LibroDetailedView(Client client) {
         this.client = client;
+    }
+
+    public void setAttendi(boolean attendi) {
+        this.attendi = attendi;
     }
 
     /**
@@ -84,9 +92,15 @@ public class LibroDetailedView {
             s.close();
             if (onBack != null) onBack.run();
         });
-        HBox topBar = new HBox(backBtn);
-        topBar.setPadding(new Insets(10));
-        topBar.setAlignment(Pos.CENTER_RIGHT);
+        HBox topBar1 = new HBox(messaggioerrore);
+        topBar1.setPadding(new Insets(10));
+        topBar1.setAlignment(Pos.CENTER);
+
+        HBox topBar2 = new HBox(backBtn);
+        topBar2.setPadding(new Insets(10));
+        topBar2.setAlignment(Pos.CENTER_RIGHT);
+
+        HBox topBar = new HBox(topBar1, topBar2);
 
         Label titolo = new Label("Titolo: " + libro.getTitolo());
         Label autore = new Label("Autore: " + libro.getAutore());
@@ -161,7 +175,10 @@ public class LibroDetailedView {
             rStage.close();
         });
 
-        HBox topBar = new HBox(backBtn);
+        messaggioerrore2 = new Label(" ");
+        messaggioerrore2.setStyle("-fx-text-fill: red;");
+
+        HBox topBar = new HBox(messaggioerrore2, backBtn);
         topBar.setAlignment(Pos.CENTER_RIGHT);
         box.getChildren().add(topBar);
 
@@ -178,8 +195,27 @@ public class LibroDetailedView {
                 if (canDelete) {
                     Button del = new Button("Elimina");
                     del.setOnAction(ev -> {
-                        //logica recensione da cancellare
-                        rStage.close();
+                        //logica recensione per cancellare recensione
+                        RichiestaCancellaRecensione richiesta = new RichiestaCancellaRecensione(r);
+                        try {
+                            client.sendMessage(richiesta);
+                        } catch (IOException e) {
+                            System.out.println("Errore invio cancellazione recensione: " + e.getMessage());
+                            messaggioerrore2.setText("Errore invio cancellazione recensione: " + e.getMessage());
+                        }
+
+                        this.attendi = true;
+                        while (attendi) {
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException ex) {
+                                System.out.println("Errore attesa recensioni: " + ex.getMessage());
+                                messaggioerrore2.setText("Errore attesa recensioni: " + ex.getMessage());
+                            }
+                        };
+
+                        // rStage.close();
+
                     });
                     HBox h = new HBox(8, v, del);
                     h.setAlignment(Pos.CENTER_LEFT);
@@ -235,6 +271,7 @@ public class LibroDetailedView {
                 client.sendMessage(richiesta);
             } catch (IOException e) {
                 System.out.println("Errore invio recensione: " + e.getMessage());
+                messaggioerrore.setText("Errore invio recensione: " + e.getMessage());
             }
             d.close();
         });
@@ -258,9 +295,20 @@ public class LibroDetailedView {
         });
     }
 
+    public void mostraErrore2(String msgerrore) {
+        Platform.runLater(()->{
+            this.messaggioerrore2.setText(msgerrore);
+        });
+    }
+
     public void aggiornaRecensioni(Recensione nuovarecensione) {
         recensioniAggiornate.add(nuovarecensione);
     }
+
+    public void cancellaRecensione(int idRecensione) {
+            recensioniAggiornate.removeIf(r -> r.getId() == idRecensione);
+    }
+
 }
 
 

@@ -356,4 +356,19 @@ public class Controller {
         }
         return risposta;
     }
+
+    public RispostaCancellaRecensione cancellaRecensione(Recensione recensione) {
+        RispostaCancellaRecensione risposta = new RispostaCancellaRecensione(recensione);
+        try {
+            recensioneDAO.cancellaRecensione(recensione);
+            risposta.setSuccesso(true);
+        } catch (Exception e) {
+            risposta.setSuccesso(false);
+            risposta.setMessaggioErrore("Errore richiesta cancellazione recensione al server." + e.getMessage());
+            e.printStackTrace();
+        }
+        return risposta;
+    }
+
+
 }

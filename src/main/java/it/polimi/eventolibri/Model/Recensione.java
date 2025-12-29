@@ -49,4 +49,8 @@ public class Recensione  implements Serializable {
     public void setId(int id) {
         this.id = id;
     }
+
+    public int getId() {
+        return id;
+    }
 }

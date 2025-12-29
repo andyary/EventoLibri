@@ -41,8 +41,9 @@ public class HomeGenitore {
     private ArrayList<Libro> elencoLibri = new ArrayList<>();
     private boolean recensibile;
     private ArrayList<Recensione> recensioni = new ArrayList<>(); // da caricare dal server
-    private Label messaggioerrore;
     private boolean attendi;
+
+    private Label messaggioerrore;
 
 
     public HomeGenitore(Client client, EventoView eventoView, ProfiloGenitore profiloGenitore, LibroDetailedView libroDetailedView) {
@@ -66,8 +67,7 @@ public class HomeGenitore {
     }
 
     public void addRecensione(Recensione recensione) {
-        if (this.recensioni == null) this.recensioni = new ArrayList<>();
-        this.recensioni.add(recensione);
+        if (this.recensioni != null) this.recensioni.add(recensione);
     }
 
     public void setAttendi(boolean attendi) {

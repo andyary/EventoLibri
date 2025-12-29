@@ -170,6 +170,14 @@ public class ClientHandler extends Thread {
             out.reset();
         }
 
+        if (msg instanceof RichiestaCancellaRecensione) {
+            Recensione recensione = ((RichiestaCancellaRecensione) msg).getRecensione();
+            RispostaCancellaRecensione risposta = controller.cancellaRecensione(recensione);
+            out.writeObject(risposta);
+            out.flush();
+            out.reset();
+        }
+
         // QUI CONTINUI AD AGGIUNGERE I MESSAGGI
     }
 

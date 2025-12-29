@@ -36,7 +36,6 @@ public class Client {
     private Utente utente;
 
 
-
     public void start(LoginView loginView, HomeGenitore homeGenitore, HomeAmministratore homeAmministratore,
                       EventoView eventoView, HomeLettore homeLettore, EventoViewLettore eventoViewLettore,
                       ProfiloGenitore profiloGenitore, ProfiloLettore profiloLettore,
@@ -79,7 +78,6 @@ public class Client {
     }
 
 
-
     private void handleMessage(Messaggio msg) {
         // Gestisci il messaggio ricevuto dal server
         System.out.println("Messaggio ricevuto dal server: " + msg);
@@ -89,30 +87,33 @@ public class Client {
                 switch (((RispostaLogin) msg).getUtente()) {
                     case Genitore gen -> {
                         CreaUtente<Genitore> creaGenitore = new CreaGenitore();
-                        Genitore genitore = creaGenitore.nuovoUtente(gen.getId(), gen.getNome(),gen.getCognome(), gen.getUserName());
+                        Genitore genitore = creaGenitore.nuovoUtente(gen.getId(), gen.getNome(), gen.getCognome(), gen.getUserName());
                         genitore.setFigli(gen.getFigli());
                         utente = genitore;
                         homeGenitore.show(loginView.getStage(), genitore, ((RispostaLogin) msg).getProssimiEventi(),
-                                () -> {loginView.show(loginView.getStage());
-                        });
+                                () -> {
+                                    loginView.show(loginView.getStage());
+                                });
                     }
                     case Lettore let -> {
                         CreaUtente<Lettore> creaLettore = new CreaLettore();
-                        Lettore lettore = creaLettore.nuovoUtente(let.getId(), let.getNome(),let.getCognome(), let.getUserName());
+                        Lettore lettore = creaLettore.nuovoUtente(let.getId(), let.getNome(), let.getCognome(), let.getUserName());
                         lettore.setIscrizioniLettura(let.getIscrizioniLettura());
                         lettore.setEventiCreati(let.getEventiCreati());
                         utente = lettore;
                         homeLettore.show(loginView.getStage(), lettore, ((RispostaLogin) msg).getProssimiEventi(),
-                        () -> {loginView.show(loginView.getStage());
-                        });
+                                () -> {
+                                    loginView.show(loginView.getStage());
+                                });
                     }
 
                     case Amministratore amm -> {
                         CreaUtente<Amministratore> creaAmministratore = new CreaAmministratore();
-                        Amministratore amministratore = creaAmministratore.nuovoUtente(amm.getId(), amm.getNome(),amm.getCognome(), amm.getUserName());
+                        Amministratore amministratore = creaAmministratore.nuovoUtente(amm.getId(), amm.getNome(), amm.getCognome(), amm.getUserName());
                         utente = amministratore;
                         homeAmministratore.show(loginView.getStage(), amministratore,
-                                () -> {loginView.show(loginView.getStage());
+                                () -> {
+                                    loginView.show(loginView.getStage());
                                 });
                     }
 
@@ -121,7 +122,6 @@ public class Client {
                     }
                     // gestisci altri tipi di utenti qui
                 }
-
 
 
             } else {
@@ -155,7 +155,7 @@ public class Client {
 
         if (msg instanceof RispostaIscrizioneEvento) {
             if (((RispostaIscrizioneEvento) msg).isSuccesso()) {
-                for (Figlio f: eventoView.getGenitore().getFigli()) {
+                for (Figlio f : eventoView.getGenitore().getFigli()) {
                     if (f.getId() == ((RispostaIscrizioneEvento) msg).getFiglio().getId()) {
                         f.iscrivi(eventoView.getEvento(), eventoView.getGenitore());
                         RichiestaIscrittiEvento richiestaIscritti = new RichiestaIscrittiEvento(eventoView.getEvento());
@@ -166,8 +166,8 @@ public class Client {
                         }
                     }
                 }
-                System.out.println("Iscritto " + ((RispostaIscrizioneEvento) msg).getFiglio().getNome());}
-            else {
+                System.out.println("Iscritto " + ((RispostaIscrizioneEvento) msg).getFiglio().getNome());
+            } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaIscrizioneEvento) msg).getMessaggioErrore());
                 eventoView.mostraErrore(((RispostaIscrizioneEvento) msg).getMessaggioErrore());
             }
@@ -186,7 +186,7 @@ public class Client {
 
         if (msg instanceof RispostaDisiscrizioneEvento) {
             if (((RispostaDisiscrizioneEvento) msg).isSuccesso()) {
-                for (Figlio f: eventoView.getGenitore().getFigli()) {
+                for (Figlio f : eventoView.getGenitore().getFigli()) {
                     if (f.getId() == ((RispostaDisiscrizioneEvento) msg).getFiglio().getId()) {
                         f.disiscrivi(eventoView.getEvento(), eventoView.getGenitore());
                         RichiestaIscrittiEvento richiestaIscritti = new RichiestaIscrittiEvento(eventoView.getEvento());
@@ -197,8 +197,8 @@ public class Client {
                         }
                     }
                 }
-                System.out.println("Disiscritto " + ((RispostaDisiscrizioneEvento) msg).getFiglio().getNome());}
-            else {
+                System.out.println("Disiscritto " + ((RispostaDisiscrizioneEvento) msg).getFiglio().getNome());
+            } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaDisiscrizioneEvento) msg).getMessaggioErrore());
                 eventoView.mostraErrore(((RispostaDisiscrizioneEvento) msg).getMessaggioErrore());
             }
@@ -210,15 +210,14 @@ public class Client {
                 profiloGenitore.getGenitore().setCognome(((RispostaAggiornaGenitore) msg).getGenitore().getCognome());
 
                 Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION,"", ButtonType.OK);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
                     alert.setTitle("Aggiornamento Genitore");
                     alert.setHeaderText("Dati Genitore aggiornati!");
                     alert.setContentText(null);
                     alert.showAndWait();
                 });
 
-            }
-            else {
+            } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiornaGenitore) msg).getMessaggioErrore());
                 profiloGenitore.mostraErrore(((RispostaAggiornaGenitore) msg).getMessaggioErrore());
             }
@@ -230,15 +229,14 @@ public class Client {
                 profiloGenitore.aggiornaFigli((((RispostaAggiungiFiglio) msg).getNuovoFiglio()));
 
                 Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION,"", ButtonType.OK);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
                     alert.setTitle("Aggiornamento Genitore");
                     alert.setHeaderText("Aggiunto nuovo figlio!");
                     alert.setContentText(null);
                     alert.showAndWait();
                 });
 
-            }
-            else {
+            } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiungiFiglio) msg).getMessaggioErrore());
                 profiloGenitore.mostraErrore2(((RispostaAggiungiFiglio) msg).getMessaggioErrore());
             }
@@ -247,8 +245,7 @@ public class Client {
         if (msg instanceof RispostaNuovoGenitore) {
             if (((RispostaNuovoGenitore) msg).isSuccesso()) {
                 registraNewGenitore.mostraSuccesso("Nuovo genitore registrato!");
-            }
-            else {
+            } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaNuovoGenitore) msg).getMessaggioErrore());
                 registraNewGenitore.mostraErrore(((RispostaNuovoGenitore) msg).getMessaggioErrore());
             }
@@ -259,11 +256,12 @@ public class Client {
                 eventoViewLettore.aggiornaLettoriELuoghiELibri(((RispostaLettoriELuoghiELibri) msg).getLettori(),
                         ((RispostaLettoriELuoghiELibri) msg).getLuoghi(), ((RispostaLettoriELuoghiELibri) msg).getElencolibri());
                 homeGenitore.aggiornaLibri(((RispostaLettoriELuoghiELibri) msg).getElencolibri());
-            }
-            else {
+                homeAmministratore.aggiornaLibri(((RispostaLettoriELuoghiELibri) msg).getElencolibri());
+            } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaLettoriELuoghiELibri) msg).getMessaggioerrore());
                 eventoViewLettore.mostraErrore(((RispostaLettoriELuoghiELibri) msg).getMessaggioerrore());
                 homeGenitore.mostraErrore(((RispostaLettoriELuoghiELibri) msg).getMessaggioerrore());
+                homeAmministratore.mostraErrore(((RispostaLettoriELuoghiELibri) msg).getMessaggioerrore());
             }
 
         }
@@ -272,20 +270,22 @@ public class Client {
             if (((RispostaRecensioniERecensibilita) msg).isSuccesso()) {
                 homeGenitore.setRecensibile(((RispostaRecensioniERecensibilita) msg).isRecensibile());
                 homeGenitore.setRecensioni(((RispostaRecensioniERecensibilita) msg).getRecensioni());
+                homeAmministratore.setRecensibile(((RispostaRecensioniERecensibilita) msg).isRecensibile());
+                homeAmministratore.setRecensioni(((RispostaRecensioniERecensibilita) msg).getRecensioni());
                 // Aggiorna le recensioni e la recensibilità nella vista
-            }
-            else {
+            } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaRecensioniERecensibilita) msg).getMessaggioerrore());
                 homeGenitore.mostraErrore(((RispostaRecensioniERecensibilita) msg).getMessaggioerrore());
+                homeAmministratore.mostraErrore(((RispostaRecensioniERecensibilita) msg).getMessaggioerrore());
             }
             homeGenitore.setAttendi(false);
+            homeAmministratore.setAttendi(false);
         }
 
         if (msg instanceof RispostaNuovoLettore) {
             if (((RispostaNuovoLettore) msg).isSuccesso()) {
                 registraNewLettore.mostraSuccesso("Nuovo lettore registrato!");
-            }
-            else {
+            } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaNuovoLettore) msg).getMessaggioErrore());
                 registraNewLettore.mostraErrore(((RispostaNuovoLettore) msg).getMessaggioErrore());
             }
@@ -294,8 +294,7 @@ public class Client {
         if (msg instanceof RispostaNuovoAmministratore) {
             if (((RispostaNuovoAmministratore) msg).isSuccesso()) {
                 registraNewAmministratore.mostraSuccesso("Nuovo amministratore registrato!");
-            }
-            else {
+            } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaNuovoAmministratore) msg).getMessaggioErrore());
                 registraNewAmministratore.mostraErrore(((RispostaNuovoAmministratore) msg).getMessaggioErrore());
             }
@@ -307,15 +306,14 @@ public class Client {
                 profiloLettore.getLettore().setCognome(((RispostaAggiornaLettore) msg).getLettore().getCognome());
 
                 Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION,"", ButtonType.OK);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
                     alert.setTitle("Aggiornamento Lettore");
                     alert.setHeaderText("Dati Lettore aggiornati!");
                     alert.setContentText(null);
                     alert.showAndWait();
                 });
 
-            }
-            else {
+            } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiornaLettore) msg).getMessaggioErrore());
                 profiloLettore.mostraErrore(((RispostaAggiornaLettore) msg).getMessaggioErrore());
             }
@@ -327,15 +325,14 @@ public class Client {
                 profiloAmministratore.getAmministratore().setCognome(((RispostaAggiornaAmministratore) msg).getAmministratore().getCognome());
 
                 Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION,"", ButtonType.OK);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
                     alert.setTitle("Aggiornamento Amministratore");
                     alert.setHeaderText("Dati Amministratore aggiornati!");
                     alert.setContentText(null);
                     alert.showAndWait();
                 });
 
-            }
-            else {
+            } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiornaAmministratore) msg).getMessaggioErrore());
                 profiloAmministratore.mostraErrore(((RispostaAggiornaAmministratore) msg).getMessaggioErrore());
             }
@@ -344,7 +341,7 @@ public class Client {
         if (msg instanceof RispostaSalvaEvento) {
             if (((RispostaSalvaEvento) msg).isSuccesso()) {
                 Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION,"", ButtonType.OK);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
                     alert.setTitle("Salvataggio Evento");
                     alert.setHeaderText("Evento salvato con successo!");
                     alert.setContentText(null);
@@ -360,8 +357,7 @@ public class Client {
                     eventoViewLettore.getLettore().rimuoviIscrizioneLettura(((RispostaSalvaEvento) msg).getEvento());
                 }
                 eventoViewLettore.setEvento(((RispostaSalvaEvento) msg).getEvento());
-            }
-            else {
+            } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaSalvaEvento) msg).getMessaggioErrore());
                 eventoViewLettore.mostraErrore(((RispostaSalvaEvento) msg).getMessaggioErrore());
             }
@@ -371,19 +367,39 @@ public class Client {
             if (((RispostaAggiungiRecensione) msg).isSuccesso()) {
                 libroDetailedView.aggiornaRecensioni(((RispostaAggiungiRecensione) msg).getRecensione());
                 Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION,"", ButtonType.OK);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
                     alert.setTitle("Aggiornamento Recensione");
                     alert.setHeaderText("Aggiunto nuova recensione!");
                     alert.setContentText(null);
                     alert.showAndWait();
                 });
 
-            }
-            else {
+            } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiungiRecensione) msg).getMessaggioErrore());
                 libroDetailedView.mostraErrore(((RispostaAggiungiRecensione) msg).getMessaggioErrore());
             }
         }
+
+        if (msg instanceof RispostaCancellaRecensione) {
+            if (((RispostaCancellaRecensione) msg).isSuccesso()) {
+                libroDetailedView.cancellaRecensione(((RispostaCancellaRecensione) msg).getId());
+                System.out.println("Cancellata recensione con ID: " + ((RispostaCancellaRecensione) msg).getId());
+                libroDetailedView.mostraErrore2("Cancellata recensione con ID: " + ((RispostaCancellaRecensione) msg).getId());
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+                    alert.setTitle("Cancellazione Recensione");
+                    alert.setHeaderText("Recensione cancellata correttamente!");
+                    alert.setContentText(null);
+                    alert.showAndWait();
+                });
+            } else {
+                System.out.println("Messaggio di errore ricevuto : " + ((RispostaCancellaRecensione) msg).getMessaggioErrore());
+                libroDetailedView.mostraErrore2(((RispostaCancellaRecensione) msg).getMessaggioErrore());
+            }
+            libroDetailedView.setAttendi(false);
+
+        }
+
 
     }
 
