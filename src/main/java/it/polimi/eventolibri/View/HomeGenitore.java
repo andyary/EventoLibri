@@ -165,7 +165,7 @@ public class HomeGenitore {
 
 
         // formatter per colonne
-        DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         DateTimeFormatter formatoOra = DateTimeFormatter.ofPattern("HH:mm");
 
         // ---------- EVENTI FIGLI: usa TableView per ciascun figlio ----------

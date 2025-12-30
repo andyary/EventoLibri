@@ -8,9 +8,9 @@ class LibroLettoreTest {
 
     @Test
     void modificaLettore() {
-        Lettore lettore1 = new Lettore( "Mario", "Rossi", "mariorossi");
-        Lettore lettore2 = new Lettore( "Luca", "Bianchi", "lucabianchi");
-        Libro libro = new Libro("Il Nome della Rosa", 20, "link.com", "Umberto Eco", 1, null);
+        Lettore lettore1 = new Lettore(1, "Mario", "Rossi", "mariorossi");
+        Lettore lettore2 = new Lettore( 2,"Luca", "Bianchi", "lucabianchi");
+        Libro libro = new Libro("Il Nome della Rosa", 20, "link.com", "Umberto Eco", 1);
         LibroLettore libroLettore = new LibroLettore(libro, 1);
         libroLettore.modificaLettore(lettore1);
         assertEquals(lettore1, libroLettore.getLettore());

@@ -226,7 +226,8 @@ public class EventoViewLettore {
                     dataOra
             );
             eventoTemp.setScaletta(scalettaTemp);
-            eventoTemp.setCreatore(lettore);
+
+            eventoTemp.setCreatore(evento.getCreatore());
             if (evento.getId() != 0) {
                 eventoTemp.setId(evento.getId());
             }

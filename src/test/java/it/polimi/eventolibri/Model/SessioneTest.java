@@ -14,8 +14,8 @@ class SessioneTest {
         Lettore creatore = new Lettore("Mario", "Rossi", "mariorossi");
         Luogo luogo = new Luogo("Sala A", 15, 2);
         LocalDateTime date = LocalDateTime.of(2026, 6, 15, 18, 0);
-        Libro libro1 = new Libro("Libro1", 10, "link1.com", "Autore1", 1, null);
-        Libro libro2 = new Libro("Libro2", 9, "link2.com", "Autore2", 2, null);
+        Libro libro1 = new Libro("Libro1", 10, "link1.com", "Autore1", 1);
+        Libro libro2 = new Libro("Libro2", 9, "link2.com", "Autore2", 2);
         Lettore lettore1 = new Lettore("Luca", "Bianchi", "lucabianchi");
         Lettore lettore2 = new Lettore("Anna", "Verdi", "annaverdi");
         LibroLettore ll1 = new LibroLettore(libro1, lettore1, 1);
@@ -28,8 +28,8 @@ class SessioneTest {
         Lettore creatore2 = new Lettore("Mario2", "Rossi2", "mariorossi2");
         Luogo luogo2 = new Luogo("Sala B", 10, 3);
         LocalDateTime date2 = LocalDateTime.of(2026, 5, 15, 18, 0);
-        Libro libro3 = new Libro("Libro3", 12, "link3.com", "Autore3", 3, null);
-        Libro libro4 = new Libro("Libro4", 5, "link4.com", "Autore4", 4, null);
+        Libro libro3 = new Libro("Libro3", 12, "link3.com", "Autore3", 3);
+        Libro libro4 = new Libro("Libro4", 5, "link4.com", "Autore4", 4);
         Lettore lettore3 = new Lettore("Luca2", "Bianchi2", "lucabianchi2");
         Lettore lettore4 = new Lettore("Anna2", "Verdi2", "annaverdi2");
         LibroLettore ll3 = new LibroLettore(libro3, lettore3, 1);

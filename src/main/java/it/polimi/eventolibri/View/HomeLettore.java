@@ -175,7 +175,7 @@ public class HomeLettore {
         topBar.setAlignment(Pos.CENTER);
 
         // formatter per colonne
-        DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         DateTimeFormatter formatoOra = DateTimeFormatter.ofPattern("HH:mm");
 
         // ---------- TABELLE ----------
