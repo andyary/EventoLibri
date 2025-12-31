@@ -1,8 +1,9 @@
 package it.polimi.eventolibri.Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public abstract class EventoAstratto {
+public abstract class EventoAstratto  implements Serializable {
 
     private ArrayList<Listener> listeners = new ArrayList<Listener>();
 

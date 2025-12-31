@@ -48,9 +48,9 @@ public class Figlio implements Serializable {
     }
 
 	public void disiscrivi(Evento evento, Genitore genitore) {
-        iscrizioni.remove(evento);
+        iscrizioni.removeIf(e -> e.getId() == evento.getId());
         for (Figlio figlio : genitore.getFigli()) {
-            if (figlio.getIscrizioni().contains(evento)) {
+            if (figlio.getIscrizioni().stream().anyMatch(ev -> ev.getId() == evento.getId())) {
                 return; // Un altro figlio del genitore è ancora iscritto all'evento
             }
         }

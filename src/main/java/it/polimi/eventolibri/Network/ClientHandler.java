@@ -181,4 +181,10 @@ public class ClientHandler extends Thread {
         // QUI CONTINUI AD AGGIUNGERE I MESSAGGI
     }
 
+    public void sendMessage(Messaggio msg) throws IOException {
+        out.writeObject(msg);
+        out.flush();
+        out.reset();
+    }
+
 }

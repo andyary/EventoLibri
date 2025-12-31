@@ -107,8 +107,8 @@ public class EventoView {
             for (int i = 0; i < checkFigli.size(); i++) {
                 Figlio f = genitore.getFigli().get(i);
                 boolean selezionato = checkFigli.get(i).isSelected();
-                boolean eraIscritto = f.getIscrizioni().contains(evento);
-
+                // boolean eraIscritto = f.getIscrizioni().contains(evento);
+                boolean eraIscritto = f.getIscrizioni().stream().anyMatch(ev -> ev.getId() == evento.getId());
                 if (selezionato && !eraIscritto) {
                     // iscrizione
                     RichiestaIscrizioneEvento req = new RichiestaIscrizioneEvento(f, evento, genitore);
@@ -166,8 +166,6 @@ public class EventoView {
         VBox layout = new VBox(15, mainBtnBox, titolo, data, luogo, capienza, iscritti, figliBox, aggiornaButton, messaggioerrore, scalettaBox);
         layout.setAlignment(Pos.TOP_CENTER);
         layout.setPadding(new Insets(20));
-
-        System.out.println("dalla show contenuto di messaggio errore:" + messaggioerrore);
 
         Scene scene = new Scene(layout, 800, 750);
 

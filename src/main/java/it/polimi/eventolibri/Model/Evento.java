@@ -60,7 +60,7 @@ public class Evento extends EventoAstratto implements Serializable {
         this.scaletta = scaletta;
         creatore.aggiungiEventiCreati(this);
         for (LibroLettore ll : scaletta) {
-            this.addListener(ll.getLettore());
+            if (ll.getLettore() != null) this.addListener(ll.getLettore());
         }
         this.id = id;
     }

@@ -25,8 +25,9 @@ public class LibroLettoreDAO {
                     return scaletta;
                 else {
                     while (result.next()) {
-                        CreaUtente creaLettore = new CreaLettore();
-                        Utente lettore = creaLettore.nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
+                        CreaUtente<Lettore> creaLettore = new CreaLettore();
+                        // CreaUtente creaLettore = new CreaLettore();
+                        Lettore lettore = creaLettore.nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
                         Libro libro = new Libro(result.getString("l.titolo"), result.getInt("l.tempoLettura"), result.getString("l.link"), result.getString("l.autore"), result.getInt("l.id"));
                         LibroLettore libroLettore = new LibroLettore(libro, (Lettore) lettore, result.getInt("ll.progressivo"));
                         scaletta.add(libroLettore);

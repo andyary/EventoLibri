@@ -1,10 +1,15 @@
 package it.polimi.eventolibri.Network;
 
+import it.polimi.eventolibri.Model.Utente;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Server {
+
+    // private ArrayList<ClientHandler, Utente> clients;
 
     private ServerSocket serverSocket;
     public void start(int port) throws IOException {
