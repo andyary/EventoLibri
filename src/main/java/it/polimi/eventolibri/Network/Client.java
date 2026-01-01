@@ -177,10 +177,18 @@ public class Client {
             if (((RispostaIscrittiEvento) msg).isSuccesso()) {
                 if (utente instanceof Genitore) {
                     eventoView.aggiornaIscritti(((RispostaIscrittiEvento) msg).getEvento().getIscritti());
+                    for (Listener l : ((RispostaIscrittiEvento) msg).getEvento().getListeners()) {
+                        eventoView.getEvento().addListener(l);
+                    }
                 }
-
-
+                if (utente instanceof Lettore) {
+                    eventoViewLettore.aggiornaIscritti(((RispostaIscrittiEvento) msg).getEvento().getIscritti());
+                    for (Listener l : ((RispostaIscrittiEvento) msg).getEvento().getListeners()) {
+                        eventoViewLettore.getEvento().addListener(l);
+                    }
+                }
                 System.out.println("Numero iscritti aggiornato: " + ((RispostaIscrittiEvento) msg).getEvento().getIscritti());
+                System.out.println("Listeners aggiornati.");
             }
         }
 

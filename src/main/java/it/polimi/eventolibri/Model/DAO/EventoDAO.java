@@ -229,4 +229,32 @@ public class EventoDAO {
             throw new SQLException();
         }
     }
+
+    public ArrayList<Genitore> getGenitoriIscritti(Evento evento) throws SQLException {
+        ArrayList<Genitore> genitoriIscritti = new ArrayList<>();
+        String query = "SELECT DISTINCT u.id, u.nome, u.cognome, u.username FROM iscrizioni i JOIN figli f JOIN utenti u ON i.id_figlio=f.id AND f.id_genitore=u.id WHERE i.id_evento = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, evento.getId());
+            try (ResultSet result = pstatement.executeQuery();) {
+                if (!result.isBeforeFirst()) // no risultati
+                    return genitoriIscritti;
+                else {
+                    while (result.next()) {
+                        CreaUtente<Genitore> creaGenitore = new CreaGenitore();
+                        Genitore genitore = creaGenitore.nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
+                        genitoriIscritti.add(genitore);
+                    }
+                    return genitoriIscritti;
+                }
+            } catch (SQLException ex) {
+                System.out.println("Errore query genitori iscritti evento:" + ex.getMessage());
+                throw new SQLException();
+            }
+
+        } catch (SQLException ex) {
+            System.out.println("Errore query genitori iscritti evento2:" + ex.getMessage());
+            throw new SQLException();
+        }
+    }
+
 }

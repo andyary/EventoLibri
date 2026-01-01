@@ -36,13 +36,16 @@ public class Genitore extends Utente implements Listener, Serializable {
         return figli;
     }
 
-
-
     public void update(Evento evento) {
         for (Figlio figlio : figli) {
             figlio.aggiornaEvento(evento);
         }
 
 	}
+
+    @Override
+    public boolean equals(Listener listener) {
+        return this.getId() == listener.getId();
+    }
 
 }

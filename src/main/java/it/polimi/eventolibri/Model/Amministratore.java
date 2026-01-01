@@ -13,4 +13,5 @@ public class Amministratore extends  Utente implements Serializable {
         super(id, nome, cognome, userName);
     }
 
+
 }

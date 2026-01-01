@@ -1,5 +1,6 @@
 package it.polimi.eventolibri.View;
 
+import it.polimi.eventolibri.Message.RichiestaIscrittiEvento;
 import it.polimi.eventolibri.Message.RichiestaLettoriELuoghiELibri;
 import it.polimi.eventolibri.Message.RichiestaSalvaEvento;
 import it.polimi.eventolibri.Model.*;
@@ -81,6 +82,13 @@ public class EventoViewLettore {
         this.lettore = lettore;
         this.onBack = onBack;
         this.messaggioerrore.setText("");
+
+        RichiestaIscrittiEvento richiestaIscritti = new RichiestaIscrittiEvento(evento);
+        try {
+            client.sendMessage(richiestaIscritti);
+        } catch (IOException e) {
+            System.out.println("Errore nel richiestaIscrittiEvento" + e.getMessage());
+        }
 
         RichiestaLettoriELuoghiELibri richiestaLettoriELuoghiELibri = new RichiestaLettoriELuoghiELibri();
         try {
@@ -434,4 +442,11 @@ public class EventoViewLettore {
             scalettaBox.getChildren().add(riga);
         }
     }
+
+    public void aggiornaIscritti(int numIscritti) {
+        evento.setIscritti(numIscritti);
+        Platform.runLater(() -> {
+        });
+    }
+
 }

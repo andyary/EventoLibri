@@ -48,8 +48,6 @@ public abstract class Utente implements Serializable {
         this.nome = nome;
     }
 
-
-
     public void setCognome(String cognome) {
         this.cognome = cognome;
     }

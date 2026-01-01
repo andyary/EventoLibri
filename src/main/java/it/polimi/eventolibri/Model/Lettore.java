@@ -100,4 +100,10 @@ public class Lettore extends Utente implements Listener, Serializable {
     public ArrayList<Evento> getIscrizioniLettura() {
         return iscrizioniLettura;
     }
+
+    @Override
+    public boolean equals(Listener listener) {
+        return this.getId() == listener.getId();
+    }
+
 }
