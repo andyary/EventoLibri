@@ -3,13 +3,15 @@ package it.polimi.eventolibri.Network;
 import it.polimi.eventolibri.Model.Utente;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Server {
 
-    // private ArrayList<ClientHandler, Utente> clients;
+    private HashMap<ClientHandler, Utente> clients= new HashMap<>();
 
     private ServerSocket serverSocket;
     public void start(int port) throws IOException {
@@ -19,7 +21,8 @@ public class Server {
             Socket socket = serverSocket.accept();
             System.out.println("Nuovo client connesso: " + socket);
             // ogni client ha il suo thread
-            new ClientHandler(socket).start();
+            ClientHandler clientHandler = new ClientHandler(socket, this);
+            clientHandler.start();
         }
     }
 
@@ -27,4 +30,7 @@ public class Server {
         new Server().start(5000);
     }
 
+    public HashMap<ClientHandler, Utente> getClients() {
+        return clients;
+    }
 }

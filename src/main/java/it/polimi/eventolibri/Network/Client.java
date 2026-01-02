@@ -101,6 +101,7 @@ public class Client {
                         lettore.setIscrizioniLettura(let.getIscrizioniLettura());
                         lettore.setEventiCreati(let.getEventiCreati());
                         utente = lettore;
+
                         homeLettore.show(loginView.getStage(), lettore, ((RispostaLogin) msg).getProssimiEventi(),
                                 () -> {
                                     loginView.show(loginView.getStage());

@@ -15,10 +15,18 @@ public class ClientHandler extends Thread {
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private Controller controller;
+    private Utente utente;
+    private Server server;
 
-    public ClientHandler(Socket socket) {
+    public Utente getUtente() {
+        return utente;
+    }
+
+    public ClientHandler(Socket socket, Server server) {
+        this.server = server;
         this.socket = socket;
         this.controller = new Controller();
+
     }
 
     @Override
@@ -40,6 +48,21 @@ public class ClientHandler extends Thread {
         // esempio di DAO
         if (msg instanceof RichiestaLogin) {
             RispostaLogin risposta = controller.controllaLogin(((RichiestaLogin) msg).getUsername(), ((RichiestaLogin) msg).getPassword());
+            if (risposta.isSuccesso()){
+                if (risposta.getUtente() instanceof Genitore) {
+                    CreaUtente<Genitore> creaUtente = new CreaGenitore();
+                    this.utente = creaUtente.nuovoUtente(risposta.getUtente().getId(),risposta.getUtente().getNome(),risposta.getUtente().getCognome(),risposta.getUtente().getUserName());
+                }
+                if (risposta.getUtente() instanceof Lettore) {
+                    CreaUtente<Lettore> creaUtente = new CreaLettore();
+                    this.utente = creaUtente.nuovoUtente(risposta.getUtente().getId(),risposta.getUtente().getNome(),risposta.getUtente().getCognome(),risposta.getUtente().getUserName());
+                }
+                if (risposta.getUtente() instanceof Amministratore) {
+                    CreaUtente<Amministratore> creaUtente = new CreaAmministratore();
+                    this.utente = creaUtente.nuovoUtente(risposta.getUtente().getId(),risposta.getUtente().getNome(),risposta.getUtente().getCognome(),risposta.getUtente().getUserName());
+                }
+                server.getClients().put(this, this.utente);
+            }
             out.writeObject(risposta);
             out.flush();
             out.reset();

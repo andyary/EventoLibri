@@ -51,4 +51,8 @@ public abstract class Utente implements Serializable {
     public void setCognome(String cognome) {
         this.cognome = cognome;
     }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 }
