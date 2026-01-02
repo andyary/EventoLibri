@@ -67,6 +67,13 @@ public class ClientHandler extends Thread {
             out.flush();
             out.reset();
         }
+
+        if (msg instanceof CloseUI) {
+            server.getClients().remove(this);
+            socket.close();
+            System.out.println("Connessione chiusa con il client: " + socket);
+        }
+
         if (msg instanceof RichiestaNextEventi) {
             // gestisci la richiesta di next eventi
             Evento ultimoEvento = ((RichiestaNextEventi) msg).getUltimoEvento();
