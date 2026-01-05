@@ -74,6 +74,14 @@ public class HomeGenitore {
         if (this.recensioni != null) this.recensioni.remove(recensione);
     }
 
+    public Genitore getGenitore() {
+        return genitore;
+    }
+
+    public ArrayList<Evento> getEventiProssimi() {
+        return eventiProssimi;
+    }
+
     public void setAttendi(boolean attendi) {
         this.attendi = attendi;
     }

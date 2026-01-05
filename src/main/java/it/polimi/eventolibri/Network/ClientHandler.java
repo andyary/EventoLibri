@@ -177,9 +177,23 @@ public class ClientHandler extends Thread {
         if (msg instanceof RichiestaSalvaEvento) {
             Evento evento = ((RichiestaSalvaEvento) msg).getEvento();
             RispostaSalvaEvento risposta = controller.salvaEvento(evento);
+            Evento eventoAggiornato = risposta.getEvento();
             out.writeObject(risposta);
             out.flush();
             out.reset();
+            // Implementazione Pattern Observer
+            if (risposta.isSuccesso()) {
+                for (Listener l: eventoAggiornato.getListeners()) {
+                    for (ClientHandler ch: server.getClients().keySet()) {
+                        if (ch.getUtente().getId() == l.getId() && /*l.getId()!= utente.getId()*/ ch != this) {
+                            NotificaAggiornamentoEvento notifica = new NotificaAggiornamentoEvento(eventoAggiornato);
+                            out.writeObject(notifica);
+                            out.flush();
+                            out.reset();
+                        }
+                    }
+                }
+            }
         }
 
         if (msg instanceof RichiestaRecensioniERecensibilita) {

@@ -35,20 +35,22 @@ public class Client {
     private ArrayList<Evento> eventi;
     private Utente utente;
 
-    /** Inizializza il client e stabilisce la connessione con il server.
-     * @param loginView La vista di login.
-     * @param homeGenitore La vista home per il genitore.
-     * @param homeAmministratore La vista home per l'amministratore.
-     * @param eventoView La vista dell'evento per il genitore.
-     * @param homeLettore La vista home per il lettore.
-     * @param eventoViewLettore La vista dell'evento per il lettore.
-     * @param profiloGenitore La vista del profilo del genitore.
-     * @param profiloLettore La vista del profilo del lettore.
-     * @param profiloAmministratore La vista del profilo dell'amministratore.
-     * @param registraNewGenitore La vista per la registrazione di un nuovo genitore.
-     * @param registraNewLettore La vista per la registrazione di un nuovo lettore.
+    /**
+     * Inizializza il client e stabilisce la connessione con il server.
+     *
+     * @param loginView                 La vista di login.
+     * @param homeGenitore              La vista home per il genitore.
+     * @param homeAmministratore        La vista home per l'amministratore.
+     * @param eventoView                La vista dell'evento per il genitore.
+     * @param homeLettore               La vista home per il lettore.
+     * @param eventoViewLettore         La vista dell'evento per il lettore.
+     * @param profiloGenitore           La vista del profilo del genitore.
+     * @param profiloLettore            La vista del profilo del lettore.
+     * @param profiloAmministratore     La vista del profilo dell'amministratore.
+     * @param registraNewGenitore       La vista per la registrazione di un nuovo genitore.
+     * @param registraNewLettore        La vista per la registrazione di un nuovo lettore.
      * @param registraNewAmministratore La vista per la registrazione di un nuovo amministratore.
-     * @param libroDetailedView La vista dettagliata del libro.
+     * @param libroDetailedView         La vista dettagliata del libro.
      * @throws Exception In caso di errore durante la connessione.
      */
     public void start(LoginView loginView, HomeGenitore homeGenitore, HomeAmministratore homeAmministratore,
@@ -76,7 +78,9 @@ public class Client {
 
     }
 
-    /** Inizia l'ascolto dei messaggi dal server in un thread separato. */
+    /**
+     * Inizia l'ascolto dei messaggi dal server in un thread separato.
+     */
     public void startListening() {
         Thread listenerThread = new Thread(() -> {
             try {
@@ -93,7 +97,9 @@ public class Client {
         listenerThread.start();
     }
 
-    /** Gestisce i messaggi ricevuti dal server.
+    /**
+     * Gestisce i messaggi ricevuti dal server.
+     *
      * @param msg Il messaggio ricevuto.
      */
     private void handleMessage(Messaggio msg) {
@@ -430,6 +436,44 @@ public class Client {
                 libroDetailedView.mostraErrore2(((RispostaCancellaRecensione) msg).getMessaggioErrore());
             }
             libroDetailedView.setAttendi(false);
+        }
+
+        if (msg instanceof NotificaAggiornamentoEvento) {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+                alert.setTitle("Aggiornamento Live Evento");
+                alert.setHeaderText("Ricevuto aggiornamento evento: "
+                        + ((NotificaAggiornamentoEvento) msg).getEvento().getNome() + " con successo!");
+                alert.setContentText(null);
+                alert.showAndWait();
+            });
+            if (utente instanceof Genitore) {
+                for (Figlio f : ((Genitore) utente).getFigli()) {
+                    if (f.isIscritto(((NotificaAggiornamentoEvento) msg).getEvento())) {
+                        f.aggiornaEvento(((NotificaAggiornamentoEvento) msg).getEvento());
+                    }
+                }
+                for (Evento e :homeGenitore.getEventiProssimi()) {
+                    if (e.getId() == ((NotificaAggiornamentoEvento) msg).getEvento().getId()) {
+                        homeGenitore.getEventiProssimi().set(homeGenitore.getEventiProssimi().indexOf(e),
+                                ((NotificaAggiornamentoEvento) msg).getEvento());
+                    }
+                }
+            }
+            if (utente instanceof Lettore) {
+                if (((NotificaAggiornamentoEvento) msg).getEvento().isIscritto(eventoViewLettore.getLettore())) {
+                    homeLettore.getLettore().aggiungiIscrizioneLettura(((NotificaAggiornamentoEvento) msg).getEvento());
+                }
+                if (!((NotificaAggiornamentoEvento) msg).getEvento().isIscritto(eventoViewLettore.getLettore())) {
+                    homeLettore.getLettore().rimuoviIscrizioneLettura(((NotificaAggiornamentoEvento) msg).getEvento());
+                }
+                for (Evento e :homeLettore.getEventiProssimi()) {
+                    if (e.getId() == ((NotificaAggiornamentoEvento) msg).getEvento().getId()) {
+                        homeLettore.getEventiProssimi().set(homeLettore.getEventiProssimi().indexOf(e),
+                                ((NotificaAggiornamentoEvento) msg).getEvento());
+                    }
+                }
+            }
         }
 
 

@@ -76,6 +76,14 @@ public class HomeLettore {
         if (this.recensioni != null) this.recensioni.remove(recensione);
     }
 
+    public Lettore getLettore() {
+        return lettore;
+    }
+
+    public ArrayList<Evento> getEventiProssimi() {
+        return eventiProssimi;
+    }
+
     public void setAttendi(boolean attendi) {
         this.attendi = attendi;
     }

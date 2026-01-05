@@ -22,7 +22,7 @@ public class EventoDAO {
 
     /** Restituisce la lista degli eventi futuri creati da un lettore.
      * L'Evento contiene info circa creatore, luogo e scaletta.
-     * Contiene solo i listener associati al creatore e ai lettori iscritti. Mancano i listener dei genitori con figli iscritti all'evento.
+     * Contiene i listener associati al creatore e ai lettori iscritti e ai genitori con figli iscritti all'evento.
      * @param lettore Lettore di cui si vogliono ottenere gli eventi creati.
      * @return Lista degli eventi creati dal lettore con data futura (rispetto alla data odierna).
      * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
@@ -40,6 +40,8 @@ public class EventoDAO {
                         LibroLettoreDAO libroLettoreDAO = new LibroLettoreDAO(connection);
                         Luogo luogo = new Luogo(result.getString("l.nome"), result.getInt("l.capienza"), result.getInt("l.id"));
                         Evento evento = new Evento(result.getInt("e.id"), lettore, result.getString("e.nome"), luogo, result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")));
+                        EventoDAO eventoDAO = new EventoDAO(connection);
+                        evento.addListeners(eventoDAO.getGenitoriIscritti(evento));
                         eventiCreati.add(evento);
                     }
                     return eventiCreati;
@@ -56,7 +58,7 @@ public class EventoDAO {
 
     /** Restituisce la lista dei prossimi eventi a partire da una data specifica.
      * L'Evento contiene info circa creatore, luogo e scaletta.
-     * Contiene solo i listener associati al creatore e ai lettori iscritti. Mancano i listener dei genitori con figli iscritti all'evento.
+     * Contiene i listener associati al creatore e ai lettori iscritti e ai genitori con figli iscritti all'evento.
      * @param data Data di inizio per la ricerca degli eventi.
      * @return Lista dei prossimi 10 eventi a partire dalla data specificata.
      * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
@@ -78,6 +80,8 @@ public class EventoDAO {
                         CreaUtente<Lettore> creaLettore = new CreaLettore();
                         Lettore creatore = creaLettore.nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
                         Evento evento = new Evento(result.getInt("e.id"), creatore, result.getString("e.nome"), luogo, result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")));
+                        EventoDAO eventoDAO = new EventoDAO(connection);
+                        evento.addListeners(eventoDAO.getGenitoriIscritti(evento));
                         nextEventi.add(evento);
                     }
                     return nextEventi;
@@ -95,7 +99,7 @@ public class EventoDAO {
 
     /** Restituisce la lista dei prossimi eventi a partire dalla data di un evento specifico.
      * L'Evento contiene info circa creatore, luogo e scaletta.
-     * Contiene solo i listener associati al creatore e ai lettori iscritti. Mancano i listener dei genitori con figli iscritti all'evento.
+     * Contiene i listener associati al creatore e ai lettori iscritti e ai genitori con figli iscritti all'evento.
      * @param eventoUltimoVisto Evento di riferimento per la ricerca dei prossimi eventi.
      * @return Lista dei prossimi 10 eventi successivi all'evento specificato.
      * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
@@ -119,6 +123,8 @@ public class EventoDAO {
                         CreaUtente<Lettore> creaLettore = new CreaLettore();
                         Lettore creatore = creaLettore.nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
                         Evento evento = new Evento(result.getInt("e.id"), creatore, result.getString("e.nome"), luogo, result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")));
+                        EventoDAO eventoDAO = new EventoDAO(connection);
+                        evento.addListeners(eventoDAO.getGenitoriIscritti(evento));
                         nextEventi.add(evento);
                     }
                     return nextEventi;
@@ -136,7 +142,7 @@ public class EventoDAO {
 
     /** Restituisce un evento dato il suo ID.
      * L'Evento contiene info circa creatore, luogo e scaletta.
-     * Contiene solo i listener associati al creatore e ai lettori iscritti. Mancano i listener dei genitori con figli iscritti all'evento.
+     * Contiene i listener associati al creatore e ai lettori iscritti e ai genitori con figli iscritti all'evento.
      * @param id_evento ID dell'evento da recuperare.
      * @return Evento corrispondente all'ID specificato, o null se non trovato.
      * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
@@ -152,6 +158,8 @@ public class EventoDAO {
                     CreaUtente<Lettore> creaLettore = new CreaLettore();
                     Lettore creatore = creaLettore.nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
                     Evento evento = new Evento(result.getInt("e.id"), creatore, result.getString("e.nome"), luogo, result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")));
+                    EventoDAO eventoDAO = new EventoDAO(connection);
+                    evento.addListeners(eventoDAO.getGenitoriIscritti(evento));
                     return evento;
                 } else {
                     return null;

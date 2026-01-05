@@ -117,6 +117,14 @@ public class Figlio implements Serializable {
         }
     }
 
+    /** Verifica se il figlio è iscritto ad un evento specifico.
+     * @param evento Evento da verificare.
+     * @return true se il figlio è iscritto all'evento, false altrimenti.
+     */
+    public boolean isIscritto(Evento evento) {
+        return iscrizioni.stream().anyMatch(e -> e.getId() == evento.getId());
+    }
+
     /** Restituisce l'ID del figlio.
      * @return ID del figlio.
      */
