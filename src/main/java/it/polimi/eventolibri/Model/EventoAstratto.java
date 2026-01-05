@@ -12,7 +12,7 @@ public abstract class EventoAstratto  implements Serializable {
 
     private ArrayList<Listener> listeners = new ArrayList<Listener>();
 
-    /* Metodo per aggiungere un listener alla lista dei listener.
+    /** Metodo per aggiungere un listener alla lista dei listener.
      * Controlla se il listener è già presente prima di aggiungerlo.
      */
 	public void addListener(Listener listener) {

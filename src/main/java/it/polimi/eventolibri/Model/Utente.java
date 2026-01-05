@@ -13,11 +13,11 @@ public abstract class Utente implements Serializable {
 	private String cognome;
 	private String userName;
 
-    /** Costruttori della classe Utente.
+    /** Costruttore della classe Utente.
+     *
      * @param nome Nome dell'utente.
      * @param cognome Cognome dell'utente.
-     * @param userName Username dell'utente.
-     * @param id ID univoco dell'utente.
+     * @param userName Nome utente (username) dell'utente.
      */
     public Utente(String nome, String cognome, String userName) {
         this.nome = nome;
@@ -25,6 +25,13 @@ public abstract class Utente implements Serializable {
         this.userName = userName;
     }
 
+    /** Costruttore della classe Utente con id.
+     *
+     * @param id Identificativo univoco dell'utente.
+     * @param nome Nome dell'utente.
+     * @param cognome Cognome dell'utente.
+     * @param userName Nome utente (username) dell'utente.
+     */
     public Utente(int id, String nome, String cognome, String userName) {
         this.nome = nome;
         this.cognome = cognome;
