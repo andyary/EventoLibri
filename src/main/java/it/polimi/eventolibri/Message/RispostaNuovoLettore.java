@@ -11,42 +11,42 @@ public class RispostaNuovoLettore extends Messaggio {
     private String messaggioErrore;
     private Lettore nuovoLettore;
 
-    /* Ritorna lo stato di successo dell'operazione di creazione del lettore.
+    /** Ritorna lo stato di successo dell'operazione di creazione del lettore.
      * @return true se l'operazione è riuscita, false altrimenti.
      */
     public boolean isSuccesso() {
         return successo;
     }
 
-    /* Imposta lo stato di successo dell'operazione di creazione del lettore.
+    /** Imposta lo stato di successo dell'operazione di creazione del lettore.
      * @param successo true se l'operazione è riuscita, false altrimenti.
      */
     public void setSuccesso(boolean successo) {
         this.successo = successo;
     }
 
-    /* Ritorna il messaggio di errore in caso di fallimento dell'operazione.
+    /** Ritorna il messaggio di errore in caso di fallimento dell'operazione.
      * @return il messaggio di errore.
      */
     public String getMessaggioErrore() {
         return messaggioErrore;
     }
 
-    /* Imposta il messaggio di errore in caso di fallimento dell'operazione.
+    /** Imposta il messaggio di errore in caso di fallimento dell'operazione.
      * @param messaggioErrore il messaggio di errore.
      */
     public void setMessaggioErrore(String messaggioErrore) {
         this.messaggioErrore = messaggioErrore;
     }
 
-    /* Ritorna il nuovo lettore creato.
+    /** Ritorna il nuovo lettore creato.
      * @return il nuovo lettore.
      */
     public Lettore getNuovoLettore() {
         return nuovoLettore;
     }
 
-    /* Imposta il nuovo lettore creato.
+    /** Imposta il nuovo lettore creato.
      * @param nuovoLettore il nuovo lettore.
      */
     public void setNuovoLettore(Lettore nuovoLettore) {

@@ -11,42 +11,42 @@ public class RispostaNuovoAmministratore extends Messaggio {
     private String messaggioErrore;
     private Amministratore nuovoAmministratore;
 
-    /* Ritorna il successo dell'operazione di creazione del nuovo amministratore.
+    /** Ritorna il successo dell'operazione di creazione del nuovo amministratore.
      * @return true se l'operazione è riuscita, false altrimenti.
      */
     public boolean isSuccesso() {
         return successo;
     }
 
-    /* Setta il successo dell'operazione di creazione del nuovo amministratore.
+    /** Setta il successo dell'operazione di creazione del nuovo amministratore.
      * @param successo true se l'operazione è riuscita, false altrimenti.
      */
     public void setSuccesso(boolean successo) {
         this.successo = successo;
     }
 
-    /* Ritorna il messaggio di errore in caso di fallimento dell'operazione.
+    /** Ritorna il messaggio di errore in caso di fallimento dell'operazione.
      * @return il messaggio di errore.
      */
     public String getMessaggioErrore() {
         return messaggioErrore;
     }
 
-    /* Setta il messaggio di errore in caso di fallimento dell'operazione.
+    /** Setta il messaggio di errore in caso di fallimento dell'operazione.
      * @param messaggioErrore il messaggio di errore.
      */
     public void setMessaggioErrore(String messaggioErrore) {
         this.messaggioErrore = messaggioErrore;
     }
 
-    /* Ritorna il nuovo amministratore creato.
+    /** Ritorna il nuovo amministratore creato.
      * @return il nuovo amministratore.
      */
     public Amministratore getNuovoAmministratore() {
         return nuovoAmministratore;
     }
 
-    /* Setta il nuovo amministratore creato.
+    /** Setta il nuovo amministratore creato.
      * @param nuovoAmministratore il nuovo amministratore.
      */
     public void setNuovoAmministratore(Amministratore nuovoAmministratore) {

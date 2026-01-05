@@ -26,7 +26,7 @@ public abstract class EventoAstratto  implements Serializable {
         // if (!listeners.contains(listener)){listeners.add(listener);}
     }
 
-    /* Metodo per aggiungere una lista di listener alla lista dei listener.
+    /** Metodo per aggiungere una lista di listener alla lista dei listener.
      * Utilizza il metodo addListener per ogni listener nella lista fornita.
      */
     public void addListeners(ArrayList<Genitore> listenersToAdd) {
@@ -35,7 +35,7 @@ public abstract class EventoAstratto  implements Serializable {
         }
     }
 
-    /* Metodo per rimuovere un listener dalla lista dei listener.
+    /** Metodo per rimuovere un listener dalla lista dei listener.
      * Cerca il listener nella lista e lo rimuove se trovato.
      */
 	public void removeListener(Listener listener) {
@@ -52,7 +52,7 @@ public abstract class EventoAstratto  implements Serializable {
         return listeners;
     }
 
-    /* Metodo per notificare tutti i listener registrati di un aggiornamento.
+    /** Metodo per notificare tutti i listener registrati di un aggiornamento.
      * Chiama il metodo update su ogni listener, passando l'evento aggiornato.
      */
 	public void updateAll(Evento evento) {

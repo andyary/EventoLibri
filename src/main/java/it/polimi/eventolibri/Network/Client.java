@@ -475,8 +475,6 @@ public class Client {
                 }
             }
         }
-
-
     }
 
     private void close() {
