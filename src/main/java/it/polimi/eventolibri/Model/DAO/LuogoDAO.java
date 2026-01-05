@@ -8,12 +8,23 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/** Classe DAO per la gestione dei luoghi nel database.
+ */
 public class LuogoDAO {
     private Connection connection;
+
+    /** Costruttore della classe LuogoDAO.
+     * @param connection Connessione al database.
+     */
     public LuogoDAO(Connection connection) {
         this.connection = connection;
     }
 
+    /** Recupera un luogo specifico dal database in base all'ID.
+     * @param idLuogo ID del luogo da recuperare.
+     * @return Oggetto Luogo corrispondente all'ID, o null se non trovato.
+     * @throws SQLException Se si verifica un errore durante l'accesso al database.
+     */
     public Luogo getLuogo(int idLuogo) throws SQLException {
         String query = "SELECT * FROM luoghi WHERE id = ?";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
@@ -35,6 +46,10 @@ public class LuogoDAO {
         }
     }
 
+    /** Recupera tutti i luoghi dal database.
+     * @return ArrayList di oggetti Luogo presenti nel database, o null se non ci sono luoghi.
+     * @throws SQLException Se si verifica un errore durante l'accesso al database.
+     */
     public ArrayList<Luogo> getLuoghi() throws SQLException {
         String query = "SELECT * FROM luoghi";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {

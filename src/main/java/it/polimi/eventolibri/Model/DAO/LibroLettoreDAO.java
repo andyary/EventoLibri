@@ -8,13 +8,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/** Classe DAO per la gestione delle operazioni sul database relavice alla classe LibroLettore,
+ * utile per la creazione della scaletta di lettura degli eventi.
+ */
 public class LibroLettoreDAO {
     private Connection connection;
 
+    /** Costruttore della classe LibroLettoreDAO.
+     * @param connection Connessione al database.
+     */
     public LibroLettoreDAO(Connection connection) {
         this.connection = connection;
     }
 
+    /** Recupera la scaletta di lettura per un evento specifico.
+     * @param id_evento ID dell'evento di cui recuperare la scaletta.
+     * @return ArrayList di oggetti LibroLettore che rappresentano la scaletta di lettura.
+     * @throws SQLException Se si verifica un errore durante l'accesso al database.
+     */
     public ArrayList<LibroLettore> getScaletta(int id_evento) throws SQLException {
         ArrayList<LibroLettore> scaletta = new ArrayList<>();
         String query = "SELECT * FROM librolettore ll JOIN libri l ON ll.id_libro=l.id  LEFT JOIN utenti u ON  ll.id_lettore=u.id WHERE id_evento = ?";
@@ -44,6 +55,13 @@ public class LibroLettoreDAO {
         }
     }
 
+    /** Recupera gli eventi di lettura a cui un lettore è iscritto.
+     * Evento contiene informazioni sul creatore, luogo e scaletta.
+     * Evento contiene listener associati al creatore e ai lettori nella scaletta. Non contiene listener associati ai genitori dei figli iscrittti all'evento.
+     * @param lettore Lettore di cui recuperare gli eventi di lettura.
+     * @return ArrayList di oggetti Evento che rappresentano gli eventi di lettura.
+     * @throws SQLException Se si verifica un errore durante l'accesso al database.
+     */
     public ArrayList<Evento> getEventiLettura(Lettore lettore) throws SQLException {
         ArrayList<Evento> eventiLettura = new ArrayList<>();
         String query = "SELECT * FROM librolettore ll JOIN eventi e JOIN luoghi l JOIN utenti u ON e.id=ll.id_evento AND e.id_luogo=l.id AND u.id=e.id_creatore WHERE ll.id_lettore = ? AND e.data >= NOW() ORDER BY e.data ASC";
@@ -79,6 +97,13 @@ public class LibroLettoreDAO {
         }
     }
 
+    /** Crea nel database una nuova associazione tra un libro e un lettore per un evento specifico.
+     * @param evento Evento a cui associare il libro e il lettore.
+     * @param libro Libro da associare.
+     * @param lettore Lettore da associare (può essere null).
+     * @param progressivo Progressivo dell'associazione libro-lettore in scaletta.
+     * @throws SQLException Se si verifica un errore durante l'accesso al database.
+     */
     public void creaLibroLettore(Evento evento, Libro libro, Lettore lettore, int progressivo) throws SQLException {
         String query = "INSERT into librolettore (id_evento, id_libro, id_lettore, progressivo)   VALUES(?, ?, ?, ?)";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
@@ -94,12 +119,20 @@ public class LibroLettoreDAO {
             }
     }
 
+    /** Crea nel database la scaletta di lettura per un evento specifico.
+     * @param evento Evento per cui creare la scaletta di lettura.
+     * @throws SQLException Se si verifica un errore durante l'accesso al database.
+     */
     public void creaScaletta(Evento evento) throws SQLException {
         for (LibroLettore libroLettore : evento.getScaletta()) {
             creaLibroLettore(evento, libroLettore.getLibro(), libroLettore.getLettore(), libroLettore.getProgressivo());
         }
     }
 
+    /** Cancella la scaletta di lettura per un evento specifico dal database.
+     * @param evento Evento di cui cancellare la scaletta di lettura.
+     * @throws SQLException Se si verifica un errore durante l'accesso al database.
+     */
     public void cancellaScaletta(Evento evento) throws SQLException {
         String query = "DELETE from librolettore WHERE id_evento = ?";
         try  (PreparedStatement pstatement = connection.prepareStatement(query);) {
@@ -107,7 +140,4 @@ public class LibroLettoreDAO {
             pstatement.executeUpdate();
         }
     }
-
-
-
 }

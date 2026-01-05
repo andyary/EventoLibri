@@ -3,6 +3,9 @@ package it.polimi.eventolibri.Model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * Classe astratta che rappresenta un utente del sistema.
+ */
 public abstract class Utente implements Serializable {
 
 	private int id;
@@ -10,7 +13,12 @@ public abstract class Utente implements Serializable {
 	private String cognome;
 	private String userName;
 
-
+    /** Costruttori della classe Utente.
+     * @param nome Nome dell'utente.
+     * @param cognome Cognome dell'utente.
+     * @param userName Username dell'utente.
+     * @param id ID univoco dell'utente.
+     */
     public Utente(String nome, String cognome, String userName) {
         this.nome = nome;
         this.cognome = cognome;

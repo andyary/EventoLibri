@@ -6,14 +6,27 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+/** Classe DAO per la gestione degli eventi nel database.
+ * Fornisce metodi per creare, modificare, cancellare e recuperare eventi.
+ */
 public class EventoDAO {
 
     private Connection connection;
 
+    /** Costruttore della classe EventoDAO.
+     * @param connection Connessione al database.
+     */
     public EventoDAO(Connection connection) {
         this.connection = connection;
     }
 
+    /** Restituisce la lista degli eventi futuri creati da un lettore.
+     * L'Evento contiene info circa creatore, luogo e scaletta.
+     * Contiene solo i listener associati al creatore e ai lettori iscritti. Mancano i listener dei genitori con figli iscritti all'evento.
+     * @param lettore Lettore di cui si vogliono ottenere gli eventi creati.
+     * @return Lista degli eventi creati dal lettore con data futura (rispetto alla data odierna).
+     * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+     */
     public ArrayList<Evento> getEventiCreati(Lettore lettore) throws SQLException {
         ArrayList<Evento> eventiCreati = new ArrayList<>();
         String query = "SELECT * FROM eventi e JOIN luoghi l ON e.id_luogo=l.id WHERE e.id_creatore = ? AND e.data >= NOW() ORDER BY e.data ASC";
@@ -35,13 +48,19 @@ public class EventoDAO {
                 System.out.println("8" + ex.getMessage());
                 return eventiCreati;
             }
-
         } catch (SQLException ex) {
             System.out.println("9" + ex.getMessage());
             return eventiCreati;
         }
     }
 
+    /** Restituisce la lista dei prossimi eventi a partire da una data specifica.
+     * L'Evento contiene info circa creatore, luogo e scaletta.
+     * Contiene solo i listener associati al creatore e ai lettori iscritti. Mancano i listener dei genitori con figli iscritti all'evento.
+     * @param data Data di inizio per la ricerca degli eventi.
+     * @return Lista dei prossimi 10 eventi a partire dalla data specificata.
+     * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+     */
     public ArrayList<Evento> getNextEventi(LocalDateTime data) throws SQLException {
         ArrayList<Evento> nextEventi = new ArrayList<>();
         String query = "SELECT * FROM eventi e JOIN luoghi l JOIN utenti u " +
@@ -74,6 +93,13 @@ public class EventoDAO {
         }
     }
 
+    /** Restituisce la lista dei prossimi eventi a partire dalla data di un evento specifico.
+     * L'Evento contiene info circa creatore, luogo e scaletta.
+     * Contiene solo i listener associati al creatore e ai lettori iscritti. Mancano i listener dei genitori con figli iscritti all'evento.
+     * @param eventoUltimoVisto Evento di riferimento per la ricerca dei prossimi eventi.
+     * @return Lista dei prossimi 10 eventi successivi all'evento specificato.
+     * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+     */
     public ArrayList<Evento> getNextEventi(Evento eventoUltimoVisto) throws SQLException {
         ArrayList<Evento> nextEventi = new ArrayList<>();
         String query = "SELECT * FROM eventi e JOIN luoghi l JOIN utenti u ON e.id_luogo=l.id AND e.id_creatore=u.id " +
@@ -108,6 +134,13 @@ public class EventoDAO {
         }
     }
 
+    /** Restituisce un evento dato il suo ID.
+     * L'Evento contiene info circa creatore, luogo e scaletta.
+     * Contiene solo i listener associati al creatore e ai lettori iscritti. Mancano i listener dei genitori con figli iscritti all'evento.
+     * @param id_evento ID dell'evento da recuperare.
+     * @return Evento corrispondente all'ID specificato, o null se non trovato.
+     * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+     */
     public Evento getEventoDaId(int id_evento) throws SQLException {
         String query = "SELECT * FROM eventi e JOIN luoghi l JOIN utenti u ON e.id_luogo=l.id AND e.id_creatore=u.id WHERE e.id = ?";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
@@ -134,6 +167,14 @@ public class EventoDAO {
         }
     }
 
+    /** Crea un nuovo evento nel database.
+     * @param creatore Lettore che crea l'evento.
+     * @param nome Nome dell'evento.
+     * @param luogo Luogo in cui si svolge l'evento.
+     * @param data Data e ora dell'evento.
+     * @return ID dell'evento appena creato.
+     * @throws SQLException Se si verifica un errore durante l'accesso al database.
+     */
     public int creaEvento(Lettore creatore, String nome, Luogo luogo, LocalDateTime data) throws SQLException {
         String query = "INSERT into eventi (nome, data, id_creatore, id_luogo)   VALUES(?, ?, ?, ?)";
         try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
@@ -150,6 +191,10 @@ public class EventoDAO {
         }
     }
 
+    /** Modifica un evento esistente nel database.
+     * @param evento Evento da modificare.
+     * @throws SQLException Se si verifica un errore durante l'accesso al database.
+     */
     public void modificaEvento(Evento evento) throws SQLException {
         LibroLettoreDAO libroLettoreDAO = new LibroLettoreDAO(connection);
         libroLettoreDAO.cancellaScaletta(evento);
@@ -164,6 +209,10 @@ public class EventoDAO {
         }
     }
 
+    /** Cancella un evento esistente nel database tramite id.
+     * @param evento Evento da cancellare.
+     * @throws SQLException Se si verifica un errore durante l'accesso al database.
+     */
     public void cancellaEvento(Evento evento) throws SQLException {
         String query = "DELETE FROM eventi e WHERE e.id = ?";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
@@ -172,6 +221,14 @@ public class EventoDAO {
         }
     }
 
+    /** Restituisce la lista degli eventi in conflitto con un evento specifico.
+     * Due eventi sono in conflitto se si svolgono nello stesso luogo e i loro orari si sovrappongono.
+     * L'Evento contiene info circa creatore, luogo e scaletta.
+     * Contiene solo i listener associati al creatore e ai lettori iscritti. Mancano i listener dei genitori con figli iscritti all'evento.
+     * @param evento Evento di riferimento per la ricerca dei conflitti.
+     * @return Lista degli eventi in conflitto con l'evento specificato.
+     * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+     */
     public ArrayList<Evento> eventiInConflitto(Evento evento) throws SQLException {
         String query = "SELECT e.id, e.data AS dataInizio, SUM(l.tempoLettura) AS durataEvento, DATE_ADD(e.data, INTERVAL SUM(l.tempoLettura) MINUTE) AS dataFine " +
                 "FROM eventi e JOIN libroLettore ll JOIN libri l " +
@@ -208,6 +265,11 @@ public class EventoDAO {
         }
     }
 
+    /** Restituisce il numero di figli iscritti ad un evento specifico.
+     * @param evento Evento di cui si vuole conoscere il numero di iscritti.
+     * @return Numero di figli iscritti all'evento specificato.
+     * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+     */
     public int getIscrittiEvento(Evento evento) throws SQLException {
         String query = "SELECT COUNT(*) AS numIscritti FROM iscrizioni WHERE id_evento = ?";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
@@ -223,13 +285,18 @@ public class EventoDAO {
                 System.out.println("Errore query iscritto evento:" + ex.getMessage());
                 throw new SQLException();
             }
-
         } catch (SQLException ex) {
             System.out.println("Errore query iscritto evento2:" + ex.getMessage());
             throw new SQLException();
         }
     }
 
+    /** Restituisce la lista dei genitori con figli iscritti ad un evento specifico.
+     * Il genitore ritornato contiene solo le informazioni base (id, nome, cognome, username). Non sono caricati i figli del genitore.
+     * @param evento Evento di cui si vogliono ottenere i genitori con figli iscritti.
+     * @return Lista dei genitori con figli iscritti all'evento specificato.
+     * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+     */
     public ArrayList<Genitore> getGenitoriIscritti(Evento evento) throws SQLException {
         ArrayList<Genitore> genitoriIscritti = new ArrayList<>();
         String query = "SELECT DISTINCT u.id, u.nome, u.cognome, u.username FROM iscrizioni i JOIN figli f JOIN utenti u ON i.id_figlio=f.id AND f.id_genitore=u.id WHERE i.id_evento = ?";

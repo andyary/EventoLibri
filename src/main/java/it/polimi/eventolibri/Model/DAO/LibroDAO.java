@@ -9,14 +9,25 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/** Classe DAO per la gestione dei libri nel database.
+ * Fornisce metodi per recuperare libri singoli o liste di libri.
+ */
 public class LibroDAO {
 
     private Connection connection;
 
+    /** Costruttore della classe LibroDAO.
+     * @param connection Connessione al database.
+     */
     public LibroDAO(Connection connection) {
         this.connection = connection;
     }
 
+    /** Recupera un libro specifico dal database in base al suo ID. Include le recensioni associate.
+     * @param idLibro ID del libro da recuperare.
+     * @return Oggetto Libro corrispondente all'ID fornito, o null se non trovato.
+     * @throws SQLException Se si verifica un errore durante l'accesso al database.
+     */
     public Libro getLibro(int idLibro) throws SQLException {
         String query = "SELECT * FROM libri WHERE id = ?";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
@@ -41,6 +52,9 @@ public class LibroDAO {
         }
     }
 
+    /** Recupera tutti i libri dal database. Include le recensioni associate a ciascun libro.
+     * @return ArrayList di tutti i libri presenti nel database, o null in caso di errore.
+     */
     public ArrayList<Libro> getLibri() {
         String query = "SELECT * FROM libri";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {

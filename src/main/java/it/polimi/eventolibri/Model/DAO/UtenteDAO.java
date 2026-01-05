@@ -1,18 +1,30 @@
 package it.polimi.eventolibri.Model.DAO;
 
 import it.polimi.eventolibri.Model.*;
-
 import java.sql.*;
 import java.util.ArrayList;
 
+/** Classe DAO per la gestione degli utenti nel database.
+ */
 public class UtenteDAO {
 
+    /** Attributo: Connessione al database.*/
     private Connection connection;
 
+    /** Costruttore della classe UtenteDAO.
+     * @param connection Connessione al database.
+     */
     public UtenteDAO(Connection connection) {
         this.connection = connection;
     }
 
+    /** Metodo per verificare le credenziali di un utente, usato in fase di login.
+     * In base al tipo di utente, viene creato l'oggetto corrispondente.
+     * @param username Username dell'utente.
+     * @param psw Password dell'utente.
+     * @return Utente se le credenziali sono corrette, null altrimenti.
+     * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+     */
     public Utente checkCredentials(String username, String psw) throws SQLException {
         String query = "SELECT * FROM utenti WHERE username = ? AND psw = ?";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
@@ -56,6 +68,14 @@ public class UtenteDAO {
         }
     }
 
+    /** Metodo per creare un nuovo lettore nel database.
+     * @param nome Nome del lettore.
+     * @param cognome Cognome del lettore.
+     * @param username Username del lettore.
+     * @param psw Password del lettore.
+     * @return ID del nuovo lettore creato, -1 in caso di errore.
+     * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+     */
     public int creaLettore(String nome, String cognome, String username, String psw) throws SQLException {
         String query = "INSERT into utenti (nome, cognome, username, psw, tipo)   VALUES(?, ?, ?, ?, ?)";
         try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
@@ -73,6 +93,14 @@ public class UtenteDAO {
         }
     }
 
+    /** Metodo per creare un nuovo genitore nel database.
+     * @param nome Nome del genitore.
+     * @param cognome Cognome del genitore.
+     * @param username Username del genitore.
+     * @param psw Password del genitore.
+     * @return ID del nuovo genitore creato, -1 in caso di errore.
+     * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+     */
     public int creaGenitore(String nome, String cognome, String username, String psw) throws SQLException {
         String query = "INSERT into utenti (nome, cognome, username, psw, tipo)   VALUES(?, ?, ?, ?, ?)";
         try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
@@ -90,6 +118,14 @@ public class UtenteDAO {
         }
     }
 
+    /** Metodo per creare un nuovo amministratore nel database.
+     * @param nome Nome dell'amministratore.
+     * @param cognome Cognome dell'amministratore.
+     * @param username Username dell'amministratore.
+     * @param psw Password dell'amministratore.
+     * @return ID del nuovo amministratore creato, -1 in caso di errore.
+     * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+     */
     public int creaAmministratore(String nome, String cognome, String username, String psw) throws SQLException {
         String query = "INSERT into utenti (nome, cognome, username, psw, tipo)   VALUES(?, ?, ?, ?, ?)";
         try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
@@ -107,6 +143,11 @@ public class UtenteDAO {
         }
     }
 
+    /** Metodo per verificare se esiste un utente con uno specifico username.
+     * @param username Username da verificare.
+     * @return ID dell'utente se esiste, -1 altrimenti.
+     * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+     */
     public int checkUserName (String username) throws SQLException {
         String query = "SELECT * FROM utenti WHERE username = ?";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
@@ -129,6 +170,11 @@ public class UtenteDAO {
         }
     }
 
+    /** Metodo per cancellare un genitore dal database.
+     * Prima di cancellare il genitore, vengono cancellati tutti i suoi figli.
+     * @param genitore Genitore da cancellare.
+     * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+     */
     public void cancellaGenitore(Genitore genitore) throws SQLException {
         //cancella figli di genitore
         FiglioDAO figlioDAO = new FiglioDAO(connection);
@@ -140,6 +186,10 @@ public class UtenteDAO {
         }
     }
 
+    /** Metodo per cancellare un lettore dal database.
+     * @param lettore Lettore da cancellare.
+     * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+     */
     public void cancellaLettore(Lettore lettore) throws SQLException {
         //cancella iscrizioni lettura
         String query = "DELETE FROM utenti WHERE id = ?";
@@ -149,6 +199,11 @@ public class UtenteDAO {
         }
     }
 
+    /** Metodo per modificare i dati (nome e cognome) di un genitore nel database.
+     * @param genitore Genitore da modificare.
+     * @return Numero di righe modificate.
+     * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+     */
     public int aggiornaGenitore(Genitore genitore) throws SQLException {
         String query = "UPDATE utenti SET nome = ? , cognome = ? WHERE id = ?";
         try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
@@ -159,6 +214,11 @@ public class UtenteDAO {
         }
     }
 
+    /** Metodo per modificare i dati (nome e cognome) di un lettore nel database.
+     * @param lettore Lettore da modificare.
+     * @return Numero di righe modificate.
+     * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+     */
     public int aggiornaLettore(Lettore lettore) throws SQLException {
         String query = "UPDATE utenti SET nome = ? , cognome = ? WHERE id = ?";
         try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
@@ -169,6 +229,11 @@ public class UtenteDAO {
         }
     }
 
+    /** Metodo per modificare i dati (nome e cognome) di un amministratore nel database.
+     * @param amministratore Amministratore da modificare.
+     * @return Numero di righe modificate.
+     * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+     */
     public int aggiornaAmministratore(Amministratore amministratore) throws SQLException {
         String query = "UPDATE utenti SET nome = ? , cognome = ? WHERE id = ?";
         try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
@@ -179,6 +244,9 @@ public class UtenteDAO {
         }
     }
 
+    /** Metodo per ottenere tutti i lettori presenti nel database.
+     * @return ArrayList di Lettore presenti nel database, null in caso di errore.
+     */
     public ArrayList<Lettore> getLettori() {
         String query = "SELECT * FROM utenti WHERE tipo = 'Lettore'";
         ArrayList<Lettore> lettori = new ArrayList<>();
@@ -202,7 +270,5 @@ public class UtenteDAO {
             System.out.println("Errore Query Get Lettori" + ex.getMessage());
             return null;
         }
-
-
     }
 }

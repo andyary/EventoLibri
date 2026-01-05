@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+/**
+ * Classe che rappresenta un evento di lettura di libri.
+ * Estende la classe astratta EventoAstratto e implementa l'interfaccia Serializable.
+ */
 public class Evento extends EventoAstratto implements Serializable {
 
     private String nome;
@@ -14,8 +18,11 @@ public class Evento extends EventoAstratto implements Serializable {
     private Lettore creatore;
     private int iscritti;
 
-
-    // costruttore senza creatore (usato per creare eventi temporanei prima di assegnarli a un creatore), impostato Id a 0
+    /** Costruttore della classe Evento senza creatore. Usato per creare eventi temporanei prima di assegnarli a un creatore. Id è impostato a 0.
+     * @param nome Nome dell'evento.
+     * @param luogo Luogo dell'evento.
+     * @param data Data e ora dell'evento.
+     */
     public Evento(String nome, Luogo luogo, LocalDateTime data) {
         this.id = 0;
         this.creatore = null;
@@ -25,11 +32,19 @@ public class Evento extends EventoAstratto implements Serializable {
         this.scaletta = new ArrayList<>();
     }
 
-    // setter per il creatore (usato per assegnare il creatore dopo aver creato l'evento temporaneo)
+    /** Imposta il creatore dell'evento. Usato per assegnare il creatore dopo aver creato l'evento temporaneo.
+     * @param creatore Lettore che ha creato l'evento.
+     */
     public void setCreatore(Lettore creatore) {
         this.creatore = creatore;
     }
 
+    /** Costruttore della classe Evento.
+     * @param creatore Lettore che ha creato l'evento.
+     * @param nome Nome dell'evento.
+     * @param luogo Luogo dell'evento.
+     * @param data Data e ora dell'evento.
+     */
     public Evento(Lettore creatore, String nome, Luogo luogo, LocalDateTime data) {
         this.creatore = creatore;
         this.nome  = nome;
@@ -39,7 +54,13 @@ public class Evento extends EventoAstratto implements Serializable {
         creatore.aggiungiEventiCreati(this);
     }
 
-
+    /** Costruttore della classe Evento.
+     * @param creatore Lettore che ha creato l'evento.
+     * @param nome Nome dell'evento.
+     * @param luogo Luogo dell'evento.
+     * @param data Data e ora dell'evento.
+     * @param scaletta Lista di libri e lettori associati all'evento.
+     */
     public Evento(Lettore creatore, String nome, Luogo luogo, LocalDateTime data, ArrayList<LibroLettore> scaletta) {
         this.creatore = creatore;
         this.nome  = nome;
@@ -52,6 +73,14 @@ public class Evento extends EventoAstratto implements Serializable {
         }
     }
 
+    /** Costruttore della classe Evento.
+     * @param id ID univoco dell'evento.
+     * @param creatore Lettore che ha creato l'evento.
+     * @param nome Nome dell'evento.
+     * @param luogo Luogo dell'evento.
+     * @param data Data e ora dell'evento.
+     * @param scaletta Lista di libri e lettori associati all'evento.
+     */
     public Evento(int id, Lettore creatore, String nome, Luogo luogo, LocalDateTime data, ArrayList<LibroLettore> scaletta) {
         this.creatore = creatore;
         this.nome  = nome;
@@ -65,39 +94,65 @@ public class Evento extends EventoAstratto implements Serializable {
         this.id = id;
     }
 
+    /** Imposta l'ID univoco dell'evento.
+     * @param id ID univoco dell'evento.
+     */
     public void setId(int id) {
         this.id = id;
     }
 
+    /** Restituisce il nome dell'evento.
+     * @return Nome dell'evento.
+     */
     public String getNome() {
         return nome;
     }
 
+    /** Restituisce la data e ora dell'evento.
+     * @return Data e ora dell'evento.
+     */
     public LocalDateTime getData() {
         return data;
     }
 
+    /** Restituisce il luogo dell'evento.
+     * @return Luogo dell'evento.
+     */
     public Luogo getLuogo() {
         return luogo;
     }
 
+    /** Restituisce la scaletta dell'evento.
+     * @return Scaletta dell'evento.
+     */
     public ArrayList<LibroLettore> getScaletta() {
         return scaletta;
     }
 
+    /** Restituisce il creatore dell'evento (che è un Lettore).
+     * @return Creatore dell'evento.
+     */
     public Lettore getCreatore() {
         return creatore;
     }
 
+    /** Restituisce il numero di iscritti all'evento.
+     * @return Numero di iscritti all'evento.
+     */
     public int getIscritti() {
         return iscritti;
     }
 
-
+    /** Restituisce l'ID univoco dell'evento.
+     * @return ID univoco dell'evento.
+     */
     public int getId() {
         return id;
     }
 
+    /** Aggiorna i dettagli dell'evento con quelli di un evento passato.
+     * @param evento Evento con i nuovi dettagli.
+     */
     public void aggiornaEvento(Evento evento) {
         this.nome  = evento.nome;
         this.luogo = evento.luogo;
@@ -126,8 +181,9 @@ public class Evento extends EventoAstratto implements Serializable {
         updateAll(this);
     }
 
-
-
+    /** Calcola l'ora di fine dell'evento sommando le durate di lettura di tutti i libri nella scaletta alla ora di inizio.
+     * @return Ora di fine dell'evento.
+     */
     public LocalDateTime calcolaOraFine() {
         LocalDateTime oraFine = data;
         for (LibroLettore ll : scaletta) {
@@ -137,14 +193,24 @@ public class Evento extends EventoAstratto implements Serializable {
         return oraFine;
     }
 
+    /** Imposta il numero di iscritti all'evento.
+     * @param iscritti Numero di iscritti all'evento.
+     */
     public void setIscritti(int iscritti) {
         this.iscritti = iscritti;
     }
 
+    /** Imposta la scaletta dell'evento.
+     * @param scaletta Scaletta dell'evento.
+     */
     public void setScaletta(ArrayList<LibroLettore> scaletta) {
         this.scaletta = scaletta;
     }
 
+    /** Verifica se un lettore è iscritto come Lettore all'evento.
+     * @param lettore Lettore da verificare.
+     * @return true se il lettore è iscritto, false altrimenti.
+     */
     public boolean isIscritto(Lettore lettore) {
         for (LibroLettore ll : scaletta) {
             if (ll.getLettore() == null) continue;
