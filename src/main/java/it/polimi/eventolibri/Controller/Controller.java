@@ -18,6 +18,9 @@ public class Controller {
     private LuogoDAO luogoDAO;
     private RecensioneDAO recensioneDAO;
 
+    /** Costruttore della classe Controller.
+     * Inizializza i DAO necessari per le operazioni sul database.
+     */
     public Controller() {
         try {
             Connection con = DBGestore.getConnection();
@@ -33,6 +36,12 @@ public class Controller {
         }
     }
 
+    /** Controlla le credenziali di login di un utente.
+     * @param username Username dell'utente.
+     * @param password Password dell'utente.
+     * @return RispostaLogin contenente il risultato del controllo e i dati dell'utente se il login ha successo,
+     * i prossimi eventi in calendario ed eventuale messaggio di errore.
+     */
     public RispostaLogin controllaLogin(String username, String password) {
         RispostaLogin risposta = new RispostaLogin();
         try {
@@ -52,6 +61,11 @@ public class Controller {
         return risposta;
     }
 
+    /** Recupera i prossimi eventi in calendario.
+     * @param ultimoEvento Ultimo evento ricevuto dal client, usato per il caricamento progressivo.
+     * @return RispostaNextEventi contenente il risultato della query,
+     * la lista dei prossimi eventi ed eventuale messaggio di errore.
+     */
     public RispostaNextEventi getNextEventi(Evento ultimoEvento) {
         RispostaNextEventi risposta = new RispostaNextEventi();
         try {
@@ -69,6 +83,13 @@ public class Controller {
         return risposta;
     }
 
+    /** Iscrive un figlio a un evento.
+     * @param figlio Figlio da iscrivere.
+     * @param evento Evento a cui iscrivere il figlio.
+     * @param genitore Genitore che effettua l'iscrizione.
+     * @return RispostaIscrizioneEvento contenente il risultato dell'operazione su database,
+     * dell'iscrizione ed eventuale messaggio di errore.
+     */
     public RispostaIscrizioneEvento iscriviFiglioEvento(Figlio figlio, Evento evento, Genitore genitore) {
         RispostaIscrizioneEvento risposta = new RispostaIscrizioneEvento(figlio, evento, genitore);
         try {
@@ -82,6 +103,13 @@ public class Controller {
         return risposta;
     }
 
+    /** Disiscrive un figlio da un evento.
+     * @param figlio Figlio da disiscrivere.
+     * @param evento Evento da cui disiscrivere il figlio.
+     * @param genitore Genitore che effettua la disiscrizione.
+     * @return RispostaDisiscrizioneEvento contenente il risultato dell'operazione su database,
+     * della disiscrizione ed eventuale messaggio di errore.
+     */
     public RispostaDisiscrizioneEvento disiscriviFiglioEvento(Figlio figlio, Evento evento, Genitore genitore) {
         RispostaDisiscrizioneEvento risposta = new RispostaDisiscrizioneEvento(figlio, evento, genitore);
         try {
@@ -95,7 +123,11 @@ public class Controller {
         return risposta;
     }
 
-
+    /** Recupera la lista dei figli iscritti e dei genitori associati (per gestione listener) a un evento.
+     * @param evento Evento di cui recuperare gli iscritti.
+     * @return RispostaIscrittiEvento contenente il risultato della query,
+     * la lista dei figli iscritti e i genitori associati, ed eventuale messaggio di errore.
+     */
     public RispostaIscrittiEvento getIscrittiEvento(Evento evento) {
         RispostaIscrittiEvento risposta = new RispostaIscrittiEvento(evento);
         try {
@@ -110,6 +142,11 @@ public class Controller {
         return risposta;
     }
 
+    /** Aggiorna le informazioni di un genitore.
+     * @param genitore Genitore da aggiornare.
+     * @return RispostaAggiornaGenitore contenente il risultato dell'operazione su database,
+     * il genitore aggiornato ed eventuale messaggio di errore.
+     */
     public RispostaAggiornaGenitore aggiornaGenitore(Genitore genitore) {
         RispostaAggiornaGenitore risposta = new RispostaAggiornaGenitore();
         try {
@@ -129,6 +166,12 @@ public class Controller {
         return risposta;
     }
 
+    /** Aggiunge un nuovo figlio a un genitore.
+     * @param genitore Genitore a cui aggiungere il figlio.
+     * @param nuovoFiglio Figlio da aggiungere.
+     * @return RispostaAggiungiFiglio contenente il risultato dell'operazione su database,
+     * il genitore e il nuovo figlio aggiunto, ed eventuale messaggio di errore.
+     */
     public RispostaAggiungiFiglio aggiungiFiglio(Genitore genitore, Figlio nuovoFiglio) {
         RispostaAggiungiFiglio risposta = new RispostaAggiungiFiglio();
         try {
@@ -151,6 +194,12 @@ public class Controller {
         return risposta;
     }
 
+    /** Registra un nuovo genitore nel sistema.
+     * @param nuovoGenitore Genitore da registrare.
+     * @param psw Password del genitore.
+     * @return RispostaNuovoGenitore contenente il risultato dell'operazione su database,
+     * il nuovo genitore registrato, ed eventuale messaggio di errore.
+     */
     public RispostaNuovoGenitore registraNuovoGenitore(Genitore nuovoGenitore, String psw) {
         RispostaNuovoGenitore risposta = new RispostaNuovoGenitore();
         try {
@@ -177,6 +226,12 @@ public class Controller {
         return risposta;
     }
 
+    /** Registra un nuovo lettore nel sistema.
+     * @param nuovoLettore Lettore da registrare.
+     * @param psw Password del lettore.
+     * @return RispostaNuovoLettore contenente il risultato dell'operazione su database,
+     * il nuovo lettore registrato, ed eventuale messaggio di errore.
+     */
     public RispostaNuovoLettore registraNuovoLettore(Lettore nuovoLettore, String psw) {
         RispostaNuovoLettore risposta = new RispostaNuovoLettore();
         try {
@@ -205,6 +260,12 @@ public class Controller {
         return risposta;
     }
 
+    /** Registra un nuovo amministratore nel sistema.
+     * @param nuovoAmministratore Amministratore da registrare.
+     * @param psw Password dell'amministratore.
+     * @return RispostaNuovoAmministratore contenente il risultato dell'operazione su database,
+     * il nuovo amministratore registrato, ed eventuale messaggio di errore.
+     */
     public RispostaNuovoAmministratore registraNuovoAmministratore(Amministratore nuovoAmministratore, String psw) {
         RispostaNuovoAmministratore risposta = new RispostaNuovoAmministratore();
         try {
@@ -233,6 +294,11 @@ public class Controller {
         return risposta;
     }
 
+    /** Recupera la lista di tutti i lettori, tutti i luoghi e tutti i libri dal database.
+     * Utile per menu di selezione nelle interfacce grafiche.
+     * @return RispostaLettoriELuoghiELibri contenente il risultato della query,
+     * la lista di lettori, luoghi e libri, ed eventuale messaggio di errore.
+     */
     public RispostaLettoriELuoghiELibri richiestaLettoriELuoghiELibri() {
         RispostaLettoriELuoghiELibri risposta = new RispostaLettoriELuoghiELibri();
         try {
@@ -247,6 +313,12 @@ public class Controller {
         return risposta;
     }
 
+    /** Recupera le recensioni di un libro e verifica se un utente può recensirlo.
+     * @param libro Libro di cui recuperare le recensioni.
+     * @param utente Utente che vuole recensire il libro.
+     * @return RispostaRecensioniERecensibilita contenente il risultato della query,
+     * la lista delle recensioni del libro, la conferma della possibilità di recensirlo ed eventuale messaggio di errore.
+     */
     public RispostaRecensioniERecensibilita richiestaRecensioniERecensibilita(Libro libro, Utente utente) {
         RispostaRecensioniERecensibilita risposta = new RispostaRecensioniERecensibilita();
         try {
@@ -261,6 +333,11 @@ public class Controller {
         return risposta;
     }
 
+    /** Aggiorna le informazioni di un lettore.
+     * @param lettore Lettore da aggiornare.
+     * @return RispostaAggiornaLettore contenente il risultato dell'operazione su database,
+     * il lettore aggiornato ed eventuale messaggio di errore.
+     */
     public RispostaAggiornaLettore aggiornaLettore(Lettore lettore) {
         RispostaAggiornaLettore risposta = new RispostaAggiornaLettore();
         try {
@@ -280,6 +357,11 @@ public class Controller {
         return risposta;
     }
 
+    /** Aggiorna le informazioni di un amministratore.
+     * @param amministratore Amministratore da aggiornare.
+     * @return RispostaAggiornaAmministratore contenente il risultato dell'operazione su database,
+     * l'amministratore aggiornato ed eventuale messaggio di errore.
+     */
     public RispostaAggiornaAmministratore aggiornaAmministratore(Amministratore amministratore) {
         RispostaAggiornaAmministratore risposta = new RispostaAggiornaAmministratore();
         try {
@@ -299,6 +381,12 @@ public class Controller {
         return risposta;
     }
 
+    /** Salva in database un nuovo evento o un evento modificato, controllando prima eventuali conflitti di orario con altri eventi.
+     * Relativamente all'evento salvato, la scaletta viene salvata sovrascrivendo eventuali scalette precedentemente salvate
+     * @param evento Evento da salvare.
+     * @return RispostaSalvaEvento contenente il risultato dell'operazione su database,
+     * l'evento salvato ed eventuale messaggio di errore.
+     */
     public RispostaSalvaEvento salvaEvento(Evento evento) {
         RispostaSalvaEvento risposta = new RispostaSalvaEvento();
         try {
@@ -337,6 +425,11 @@ public class Controller {
         return risposta;
     }
 
+    /** Aggiunge una nuova recensione a un libro.
+     * @param recensione Recensione da aggiungere.
+     * @return RispostaAggiungiRecensione contenente il risultato dell'operazione su database,
+     * la recensione aggiunta ed eventuale messaggio di errore.
+     */
     public RispostaAggiungiRecensione aggiungiRecensione(Recensione recensione) {
         RispostaAggiungiRecensione risposta = new RispostaAggiungiRecensione();
         try {
@@ -358,6 +451,11 @@ public class Controller {
         return risposta;
     }
 
+    /** Cancella una recensione da un libro.
+     * @param recensione Recensione da cancellare.
+     * @return RispostaCancellaRecensione contenente il risultato dell'operazione su database,
+     * la recensione cancellata ed eventuale messaggio di errore.
+     */
     public RispostaCancellaRecensione cancellaRecensione(Recensione recensione) {
         RispostaCancellaRecensione risposta = new RispostaCancellaRecensione(recensione);
         try {
@@ -370,6 +468,4 @@ public class Controller {
         }
         return risposta;
     }
-
-
 }

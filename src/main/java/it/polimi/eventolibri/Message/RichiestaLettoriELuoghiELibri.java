@@ -1,6 +1,6 @@
 package it.polimi.eventolibri.Message;
 
-public class RichiestaLettoriELuoghiELibri extends Messaggio {
-
-    }
-
+/** Messaggio inviato dal client al server per richiedere la lista di tutti i lettori, tutti i luoghi
+ * e tutti i libri.
+ */
+public class RichiestaLettoriELuoghiELibri extends Messaggio {}
