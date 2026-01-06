@@ -33,10 +33,12 @@ public class Evento extends EventoAstratto implements Serializable {
     }
 
     /** Imposta il creatore dell'evento. Usato per assegnare il creatore dopo aver creato l'evento temporaneo.
+     * Aggiunge il creatore ai listener dell'evento.
      * @param creatore Lettore che ha creato l'evento.
      */
     public void setCreatore(Lettore creatore) {
         this.creatore = creatore;
+        this.addListener(creatore);
     }
 
     /** Costruttore della classe Evento.
@@ -200,11 +202,14 @@ public class Evento extends EventoAstratto implements Serializable {
         this.iscritti = iscritti;
     }
 
-    /** Imposta la scaletta dell'evento.
+    /** Imposta la scaletta dell'evento aggiungendo i lettori come listener.
      * @param scaletta Scaletta dell'evento.
      */
     public void setScaletta(ArrayList<LibroLettore> scaletta) {
         this.scaletta = scaletta;
+        for (LibroLettore ll : scaletta) {
+            if (ll.getLettore() != null) this.addListener(ll.getLettore());
+        }
     }
 
     /** Verifica se un lettore è iscritto come Lettore all'evento.

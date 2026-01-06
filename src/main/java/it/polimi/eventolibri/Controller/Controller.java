@@ -132,7 +132,7 @@ public class Controller {
         RispostaIscrittiEvento risposta = new RispostaIscrittiEvento(evento);
         try {
             risposta.getEvento().setIscritti(eventoDAO.getIscrittiEvento(evento));
-            risposta.getEvento().addListeners(eventoDAO.getGenitoriIscritti(evento));
+            risposta.getEvento().addListenersGenitori(eventoDAO.getGenitoriIscritti(evento));
             risposta.setSuccesso(true);
         } catch (Exception e) {
             risposta.setSuccesso(false);

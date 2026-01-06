@@ -26,12 +26,21 @@ public abstract class EventoAstratto  implements Serializable {
         // if (!listeners.contains(listener)){listeners.add(listener);}
     }
 
+    /** Metodo per aggiungere una lista di listener (tipo Genitori) alla lista dei listener.
+     * Utilizza il metodo addListener per ogni listener nella lista fornita.
+     */
+    public void addListenersGenitori(ArrayList<Genitore> listenersToAdd) {
+        for (Genitore genitore : listenersToAdd) {
+            addListener(genitore);
+        }
+    }
+
     /** Metodo per aggiungere una lista di listener alla lista dei listener.
      * Utilizza il metodo addListener per ogni listener nella lista fornita.
      */
-    public void addListeners(ArrayList<Genitore> listenersToAdd) {
-        for (Genitore genitore : listenersToAdd) {
-            addListener(genitore);
+    public void addListeners(ArrayList<Listener> listenersToAdd) {
+        for (Listener l : listenersToAdd) {
+            addListener(l);
         }
     }
 
@@ -48,9 +57,31 @@ public abstract class EventoAstratto  implements Serializable {
         // listeners.remove(listener);
 	}
 
+    /** Metodo per rimuovere tutti i listener dalla lista dei listener. */
+    public void removeAllListeners() {
+        listeners.clear();
+    }
+
+    /** Metodo per ottenere la lista dei listener registrati.
+     * @return ArrayList di listener registrati.
+     */
     public ArrayList<Listener> getListeners() {
         return listeners;
     }
+
+    /** Metodo per ottenere la lista dei listener di tipo Genitore registrati.
+     * @return ArrayList di listener di tipo Genitore registrati.
+     */
+    public ArrayList<Genitore> getListenersGenitori() {
+        ArrayList<Genitore> genitori = new ArrayList<Genitore>();
+        for (Listener l : listeners) {
+            if (l instanceof Genitore) {
+                genitori.add((Genitore) l);
+            }
+        }
+        return genitori;
+    }
+
 
     /** Metodo per notificare tutti i listener registrati di un aggiornamento.
      * Chiama il metodo update su ogni listener, passando l'evento aggiornato.

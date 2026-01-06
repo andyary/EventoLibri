@@ -280,9 +280,15 @@ public class EventoViewLettore {
                     luogoCombo.getValue(),
                     dataOra
             );
+            // rimuovo tutti i listener precedenti per evitare duplicati
+            // i lettori cancellati (da questa modifica) non saranno più aggiunti come listener
+            eventoTemp.removeAllListeners();
+            // imposto la scaletta (con aggiunta listener)
             eventoTemp.setScaletta(scalettaTemp);
-
+            // imposto il creatore e lo aggiungo come listener
             eventoTemp.setCreatore(evento.getCreatore());
+            eventoTemp.addListenersGenitori(evento.getListenersGenitori());
+
             if (evento.getId() != 0) {
                 eventoTemp.setId(evento.getId());
             }

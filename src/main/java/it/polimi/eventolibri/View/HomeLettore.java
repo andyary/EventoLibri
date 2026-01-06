@@ -305,7 +305,7 @@ public class HomeLettore {
         });
     }
 
-    //* Nasconde il bottone per caricare più eventi.
+    /* Nasconde il bottone per caricare più eventi.
      */
     public void nascondiBottoneNextEventi() {
         if (nextEventiButton != null) nextEventiButton.setVisible(false);
