@@ -395,6 +395,12 @@ public class HomeGenitore {
         ObservableList<Evento> items = FXCollections.observableArrayList(eventi);
         table.setItems(items);
 
+        // Imposta ordinamento iniziale per data in ordine crescente
+        dataCol.setSortType(TableColumn.SortType.ASCENDING);
+        table.getSortOrder().clear();
+        table.getSortOrder().add(dataCol);
+        table.sort();
+
         // Altezza preferita: approssimazione riga 25px + header 30px
         double rowHeight = 25;
         double headerHeight = 30;
@@ -428,7 +434,21 @@ public class HomeGenitore {
      */
     public void aggiornaEventi(ArrayList<Evento> prossimiEventi) {
         if (this.eventiProssimi == null) this.eventiProssimi = new ArrayList<>();
-        this.eventiProssimi.addAll(prossimiEventi);
+        // aggiungi gli eventi nella nuova lista prossimi eventi se l'id dell'evento
+        // non c'è nella vecchia lista
+        for (Evento ev : prossimiEventi) {
+            boolean found = false;
+            for (Evento oldEv : this.eventiProssimi) {
+                if (ev.getId() == oldEv.getId()) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                this.eventiProssimi.add(ev);
+            }
+        }
+        // this.eventiProssimi.addAll(prossimiEventi);
         Platform.runLater(() -> this.show(stage, genitore, this.eventiProssimi, onBack));
     }
 

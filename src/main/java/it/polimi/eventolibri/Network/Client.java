@@ -464,6 +464,13 @@ public class Client {
                 });
             }
             if (utente instanceof Lettore) {
+                if (((NotificaAggiornamentoEvento) msg).getEvento().getCreatore().getId() == utente.getId()) {
+                    for (Evento e : homeLettore.getLettore().getEventiCreati()){
+                        if (e.getId() == ((NotificaAggiornamentoEvento) msg).getEvento().getId()) {
+                            e.aggiornaEvento(((NotificaAggiornamentoEvento) msg).getEvento());
+                        }
+                    }
+                }
                 if (((NotificaAggiornamentoEvento) msg).getEvento().isIscritto(homeLettore.getLettore())) {
                     homeLettore.getLettore().aggiungiIscrizioneLettura(((NotificaAggiornamentoEvento) msg).getEvento());
                 }

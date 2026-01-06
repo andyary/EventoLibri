@@ -49,7 +49,7 @@ public class EventoViewLettore {
         this.client = client;
         this.messaggioerrore = new Label("");
         this.messaggioerrore.setStyle("-fx-text-fill: red;");
-        this.iscritti = new Label("Iscritti: TBD");
+        this.iscritti = new Label("TBD");
     }
 
     /**
@@ -130,6 +130,12 @@ public class EventoViewLettore {
         this.onBack = onBack;
         this.messaggioerrore.setText("");
 
+        // Determina se l'utente corrente è il creatore dell'evento
+        boolean isCreator = false;
+        if (evento != null && evento.getCreatore() != null && lettore != null) {
+            isCreator = evento.getCreatore().getId() == lettore.getId();
+        }
+
         // Richiesta iscritti evento
         RichiestaIscrittiEvento richiestaIscritti = new RichiestaIscrittiEvento(evento);
         try {
@@ -152,6 +158,10 @@ public class EventoViewLettore {
         TextField titoloField = new TextField(evento.getNome());
         titoloField.setPromptText("Titolo evento");
         titoloField.setAlignment(Pos.CENTER_LEFT);
+        // Se non è creatore, non può modificare il titolo
+        titoloField.setEditable(isCreator);
+        titoloField.setDisable(!isCreator);
+
         HBox titoloBox = new HBox(5,
                 new Label("Titolo:"),
                 titoloField
@@ -180,13 +190,32 @@ public class EventoViewLettore {
                 }
             });
         }
+        // Se non è creatore, non può cambiare il luogo
+        luogoCombo.setDisable(!isCreator);
+
         HBox luogoBox = new HBox(5,
                 new Label("Luogo:"),
                 luogoCombo
         );
+
+        HBox iscrittiBox = new HBox(5,
+                new Label("Iscritti:"),
+                iscritti
+        );
+
+        HBox titoloLuogoBox = new HBox(20,
+                titoloBox,
+                luogoBox,
+                iscrittiBox
+        );
+        titoloLuogoBox.setAlignment(Pos.CENTER_LEFT);
+
         /* ---------- DATA / ORA ---------- */
         DatePicker datePicker = new DatePicker(evento.getData().toLocalDate());
         datePicker.setPromptText("Data evento");
+        // Se non è creatore, non può cambiare data/ora
+        datePicker.setDisable(!isCreator);
+
         HBox dataBox = new HBox(5,
                 new Label("Data:"),
                 datePicker
@@ -196,6 +225,9 @@ public class EventoViewLettore {
         Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, evento.getData().toLocalTime().getMinute());
         hourSpinner.setEditable(true);
         minuteSpinner.setEditable(true);
+        hourSpinner.setDisable(!isCreator);
+        minuteSpinner.setDisable(!isCreator);
+
         HBox oraBox = new HBox(5,
                 new Label("Ora:"),
                 hourSpinner,
@@ -203,6 +235,13 @@ public class EventoViewLettore {
                 minuteSpinner
         );
         oraBox.setAlignment(Pos.CENTER_LEFT);
+
+        HBox dataOraBox = new HBox(20,
+                dataBox,
+                oraBox
+        );
+        dataOraBox.setAlignment(Pos.CENTER_LEFT);
+
         /* ---------- SCALETTA ---------- */
         Label scalettaLabel = new Label("Scaletta");
         scalettaLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
@@ -228,8 +267,12 @@ public class EventoViewLettore {
                 libroSelezionato[0] = libro;
             }
         });
+        // solo il creatore può scegliere libri per la scaletta
+        scegliLibroBtn.setDisable(!isCreator);
 
         lettoreCombo.setPromptText("Lettore (facoltativo)");
+        // solo il creatore può assegnare un lettore alla nuova riga
+        lettoreCombo.setDisable(!isCreator);
 
         Button aggiungiRigaBtn = new Button("Aggiungi riga");
         aggiungiRigaBtn.setOnAction(e -> {
@@ -249,6 +292,8 @@ public class EventoViewLettore {
             libroSelezionatoLabel.setText("Nessun libro selezionato");
             lettoreCombo.setValue(null);
         });
+        // solo il creatore può aggiungere righe
+        aggiungiRigaBtn.setDisable(!isCreator);
 
         HBox libroLettoreBox = new HBox(5,
                 new Label("Libro:"),
@@ -298,6 +343,9 @@ public class EventoViewLettore {
                 messaggioerrore.setText("Errore durante il salvataggio evento");
             }
         });
+        // solo il creatore può salvare modifiche all'evento
+        // salvaBtn.setDisable(!isCreator);
+
         annullaBtn.setOnAction(e -> {
             if (onBack != null) onBack.run();
         });
@@ -314,10 +362,12 @@ public class EventoViewLettore {
                 mainBtnBox,
                 messaggioerrore,
                 titoloLabel,
-                titoloBox,
-                luogoBox,
-                dataBox,
-                oraBox,
+                titoloLuogoBox,
+                // titoloBox,
+                // luogoBox,
+                dataOraBox,
+                // dataBox,
+                // oraBox,
                 scalettaLabel,
                 libroSelezionatoLabel,
                 libroLettoreBox,
@@ -521,7 +571,7 @@ public class EventoViewLettore {
     public void aggiornaIscritti(int numIscritti) {
         evento.setIscritti(numIscritti);
         Platform.runLater(() -> {
+            iscritti.setText(evento.getIscritti() + "");
         });
     }
-
 }

@@ -385,6 +385,12 @@ public class HomeLettore {
         ObservableList<Evento> items = FXCollections.observableArrayList(eventi);
         table.setItems(items);
 
+        // Imposta ordinamento iniziale per data in ordine crescente
+        dataCol.setSortType(TableColumn.SortType.ASCENDING);
+        table.getSortOrder().clear();
+        table.getSortOrder().add(dataCol);
+        table.sort();
+
         // Altezza preferita: approssimazione riga 25px + header 30px
         double rowHeight = 25;
         double headerHeight = 30;
