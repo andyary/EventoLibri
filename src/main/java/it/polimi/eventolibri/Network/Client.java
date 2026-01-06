@@ -9,6 +9,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -90,6 +91,8 @@ public class Client {
                 while ((msg = (Messaggio) in.readObject()) != null) { // leggi finché c'è un messaggio
                     handleMessage(msg); // chiama la tua funzione per gestire il messaggio
                 }
+            } catch (EOFException e) {
+                System.out.println("Connnessione chiusa dal server.");
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -445,16 +448,16 @@ public class Client {
             Scene scene = stage.getScene();
 
             // Verifica se vista attualmente visualizzata è compatibile con un refresh
-            boolean ViewCoerente = false;
+            boolean viewCoerente = false;
             if (stage != null && stage.isShowing()) {
                 if (utente instanceof Genitore) {
-                    if (stage == homeGenitore.getStage() && scene == homeGenitore.getStage().getScene()) {
-                        ViewCoerente = true;
+                    if (scene == homeGenitore.getScene()) {
+                        viewCoerente = true;
                     }
                 }
                 if (utente instanceof Lettore) {
-                    if (stage == homeLettore.getStage() && scene == homeLettore.getStage().getScene()) {
-                        ViewCoerente = true;
+                    if (scene == homeLettore.getScene()) {
+                        viewCoerente = true;
                     }}
             }
 
@@ -478,10 +481,13 @@ public class Client {
                                 ((NotificaAggiornamentoEvento) msg).getEvento());
                     }
                 }
-                if (ViewCoerente) {
-                    Platform.runLater(() -> {
-                        homeGenitore.aggiornaEventi(homeGenitore.getEventiProssimi());
-                    });
+
+                if (eventoView.getScene()!=null && eventoView.getScene()==stage.getScene() && eventoView.getEvento().getId()==((NotificaAggiornamentoEvento) msg).getEvento().getId()) {
+                    eventoView.aggiornaEvento(((NotificaAggiornamentoEvento) msg).getEvento());
+                }
+
+                if (viewCoerente) {
+                    homeGenitore.aggiornaEventi(homeGenitore.getEventiProssimi());
                 }
             }
             if (utente instanceof Lettore) {
@@ -504,10 +510,14 @@ public class Client {
                                 ((NotificaAggiornamentoEvento) msg).getEvento());
                     }
                 }
-                if (ViewCoerente) {
-                    Platform.runLater(() -> {
+
+                if (eventoViewLettore.getScene()!=null && eventoViewLettore.getScene()==stage.getScene() && eventoViewLettore.getEvento().getId()==((NotificaAggiornamentoEvento) msg).getEvento().getId()) {
+                    eventoViewLettore.mostraErrore("Aggiornamento da altro utente: la copia su cui lavori è non aggiornata. \n" +
+                            "Il tuo salvataggio potrebbe sovrascrivere le modifiche altrui.");
+                }
+
+                if (viewCoerente) {
                         homeLettore.aggiornaEventi(homeLettore.getEventiProssimi());
-                    });
                 }
             }
         }

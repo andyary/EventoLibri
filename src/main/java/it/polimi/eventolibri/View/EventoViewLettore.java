@@ -28,6 +28,7 @@ import java.util.ArrayList;
 public class EventoViewLettore {
     private Client client;
     private Stage stage;
+    private Scene scene = null;
     private Evento evento;
     private Lettore lettore;
     private ArrayList<Luogo> luoghi = new ArrayList<>();
@@ -113,6 +114,15 @@ public class EventoViewLettore {
      */
     public void setEvento(Evento evento) {
         this.evento = evento;
+    }
+
+    /**
+     * Restituisce la scena corrente della view.
+     *
+     * @return la scena
+     */
+    public Scene getScene() {
+        return scene;
     }
 
     /**
@@ -386,8 +396,10 @@ public class EventoViewLettore {
 
         refreshScalettaUI(scalettaBox, scalettaTemp);
 
+        this.scene=new Scene(scrollPane, 800, 750);
+
         Platform.runLater(() -> {;
-            stage.setScene(new Scene(scrollPane, 800, 750));
+            stage.setScene(scene);
             stage.setTitle("Crea Evento");
             stage.show();
         });

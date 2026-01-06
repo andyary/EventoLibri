@@ -137,6 +137,15 @@ public class HomeGenitore {
     }
 
     /**
+     * Restituisce la scena associata alla home.
+     *
+     * @return la scena
+     */
+    public Scene getScene() {
+        return scene;
+    }
+
+    /**
      * Mostra la schermata principale del genitore.
      *
      * @param stage          lo stage principale dell'applicazione
@@ -303,9 +312,8 @@ public class HomeGenitore {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        Scene scene = new Scene(scrollPane, 800, 750);
+        this.scene = new Scene(scrollPane, 800, 750);
         Platform.runLater(() -> {
-            this.scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle("Home Genitore");
             stage.show();

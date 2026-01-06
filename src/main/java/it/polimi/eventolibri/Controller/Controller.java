@@ -94,6 +94,8 @@ public class Controller {
         RispostaIscrizioneEvento risposta = new RispostaIscrizioneEvento(figlio, evento, genitore);
         try {
             figlioDAO.iscriviFiglioEvento(figlio, evento);
+            evento.setIscritti(eventoDAO.getIscrittiEvento(evento));
+            figlio.iscrivi(evento, genitore);
             risposta.setSuccesso(true);
         } catch (Exception e) {
             risposta.setSuccesso(false);
@@ -114,6 +116,8 @@ public class Controller {
         RispostaDisiscrizioneEvento risposta = new RispostaDisiscrizioneEvento(figlio, evento, genitore);
         try {
             figlioDAO.cancellaFiglioEvento(figlio, evento);
+            evento.setIscritti(eventoDAO.getIscrittiEvento(evento));
+            figlio.disiscrivi(evento, genitore);
             risposta.setSuccesso(true);
         } catch (Exception e) {
             risposta.setSuccesso(false);
@@ -402,6 +406,7 @@ public class Controller {
                 // Nessun conflitto, procedi con il salvataggio
                 if (evento.getId() != 0) {
                     eventoDAO.modificaEvento(evento);
+                    evento.setIscritti(eventoDAO.getIscrittiEvento(evento));
                     risposta.setSuccesso(true);
                     risposta.setEvento(evento);
                 } else {
@@ -412,6 +417,7 @@ public class Controller {
                     } else {
                     evento.setId(id);
                     libroLettoreDAO.creaScaletta(evento);
+                    evento.setIscritti(eventoDAO.getIscrittiEvento(evento));
                     risposta.setSuccesso(true);
                     risposta.setEvento(evento);
                     }

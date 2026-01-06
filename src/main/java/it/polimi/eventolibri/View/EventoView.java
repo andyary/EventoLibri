@@ -31,11 +31,17 @@ import java.util.ArrayList;
 public class EventoView {
     private Client client;
     private Stage stage;
+    private Scene scene = null;
     private Evento evento;
     private Genitore genitore;
     private Runnable onBack;
     private Label messaggioerrore;
     private Label iscritti;
+    private Label titolo;
+    private Label luogo;
+    private Label capienza;
+    private Label data;
+    private VBox scalettaBox;
 
     /**
      * Costruttore della classe EventoView.
@@ -47,6 +53,11 @@ public class EventoView {
         this.messaggioerrore = new Label("");
         this.messaggioerrore.setStyle("-fx-text-fill: red;");
         this.iscritti = new Label("Iscritti: TBD");
+        this.titolo = new Label("Titolo: TBD");
+        this.luogo = new Label("Luogo: TBD");
+        this.capienza = new Label("Capienza: TBD");
+        this.data = new Label("Data: TBD");
+        this.scalettaBox = new VBox(10);
     }
 
     /**
@@ -56,6 +67,15 @@ public class EventoView {
      */
     public Genitore getGenitore() {
         return genitore;
+    }
+
+    /**
+     * Restituisce la scena associata alla view.
+     *
+     * @return la scena
+     */
+    public Scene getScene() {
+        return scene;
     }
 
     /**
@@ -107,13 +127,13 @@ public class EventoView {
             System.out.println("Errore nel richiestaIscrittiEvento" + e.getMessage());
         }
 
-        Label titolo = new Label(evento.getNome());
+        titolo.setText(evento.getNome());
         titolo.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
 
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMMM yyyy 'alle' HH:mm");
-        Label data = new Label("Data: " + evento.getData().format(fmt));
-        Label luogo = new Label("Luogo: " + evento.getLuogo().getNome());
-        Label capienza = new Label("Capienza: " + evento.getLuogo().getCapienza());
+        data.setText("Data: " + evento.getData().format(fmt));
+        luogo.setText("Luogo: " + evento.getLuogo().getNome());
+        capienza.setText("Capienza: " + evento.getLuogo().getCapienza());
         iscritti.setText("Iscritti: " + evento.getIscritti());
 
 
@@ -169,7 +189,8 @@ public class EventoView {
             if (onBack != null) onBack.run();
         });
 
-        VBox scalettaBox = new VBox(10);
+        // ---------- SCALETTA EVENTO ----------
+        scalettaBox.getChildren().clear();
         scalettaBox.setPadding(new Insets(10));
         Label titoloScaletta = new Label("Scaletta dell'evento:");
         titoloScaletta.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
@@ -200,7 +221,7 @@ public class EventoView {
         layout.setAlignment(Pos.TOP_CENTER);
         layout.setPadding(new Insets(20));
 
-        Scene scene = new Scene(layout, 800, 750);
+        this.scene = new Scene(layout, 800, 750);
 
         Platform.runLater(() -> {
             stage.setScene(scene);
@@ -231,6 +252,46 @@ public class EventoView {
         evento.setIscritti(numIscritti);
         Platform.runLater(() -> {
             iscritti.setText("Iscritti: " + evento.getIscritti());
+        });
+    }
+
+    public void aggiornaEvento(Evento eventoAggiornato) {
+        this.evento = eventoAggiornato;
+        Platform.runLater(() -> {
+            titolo.setText(evento.getNome());
+            titolo.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMMM yyyy 'alle' HH:mm");
+            data.setText("Data: " + evento.getData().format(fmt));
+            luogo.setText("Luogo: " + evento.getLuogo().getNome());
+            capienza.setText("Capienza: " + evento.getLuogo().getCapienza());
+            iscritti.setText("Iscritti: " + evento.getIscritti());
+            iscritti.setText("Iscritti: " + evento.getIscritti());
+
+            scalettaBox.getChildren().clear();
+            scalettaBox.setPadding(new Insets(10));
+            Label titoloScaletta = new Label("Scaletta dell'evento:");
+            titoloScaletta.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+            scalettaBox.getChildren().add(titoloScaletta);
+
+            LocalTime tempoinizio= evento.getData().toLocalTime();
+            LocalTime tempofine;
+
+            for (LibroLettore ll : evento.getScaletta()) {
+                tempofine = tempoinizio.plusMinutes(ll.getLibro().getTempoLettura());
+                String durata = new String("(" + ll.getLibro().getTempoLettura() + " minuti)");
+                DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
+                String orario = new String("[" + tempoinizio.format(formato) + " - " + tempofine.format(formato) + "]");
+                String nomeLettore = new String(ll.getLettore() != null ? ll.getLettore().getNome() : "---------");
+                String titoloLibro = ll.getLibro().getTitolo();
+                HBox riga = new HBox(10);
+                riga.setAlignment(Pos.CENTER_LEFT);
+                Label lbl = new Label(ll.getProgressivo() + ")   " + orario + "   " + titoloLibro + "   " + durata + "   " + nomeLettore);
+                lbl.setStyle("-fx-font-size: 14px;");
+                riga.getChildren().add(lbl);
+                scalettaBox.getChildren().add(riga);
+            }
+
+
         });
     }
 

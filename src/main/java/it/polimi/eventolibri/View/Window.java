@@ -53,7 +53,7 @@ public class Window extends Application {
                 try {
                     client.sendMessage(new CloseUI());
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    System.out.println("Error: " + e.getMessage());
                 }
                 // chiudi davvero la finestra sul FX thread
                 Platform.runLater(() -> stage.close());

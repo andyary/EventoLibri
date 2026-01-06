@@ -85,6 +85,17 @@ public class ClientHandler extends Thread {
             Genitore genitore = ((RichiestaIscrizioneEvento) msg).getGenitore();
             RispostaIscrizioneEvento risposta = controller.iscriviFiglioEvento(figlio, evento, genitore);
             sendMessage(risposta);
+            if (risposta.isSuccesso()) {
+                // Implementazione Pattern Observer
+                for (Listener l: evento.getListeners()) {
+                    for (ClientHandler ch: server.getClients().keySet()) {
+                        if (ch.getUtente().getId() == l.getId() && /*l.getId()!= utente.getId()*/ ch != this) {
+                            NotificaAggiornamentoEvento notifica = new NotificaAggiornamentoEvento(evento);
+                            ch.sendMessage(notifica);
+                        }
+                    }
+                }
+            }
         }
 
         if (msg instanceof RichiestaIscrittiEvento) {
@@ -98,6 +109,17 @@ public class ClientHandler extends Thread {
             Genitore genitore = ((RichiestaDisiscrizioneEvento) msg).getGenitore();
             RispostaDisiscrizioneEvento risposta = controller.disiscriviFiglioEvento(figlio, evento, genitore);
             sendMessage(risposta);
+            if (risposta.isSuccesso()) {
+                // Implementazione Pattern Observer
+                for (Listener l: evento.getListeners()) {
+                    for (ClientHandler ch: server.getClients().keySet()) {
+                        if (ch.getUtente().getId() == l.getId() && /*l.getId()!= utente.getId()*/ ch != this) {
+                            NotificaAggiornamentoEvento notifica = new NotificaAggiornamentoEvento(evento);
+                            ch.sendMessage(notifica);
+                        }
+                    }
+                }
+            }
         }
 
         if (msg instanceof RichiestaAggiornaGenitore) {
