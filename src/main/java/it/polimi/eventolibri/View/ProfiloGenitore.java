@@ -2,7 +2,6 @@ package it.polimi.eventolibri.View;
 
 import it.polimi.eventolibri.Message.RichiestaAggiornaGenitore;
 import it.polimi.eventolibri.Message.RichiestaAggiungiFiglio;
-import it.polimi.eventolibri.Message.RichiestaNextEventi;
 import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.Network.Client;
 import javafx.application.Platform;
@@ -10,16 +9,15 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
+/**
+ * Classe View per la visualizzazione e modifica del profilo di un genitore.
+ */
 public class ProfiloGenitore {
 
     private final Client client;
@@ -32,8 +30,11 @@ public class ProfiloGenitore {
     private TextField nomeFiglioField;
     private DatePicker dataNascitaPicker;
 
-
-
+    /**
+     * Costruttore della classe ProfiloGenitore.
+     *
+     * @param client l'istanza del client per la comunicazione con il server
+     */
     public ProfiloGenitore(Client client) {
         this.client = client;
         this.messaggioerrore = new Label("");
@@ -46,10 +47,22 @@ public class ProfiloGenitore {
         this.noFigliLabel = new Label("Nessun figlio registrato.");
     }
 
+    /**
+     * Restituisce il genitore associato al profilo.
+     *
+     * @return il genitore
+     */
     public Genitore getGenitore() {
         return genitore;
     }
 
+    /**
+     * Mostra la schermata del profilo del genitore.
+     *
+     * @param stage    lo stage principale dell'applicazione
+     * @param genitore il genitore di cui visualizzare il profilo
+     * @param onBack   l'azione da eseguire quando si preme il pulsante "Indietro"
+     */
     public void show(Stage stage, Genitore genitore, Runnable onBack) {
         this.stage = stage;
         this.genitore = genitore;
@@ -176,18 +189,33 @@ public class ProfiloGenitore {
 
     }
 
+    /**
+     * Mostra un messaggio di errore nella schermata del profilo.
+     *
+     * @param msgerrore il messaggio di errore da visualizzare
+     */
     public void mostraErrore(String msgerrore) {
         Platform.runLater(()->{
             this.messaggioerrore.setText(msgerrore);
         });
     }
 
+    /**
+     * Mostra un messaggio di errore nella schermata del profilo (sezione aggiunta figlio).
+     *
+     * @param msgerrore il messaggio di errore da visualizzare
+     */
     public void mostraErrore2(String msgerrore) {
         Platform.runLater(()->{
             this.messaggioerrore2.setText(msgerrore);
         });
     }
 
+    /**
+     * Aggiorna la lista dei figli visualizzata nella schermata del profilo.
+     *
+     * @param nuovoFiglio il nuovo figlio da aggiungere alla lista
+     */
     public void aggiornaFigli(Figlio nuovoFiglio) {
         Platform.runLater(()->{
             if (!this.genitore.getFigli().isEmpty() && this.figliBox.getChildren().contains(noFigliLabel)) {

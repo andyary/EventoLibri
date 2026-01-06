@@ -1,6 +1,5 @@
 package it.polimi.eventolibri.View;
 
-
 import it.polimi.eventolibri.Message.RichiestaNuovoGenitore;
 import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.Network.Client;
@@ -15,16 +14,30 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Classe View per la registrazione di un nuovo genitore (non è richiesta autenticazione).
+ */
 public class RegistraNewGenitore {
     private final Client client;
     private Stage stage;
     private Label messaggioerrore;
 
+    /**
+     * Costruttore della classe RegistraNewGenitore.
+     *
+     * @param client l'istanza del client per la comunicazione con il server
+     */
     public RegistraNewGenitore(Client client) {
         this.client = client;
         this.messaggioerrore = new Label("");
     }
 
+    /**
+     * Mostra la schermata di registrazione di un nuovo genitore.
+     *
+     * @param stage  lo stage principale dell'applicazione
+     * @param onBack l'azione da eseguire quando si preme il pulsante "Indietro"
+     */
     public void show(Stage stage, Runnable onBack) {
         this.stage = stage;
         // ===========================
@@ -94,6 +107,11 @@ public class RegistraNewGenitore {
         ;
     }
 
+    /**
+     * Mostra un messaggio di successo nella schermata.
+     *
+     * @param messaggioerrore il messaggio di successo da visualizzare
+     */
     public void mostraSuccesso(String messaggioerrore) {
         Platform.runLater(()->{
             this.messaggioerrore.setStyle("-fx-text-fill: green;");
@@ -101,6 +119,11 @@ public class RegistraNewGenitore {
         });
     }
 
+    /**
+     * Mostra un messaggio di errore nella schermata.
+     *
+     * @param messaggioerrore il messaggio di errore da visualizzare
+     */
     public void mostraErrore(String messaggioerrore) {
         Platform.runLater(()->{
             this.messaggioerrore.setStyle("-fx-text-fill: red;");

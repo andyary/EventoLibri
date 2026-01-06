@@ -15,6 +15,9 @@ import it.polimi.eventolibri.Message.RichiestaLogin;
 
 import java.io.IOException;
 
+/**
+ * Classe View per la schermata di login.
+ */
 public class LoginView {
 
     private final Client client;
@@ -26,6 +29,15 @@ public class LoginView {
     private final HomeLettore homeLettore;
     private final HomeAmministratore homeAmministratore;
 
+    /**
+     * Costruttore della classe LoginView.
+     *
+     * @param client                l'istanza del client per la comunicazione con il server
+     * @param registraNewGenitore   la view per la registrazione di un nuovo genitore
+     * @param homeGenitore          la view della home del genitore
+     * @param homeLettore           la view della home del lettore
+     * @param homeAmministratore    la view della home dell'amministratore
+     */
     public LoginView(Client client, RegistraNewGenitore registraNewGenitore, HomeGenitore homeGenitore, HomeLettore homeLettore, HomeAmministratore homeAmministratore) {
         this.registraNewGenitore = registraNewGenitore;
         this.homeGenitore = homeGenitore;
@@ -34,6 +46,11 @@ public class LoginView {
         this.client = client;
     }
 
+    /**
+     * Mostra la schermata di login.
+     *
+     * @param stage lo stage principale dell'applicazione
+     */
     public void show(Stage stage) {
         this.stage = stage;
 
@@ -101,12 +118,22 @@ public class LoginView {
         stage.show();
     }
 
+    /**
+     * Mostra un messaggio di errore nella schermata di login.
+     *
+     * @param messaggioerrore il messaggio di errore da visualizzare
+     */
     public void mostraErrore(String messaggioerrore) {
         Platform.runLater(() -> {
             this.messaggioerrore.setText(messaggioerrore);
         });
     }
 
+    /**
+     * Restituisce lo stage associato alla view.
+     *
+     * @return lo stage
+     */
     public Stage getStage() {
         return stage;
     }

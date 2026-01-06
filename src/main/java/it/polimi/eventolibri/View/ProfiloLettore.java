@@ -14,6 +14,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Classe View per la visualizzazione e modifica del profilo di un lettore.
+ */
 public class ProfiloLettore {
 
     private final Client client;
@@ -21,17 +24,33 @@ public class ProfiloLettore {
     private Lettore lettore;
     private Label messaggioerrore;
 
-
+    /**
+     * Costruttore della classe ProfiloLettore.
+     *
+     * @param client l'istanza del client per la comunicazione con il server
+     */
     public ProfiloLettore(Client client) {
         this.client = client;
         this.messaggioerrore = new Label("");
         this.messaggioerrore.setStyle("-fx-text-fill: red;");
     }
 
+    /**
+     * Restituisce il lettore associato al profilo.
+     *
+     * @return il lettore
+     */
     public Lettore getLettore() {
         return lettore;
     }
 
+    /**
+     * Mostra la schermata del profilo del lettore.
+     *
+     * @param stage   lo stage principale dell'applicazione
+     * @param lettore il lettore di cui visualizzare il profilo
+     * @param onBack  l'azione da eseguire quando si preme il pulsante "Indietro"
+     */
     public void show(Stage stage, Lettore lettore, Runnable onBack) {
         this.stage = stage;
         this.lettore = lettore;
@@ -96,7 +115,11 @@ public class ProfiloLettore {
         });
     }
 
-
+    /**
+     * Mostra un messaggio di errore nella schermata del profilo.
+     *
+     * @param msgerrore il messaggio di errore da visualizzare
+     */
     public void mostraErrore(String msgerrore) {
         Platform.runLater(() -> {
             this.messaggioerrore.setText(msgerrore);

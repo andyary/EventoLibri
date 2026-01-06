@@ -17,6 +17,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Classe View per la visualizzazione e modifica del profilo di un amministratore.
+ */
 public class ProfiloAmministratore {
 
     private final Client client;
@@ -24,17 +27,33 @@ public class ProfiloAmministratore {
     private Amministratore amministratore;
     private Label messaggioerrore;
 
-
+    /**
+     * Costruttore della classe ProfiloAmministratore.
+     *
+     * @param client l'istanza del client per la comunicazione con il server
+     */
     public ProfiloAmministratore(Client client) {
         this.client = client;
         this.messaggioerrore = new Label("");
         this.messaggioerrore.setStyle("-fx-text-fill: red;");
     }
 
+    /**
+     * Restituisce l'amministratore associato al profilo.
+     *
+     * @return l'amministratore
+     */
     public Amministratore getAmministratore() {
         return amministratore;
     }
 
+    /**
+     * Mostra la schermata del profilo dell'amministratore.
+     *
+     * @param stage          lo stage principale dell'applicazione
+     * @param amministratore l'amministratore di cui visualizzare il profilo
+     * @param onBack         l'azione da eseguire quando si preme il pulsante "Indietro"
+     */
     public void show(Stage stage, Amministratore amministratore, Runnable onBack) {
         this.stage = stage;
         this.amministratore = amministratore;
@@ -99,7 +118,11 @@ public class ProfiloAmministratore {
         });
     }
 
-
+    /**
+     * Mostra un messaggio di errore nella schermata del profilo.
+     *
+     * @param msgerrore il messaggio di errore da visualizzare
+     */
     public void mostraErrore(String msgerrore) {
         Platform.runLater(() -> {
             this.messaggioerrore.setText(msgerrore);

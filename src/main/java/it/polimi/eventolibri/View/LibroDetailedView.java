@@ -7,7 +7,6 @@ import javafx.scene.text.TextFlow;
 
 import it.polimi.eventolibri.Message.RichiestaAggiungiRecensione;
 import it.polimi.eventolibri.Message.RichiestaCancellaRecensione;
-import it.polimi.eventolibri.Message.RispostaCancellaRecensione;
 import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.Network.Client;
 import javafx.application.Platform;
@@ -26,8 +25,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
+/**
+ * Classe View per la visualizzazione dettagliata di un libro selezionato.
+ */
 public class LibroDetailedView {
     private final Client client;
     private Label messaggioerrore;
@@ -35,10 +36,20 @@ public class LibroDetailedView {
     private ArrayList<Recensione> recensioniAggiornate = new ArrayList<>();
     private boolean attendi;
 
+    /**
+     * Costruttore della classe LibroDetailedView.
+     *
+     * @param client l'istanza del client per la comunicazione con il server
+     */
     public LibroDetailedView(Client client) {
         this.client = client;
     }
 
+    /**
+     * Imposta lo stato di attesa per le operazioni asincrone.
+     *
+     * @param attendi true se si deve attendere, false altrimenti
+     */
     public void setAttendi(boolean attendi) {
         this.attendi = attendi;
     }
@@ -166,7 +177,13 @@ public class LibroDetailedView {
         });
     }
 
-    // java
+    /**
+     * Mostra una finestra con le recensioni del libro.
+     *
+     * @param owner finestra proprietaria
+     * @param recensioni lista delle recensioni da visualizzare
+     * @param canDelete indica se l'utente può cancellare le recensioni
+     */
     private void showRecensioniWindow(Stage owner, ArrayList<Recensione> recensioni, boolean canDelete) {
         Stage rStage = new Stage();
         rStage.initOwner(owner);
@@ -252,76 +269,14 @@ public class LibroDetailedView {
         rStage.setScene(scene);
         rStage.show();
     }
-//
-//    private void showRecensioniWindow(Stage owner, ArrayList<Recensione> recensioni, boolean canDelete) {
-//        Stage rStage = new Stage();
-//        rStage.initOwner(owner);
-//        rStage.initModality(Modality.WINDOW_MODAL);
-//        rStage.setTitle("Recensioni");
-//
-//        VBox box = new VBox(8);
-//        box.setPadding(new Insets(10));
-//
-//        Button backBtn = new Button("Indietro");
-//        backBtn.setOnAction(ev -> {
-//            rStage.close();
-//        });
-//
-//        messaggioerrore2 = new Label(" ");
-//        messaggioerrore2.setStyle("-fx-text-fill: red;");
-//
-//        HBox topBar = new HBox(messaggioerrore2, backBtn);
-//        topBar.setAlignment(Pos.CENTER_RIGHT);
-//        box.getChildren().add(topBar);
-//
-//        if (recensioni == null || recensioni.isEmpty()) {
-//            box.getChildren().add(new Label("Nessuna recensione disponibile"));
-//        } else {
-//            for (Recensione r : recensioni) {
-//                Label testo = new Label("Testo: " + (r.getTesto() != null ? r.getTesto() : ""));
-//                testo.setWrapText(true);
-//                String autore = (r.getGenitore() != null) ? ((r.getGenitore().getNome()) + " " + r.getGenitore().getCognome()) : "autore sconosciuto";
-//                Label autoreLbl = new Label("Autore: " + autore);
-//                VBox v = new VBox(4,testo, autoreLbl);
-//                v.setMaxWidth(Double.MAX_VALUE);
-//                if (canDelete) {
-//                    Button del = new Button("Elimina");
-//                    del.setOnAction(ev -> {
-//                        //logica recensione per cancellare recensione
-//                        RichiestaCancellaRecensione richiesta = new RichiestaCancellaRecensione(r);
-//                        try {
-//                            client.sendMessage(richiesta);
-//                        } catch (IOException e) {
-//                            System.out.println("Errore invio cancellazione recensione: " + e.getMessage());
-//                            messaggioerrore2.setText("Errore invio cancellazione recensione: " + e.getMessage());
-//                        }
-//
-//                        this.attendi = true;
-//                        while (attendi) {
-//                            try {
-//                                Thread.sleep(100);
-//                            } catch (InterruptedException ex) {
-//                                System.out.println("Errore attesa recensioni: " + ex.getMessage());
-//                                messaggioerrore2.setText("Errore attesa recensioni: " + ex.getMessage());
-//                            }
-//                        };
-//                        rStage.close();
-//
-//                    });
-//                    HBox h = new HBox(8, del, v);
-//                    h.setAlignment(Pos.CENTER_LEFT);
-//                    box.getChildren().addAll(h, new Separator());
-//                } else {
-//                    box.getChildren().addAll(v, new Separator());
-//                }
-//            }
-//        }
-//
-//        Scene sc = new Scene(new ScrollPane(box), 540, 420);
-//        rStage.setScene(sc);
-//        rStage.show();
-//    }
 
+    /**
+     * Mostra un dialog per aggiungere una nuova recensione.
+     *
+     * @param owner finestra proprietaria
+     * @param libro libro da recensire
+     * @param utente utente che aggiunge la recensione
+     */
     private void showAggiungiRecensioneDialog(Stage owner, Libro libro, Utente utente) {
         Stage d = new Stage();
         d.initOwner(owner);
@@ -380,22 +335,42 @@ public class LibroDetailedView {
         d.show();
     }
 
+    /**
+     * Mostra un messaggio di errore nella sezione del dettaglio libro.
+     *
+     * @param msgerrore il messaggio di errore da visualizzare
+     */
     public void mostraErrore(String msgerrore) {
         Platform.runLater(()->{
             this.messaggioerrore.setText(msgerrore);
         });
     }
 
+    /**
+     * Mostra un messaggio di errore nella sezione delle recensioni.
+     *
+     * @param msgerrore il messaggio di errore da visualizzare
+     */
     public void mostraErrore2(String msgerrore) {
         Platform.runLater(()->{
             this.messaggioerrore2.setText(msgerrore);
         });
     }
 
+    /**
+     * Aggiorna la lista delle recensioni con una nuova recensione aggiunta.
+     *
+     * @param nuovarecensione la nuova recensione da aggiungere
+     */
     public void aggiornaRecensioni(Recensione nuovarecensione) {
         recensioniAggiornate.add(nuovarecensione);
     }
 
+    /**
+     * Rimuove una recensione dalla lista delle recensioni.
+     *
+     * @param idRecensione l'ID della recensione da rimuovere
+     */
     public void cancellaRecensione(int idRecensione) {
             recensioniAggiornate.removeIf(r -> r.getId() == idRecensione);
     }

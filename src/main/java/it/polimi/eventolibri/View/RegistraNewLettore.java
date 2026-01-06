@@ -1,7 +1,5 @@
 package it.polimi.eventolibri.View;
 
-
-import it.polimi.eventolibri.Message.RichiestaNuovoGenitore;
 import it.polimi.eventolibri.Message.RichiestaNuovoLettore;
 import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.Network.Client;
@@ -16,17 +14,32 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Classe View per la registrazione di un nuovo lettore da parte di un amministratore.
+ */
 public class RegistraNewLettore {
     private final Client client;
     private Stage stage;
     private Label messaggioerrore;
     private Amministratore amministratore;
 
+    /**
+     * Costruttore della classe RegistraNewLettore.
+     *
+     * @param client l'istanza del client per la comunicazione con il server
+     */
     public RegistraNewLettore(Client client) {
         this.client = client;
         this.messaggioerrore = new Label("");
     }
 
+    /**
+     * Mostra la schermata di registrazione di un nuovo lettore.
+     *
+     * @param stage          lo stage principale dell'applicazione
+     * @param amministratore l'amministratore che sta registrando il nuovo lettore
+     * @param onBack         l'azione da eseguire quando si preme il pulsante "Indietro"
+     */
     public void show(Stage stage, Amministratore amministratore, Runnable onBack) {
         this.stage = stage;
         this.amministratore = amministratore;
@@ -98,6 +111,11 @@ public class RegistraNewLettore {
         ;
     }
 
+    /**
+     * Mostra un messaggio di successo.
+     *
+     * @param messaggioerrore il messaggio di successo da visualizzare
+     */
     public void mostraSuccesso(String messaggioerrore) {
         Platform.runLater(()->{
             this.messaggioerrore.setStyle("-fx-text-fill: green;");
@@ -105,6 +123,11 @@ public class RegistraNewLettore {
         });
     }
 
+    /**
+     * Mostra un messaggio di errore.
+     *
+     * @param messaggioerrore il messaggio di errore da visualizzare
+     */
     public void mostraErrore(String messaggioerrore) {
         Platform.runLater(()->{
             this.messaggioerrore.setStyle("-fx-text-fill: red;");

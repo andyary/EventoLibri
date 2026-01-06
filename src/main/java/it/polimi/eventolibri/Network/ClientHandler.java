@@ -63,9 +63,7 @@ public class ClientHandler extends Thread {
                 }
                 server.getClients().put(this, this.utente);
             }
-            out.writeObject(risposta);
-            out.flush();
-            out.reset();
+            sendMessage(risposta);
         }
 
         if (msg instanceof CloseUI) {
@@ -78,9 +76,7 @@ public class ClientHandler extends Thread {
             // gestisci la richiesta di next eventi
             Evento ultimoEvento = ((RichiestaNextEventi) msg).getUltimoEvento();
             RispostaNextEventi risposta = controller.getNextEventi(ultimoEvento);
-            out.writeObject(risposta);
-            out.flush();
-            out.reset();
+            sendMessage(risposta);
         }
 
         if (msg instanceof RichiestaIscrizioneEvento) {
@@ -88,16 +84,12 @@ public class ClientHandler extends Thread {
             Figlio figlio = ((RichiestaIscrizioneEvento) msg).getFiglio();
             Genitore genitore = ((RichiestaIscrizioneEvento) msg).getGenitore();
             RispostaIscrizioneEvento risposta = controller.iscriviFiglioEvento(figlio, evento, genitore);
-            out.writeObject(risposta);
-            out.flush();
-            out.reset();
+            sendMessage(risposta);
         }
 
         if (msg instanceof RichiestaIscrittiEvento) {
             RispostaIscrittiEvento risposta = controller.getIscrittiEvento(((RichiestaIscrittiEvento) msg).getEvento());
-            out.writeObject(risposta);
-            out.flush();
-            out.reset();
+            sendMessage(risposta);
         }
 
         if (msg instanceof RichiestaDisiscrizioneEvento) {
@@ -105,91 +97,69 @@ public class ClientHandler extends Thread {
             Figlio figlio = ((RichiestaDisiscrizioneEvento) msg).getFiglio();
             Genitore genitore = ((RichiestaDisiscrizioneEvento) msg).getGenitore();
             RispostaDisiscrizioneEvento risposta = controller.disiscriviFiglioEvento(figlio, evento, genitore);
-            out.writeObject(risposta);
-            out.flush();
-            out.reset();
+            sendMessage(risposta);
         }
 
         if (msg instanceof RichiestaAggiornaGenitore) {
             Genitore genitore = ((RichiestaAggiornaGenitore) msg).getGenitore();
             RispostaAggiornaGenitore risposta = controller.aggiornaGenitore(genitore);
-            out.writeObject(risposta);
-            out.flush();
-            out.reset();
+            sendMessage(risposta);
         }
 
         if (msg instanceof RichiestaAggiungiFiglio) {
             Genitore genitore = ((RichiestaAggiungiFiglio) msg).getGenitore();
             Figlio nuovoFiglio = ((RichiestaAggiungiFiglio) msg).getFiglioNuovo();
             RispostaAggiungiFiglio risposta = controller.aggiungiFiglio(genitore, nuovoFiglio);
-            out.writeObject(risposta);
-            out.flush();
-            out.reset();
+            sendMessage(risposta);
         }
 
         if (msg instanceof RichiestaNuovoGenitore) {
             Genitore nuovoGenitore = ((RichiestaNuovoGenitore) msg).getNuovoGenitore();
             RispostaNuovoGenitore risposta = controller.registraNuovoGenitore(nuovoGenitore, ((RichiestaNuovoGenitore) msg).getPassword());
-            out.writeObject(risposta);
-            out.flush();
-            out.reset();
+            sendMessage(risposta);
         }
 
         if (msg instanceof RichiestaNuovoLettore) {
             Lettore nuovoLettore = ((RichiestaNuovoLettore) msg).getNuovoLettore();
             RispostaNuovoLettore risposta = controller.registraNuovoLettore(nuovoLettore, ((RichiestaNuovoLettore) msg).getPassword());
-            out.writeObject(risposta);
-            out.flush();
-            out.reset();
+            sendMessage(risposta);
         }
 
         if (msg instanceof RichiestaNuovoAmministratore) {
             Amministratore nuovoAmministratore = ((RichiestaNuovoAmministratore) msg).getNuovoAmministratore();
             RispostaNuovoAmministratore risposta = controller.registraNuovoAmministratore(nuovoAmministratore, ((RichiestaNuovoAmministratore) msg).getPassword());
-            out.writeObject(risposta);
-            out.flush();
-            out.reset();
+            sendMessage(risposta);
         }
 
         if (msg instanceof RichiestaLettoriELuoghiELibri) {
             RispostaLettoriELuoghiELibri risposta = controller.richiestaLettoriELuoghiELibri();
-            out.writeObject(risposta);
-            out.flush();
-            out.reset();
+            sendMessage(risposta);
         }
 
         if (msg instanceof RichiestaAggiornaLettore) {
             Lettore lettore = ((RichiestaAggiornaLettore) msg).getLettore();
             RispostaAggiornaLettore risposta = controller.aggiornaLettore(lettore);
-            out.writeObject(risposta);
-            out.flush();
-            out.reset();
+            sendMessage(risposta);
         }
 
         if (msg instanceof RichiestaAggiornaAmministratore) {
             Amministratore amministratore = ((RichiestaAggiornaAmministratore) msg).getAmministratore();
             RispostaAggiornaAmministratore risposta = controller.aggiornaAmministratore(amministratore);
-            out.writeObject(risposta);
-            out.flush();
-            out.reset();
+            sendMessage(risposta);
         }
 
         if (msg instanceof RichiestaSalvaEvento) {
             Evento evento = ((RichiestaSalvaEvento) msg).getEvento();
             RispostaSalvaEvento risposta = controller.salvaEvento(evento);
             Evento eventoAggiornato = risposta.getEvento();
-            out.writeObject(risposta);
-            out.flush();
-            out.reset();
+            sendMessage(risposta);
             // Implementazione Pattern Observer
             if (risposta.isSuccesso()) {
                 for (Listener l: eventoAggiornato.getListeners()) {
                     for (ClientHandler ch: server.getClients().keySet()) {
                         if (ch.getUtente().getId() == l.getId() && /*l.getId()!= utente.getId()*/ ch != this) {
                             NotificaAggiornamentoEvento notifica = new NotificaAggiornamentoEvento(eventoAggiornato);
-                            out.writeObject(notifica);
-                            out.flush();
-                            out.reset();
+                            ch.sendMessage(notifica);
                         }
                     }
                 }
@@ -201,25 +171,19 @@ public class ClientHandler extends Thread {
                     ((RichiestaRecensioniERecensibilita) msg).getLibro(),
                     ((RichiestaRecensioniERecensibilita) msg).getUtente()
             );
-            out.writeObject(risposta);
-            out.flush();
-            out.reset();
+            sendMessage(risposta);
         }
 
         if (msg instanceof RichiestaAggiungiRecensione) {
             Recensione recensione = ((RichiestaAggiungiRecensione) msg).getRecensione();
             RispostaAggiungiRecensione risposta = controller.aggiungiRecensione(recensione);
-            out.writeObject(risposta);
-            out.flush();
-            out.reset();
+            sendMessage(risposta);
         }
 
         if (msg instanceof RichiestaCancellaRecensione) {
             Recensione recensione = ((RichiestaCancellaRecensione) msg).getRecensione();
             RispostaCancellaRecensione risposta = controller.cancellaRecensione(recensione);
-            out.writeObject(risposta);
-            out.flush();
-            out.reset();
+            sendMessage(risposta);
         }
 
         // QUI CONTINUI AD AGGIUNGERE I MESSAGGI

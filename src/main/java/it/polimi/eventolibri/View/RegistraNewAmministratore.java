@@ -1,6 +1,5 @@
 package it.polimi.eventolibri.View;
 
-
 import it.polimi.eventolibri.Message.RichiestaNuovoAmministratore;
 import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.Network.Client;
@@ -15,6 +14,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Classe View per la registrazione di un nuovo amministratore da parte di un amministratore esistente.
+ */
 public class RegistraNewAmministratore {
     private final Client client;
     private Stage stage;
@@ -26,6 +28,13 @@ public class RegistraNewAmministratore {
         this.messaggioerrore = new Label("");
     }
 
+    /**
+     * Mostra la schermata di registrazione di un nuovo amministratore.
+     *
+     * @param stage          lo stage principale dell'applicazione
+     * @param amministratore l'amministratore che sta registrando il nuovo amministratore
+     * @param onBack         l'azione da eseguire quando si preme il pulsante "Indietro"
+     */
     public void show(Stage stage, Amministratore amministratore,Runnable onBack) {
         this.stage = stage;
         this.amministratore = amministratore;
@@ -97,6 +106,11 @@ public class RegistraNewAmministratore {
         ;
     }
 
+    /**
+     * Mostra un messaggio di successo nella schermata.
+     *
+     * @param messaggioerrore il messaggio di successo da mostrare
+     */
     public void mostraSuccesso(String messaggioerrore) {
         Platform.runLater(()->{
             this.messaggioerrore.setStyle("-fx-text-fill: green;");
@@ -104,6 +118,11 @@ public class RegistraNewAmministratore {
         });
     }
 
+    /**
+     * Mostra un messaggio di errore nella schermata.
+     *
+     * @param messaggioerrore il messaggio di errore da mostrare
+     */
     public void mostraErrore(String messaggioerrore) {
         Platform.runLater(()->{
             this.messaggioerrore.setStyle("-fx-text-fill: red;");

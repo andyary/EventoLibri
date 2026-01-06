@@ -22,10 +22,11 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+/**
+ * Classe View per la schermata principale del genitore.
+ */
 public class HomeGenitore {
 
     private final Client client;
@@ -45,7 +46,14 @@ public class HomeGenitore {
 
     private Label messaggioerrore;
 
-
+    /**
+     * Costruttore della classe HomeGenitore.
+     *
+     * @param client             l'istanza del client per la comunicazione con il server
+     * @param eventoView        la view per la visualizzazione dei dettagli di un evento
+     * @param profiloGenitore   la view per la visualizzazione e modifica del profilo del genitore
+     * @param libroDetailedView la view per la visualizzazione dei dettagli di un libro
+     */
     public HomeGenitore(Client client, EventoView eventoView, ProfiloGenitore profiloGenitore, LibroDetailedView libroDetailedView) {
         this.eventoView = eventoView;
         this.client = client;
@@ -54,45 +62,94 @@ public class HomeGenitore {
         this.messaggioerrore = new Label("");
         this.messaggioerrore.setStyle("-fx-text-fill: red;");
     }
+
+    /**
+     * Imposta l'elenco dei libri disponibili.
+     *
+     * @param elencoLibri l'elenco dei libri
+     */
     public void setElencoLibri(ArrayList<Libro> elencoLibri) {
         this.elencoLibri = elencoLibri == null ? new ArrayList<>() : elencoLibri;
     }
 
+    /**
+     * Imposta se il genitore può recensire un libro.
+     *
+     * @param recensibile true se il genitore può recensire, false altrimenti
+     */
     public void setRecensibile(boolean recensibile) {
         this.recensibile = recensibile;
     }
 
+    /**
+     * Imposta l'elenco delle recensioni.
+     *
+     * @param recensioni l'elenco delle recensioni
+     */
     public void setRecensioni(ArrayList<Recensione> recensioni) {
         this.recensioni = recensioni;
     }
 
+    /**
+     * Aggiunge una recensione all'elenco delle recensioni.
+     *
+     * @param recensione la recensione da aggiungere
+     */
     public void addRecensione(Recensione recensione) {
         if (this.recensioni != null) this.recensioni.add(recensione);
     }
 
+    /**
+     * Rimuove una recensione dall'elenco delle recensioni.
+     *
+     * @param recensione la recensione da rimuovere
+     */
     public void delRecensione(Recensione recensione) {
         if (this.recensioni != null) this.recensioni.remove(recensione);
     }
 
+    /**
+     * Restituisce il genitore associato alla home.
+     *
+     * @return il genitore
+     */
     public Genitore getGenitore() {
         return genitore;
     }
 
+    /**
+     * Restituisce l'elenco degli eventi prossimi.
+     *
+     * @return l'elenco degli eventi prossimi
+     */
     public ArrayList<Evento> getEventiProssimi() {
         return eventiProssimi;
     }
 
+    /**
+     * Imposta lo stato di attesa per le operazioni asincrone.
+     *
+     * @param attendi true se in attesa, false altrimenti
+     */
     public void setAttendi(boolean attendi) {
         this.attendi = attendi;
     }
 
+    /**
+     * Mostra la schermata principale del genitore.
+     *
+     * @param stage          lo stage principale dell'applicazione
+     * @param genitore       il genitore di cui visualizzare la home
+     * @param eventiProssimi l'elenco degli eventi prossimi
+     * @param onBack         l'azione da eseguire quando si preme il pulsante "Logout"
+     */
     public void show(Stage stage, Genitore genitore, ArrayList<Evento> eventiProssimi, Runnable onBack) {
         this.stage = stage;
         this.genitore = genitore;
         this.eventiProssimi = eventiProssimi != null ? eventiProssimi : new ArrayList<>();
         this.onBack = onBack;
 
-
+        // richiedi lettori, luoghi, libri per aggiornare dati locali
         RichiestaLettoriELuoghiELibri richiestaLettoriELuoghiELibri = new RichiestaLettoriELuoghiELibri();
         try {
             client.sendMessage(richiestaLettoriELuoghiELibri);
@@ -253,15 +310,26 @@ public class HomeGenitore {
         });
     }
 
+    /**
+     * Nasconde il pulsante "Carica Eventi Successivi".
+     */
     public void nascondiBottoneNextEventi() {
         Platform.runLater(() -> {
             if (nextEventiButton != null) nextEventiButton.setVisible(false);
         });
     }
 
+    /***/
+
     /**
+     * Crea una TableView per visualizzare gli eventi.
      * Crea TableView<Evento> con colonne: Data, Ora inizio, Ora fine (calcolaOraFine), Titolo.
      * visibleRows indica il numero di righe visibili. TableView gestisce lo scrolling interno se ci sono più righe.
+     * @param eventi       l'elenco degli eventi da visualizzare
+     * @param visibleRows il numero di righe visibili nella tabella
+     * @param formatoData il formato per la data
+     * @param formatoOra  il formato per l'ora
+     * @return la TableView degli eventi
      */
     private TableView<Evento> createEventoTableView(List<Evento> eventi, int visibleRows, DateTimeFormatter formatoData, DateTimeFormatter formatoOra) {
         TableView<Evento> table = new TableView<>();
@@ -353,16 +421,31 @@ public class HomeGenitore {
         return table;
     }
 
+    /**
+     * Aggiorna l'elenco degli eventi prossimi e aggiorna la visualizzazione.
+     *
+     * @param prossimiEventi l'elenco degli eventi prossimi da aggiungere
+     */
     public void aggiornaEventi(ArrayList<Evento> prossimiEventi) {
         if (this.eventiProssimi == null) this.eventiProssimi = new ArrayList<>();
         this.eventiProssimi.addAll(prossimiEventi);
         Platform.runLater(() -> this.show(stage, genitore, this.eventiProssimi, onBack));
     }
 
+    /**
+     * Aggiorna l'elenco dei libri disponibili.
+     *
+     * @param elencolibri l'elenco dei libri
+     */
     public void aggiornaLibri(ArrayList<Libro> elencolibri) {
         Platform.runLater(() -> this.elencoLibri = elencolibri);
     }
 
+    /**
+     * Mostra un messaggio di errore nella schermata principale.
+     *
+     * @param msgerrore il messaggio di errore da visualizzare
+     */
     public void mostraErrore(String msgerrore) {
         Platform.runLater(()->{
             this.messaggioerrore.setText(msgerrore);

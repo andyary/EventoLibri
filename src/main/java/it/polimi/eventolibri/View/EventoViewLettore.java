@@ -22,6 +22,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+/**
+ * Classe View per la visualizzazione e gestione di un evento dal punto di vista di un lettore.
+ */
 public class EventoViewLettore {
     private Client client;
     private Stage stage;
@@ -37,7 +40,11 @@ public class EventoViewLettore {
     private ComboBox<Lettore> lettoreCombo = new ComboBox<>();
     private ComboBox<Lettore> lettoreScalettaCombo = new ComboBox<>();
 
-
+    /**
+     * Costruttore della classe EventoViewLettore.
+     *
+     * @param client l'istanza del client per la comunicazione con il server
+     */
     public EventoViewLettore(Client client) {
         this.client = client;
         this.messaggioerrore = new Label("");
@@ -45,36 +52,76 @@ public class EventoViewLettore {
         this.iscritti = new Label("Iscritti: TBD");
     }
 
+    /**
+     * Imposta la lista dei luoghi disponibili.
+     *
+     * @param luoghi la lista dei luoghi
+     */
     public void setLuoghi(ArrayList<Luogo> luoghi) {
         this.luoghi = luoghi;
     }
 
+    /**
+     * Imposta la lista dei lettori disponibili.
+     *
+     * @param lettori la lista dei lettori
+     */
     public void setLettori(ArrayList<Lettore> lettori) {
         this.lettori = lettori;
     }
 
+    /**
+     * Imposta l'elenco dei libri disponibili.
+     *
+     * @param elencoLibri l'elenco dei libri
+     */
     public void setElencoLibri(ArrayList<Libro> elencoLibri) {
         this.elencoLibri = elencoLibri;
     }
 
+    /**
+     * Restituisce il lettore associato alla view.
+     *
+     * @return il lettore
+     */
     public Lettore getLettore() {
         return lettore;
     }
 
+    /**
+     * Imposta il lettore associato alla view.
+     *
+     * @param lettore il lettore
+     */
     public void setLettore(Lettore lettore) {
         this.lettore = lettore;
     }
 
+    /**
+     * Restituisce l'evento associato alla view.
+     *
+     * @return l'evento
+     */
     public Evento getEvento() {
         return evento;
     }
 
+    /**
+     * Imposta l'evento associato alla view.
+     *
+     * @param evento l'evento
+     */
     public void setEvento(Evento evento) {
         this.evento = evento;
     }
 
     /**
-     * Mostra la finestra dei dettagli evento con dettaglio scaletta ed iscizione come lettore
+     * Mostra la schermata di gestione dell'evento, con dettaglio scaletta ed iscizione come lettore
+     *
+     * @param stage   lo stage principale dell'applicazione
+     * @param evento  l'evento da gestire
+     * @param lettore il lettore che sta gestendo l'evento
+     * @param onBack  l'azione da eseguire quando si preme il pulsante "Indietro"
      */
     public void show(Stage stage, Evento evento, Lettore lettore, Runnable onBack) {
         this.stage = stage;
@@ -83,6 +130,7 @@ public class EventoViewLettore {
         this.onBack = onBack;
         this.messaggioerrore.setText("");
 
+        // Richiesta iscritti evento
         RichiestaIscrittiEvento richiestaIscritti = new RichiestaIscrittiEvento(evento);
         try {
             client.sendMessage(richiestaIscritti);
@@ -90,6 +138,7 @@ public class EventoViewLettore {
             System.out.println("Errore nel richiestaIscrittiEvento" + e.getMessage());
         }
 
+        // richiedi lettori, luoghi e libri
         RichiestaLettoriELuoghiELibri richiestaLettoriELuoghiELibri = new RichiestaLettoriELuoghiELibri();
         try {
             client.sendMessage(richiestaLettoriELuoghiELibri);
@@ -146,9 +195,7 @@ public class EventoViewLettore {
         Spinner<Integer> hourSpinner = new Spinner<>(0, 23, evento.getData().toLocalTime().getHour());
         Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, evento.getData().toLocalTime().getMinute());
         hourSpinner.setEditable(true);
-        // hourSpinner.getEditor().setPrefColumnCount(2);
         minuteSpinner.setEditable(true);
-        // minuteSpinner.getEditor().setPrefColumnCount(2);
         HBox oraBox = new HBox(5,
                 new Label("Ora:"),
                 hourSpinner,
@@ -291,13 +338,24 @@ public class EventoViewLettore {
 
     }
 
+    /**
+     * Mostra un messaggio di errore nella schermata dell'evento.
+     *
+     * @param msgerrore il messaggio di errore da visualizzare
+     */
     public void mostraErrore(String msgerrore) {
         Platform.runLater(()->{
             this.messaggioerrore.setText(msgerrore);
         });
     }
 
-
+    /**
+     * Aggiorna le liste di lettori, luoghi e libri disponibili.
+     *
+     * @param lettori    la lista dei lettori
+     * @param luoghi     la lista dei luoghi
+     * @param elencolibri l'elenco dei libri
+     */
     public void aggiornaLettoriELuoghiELibri(ArrayList<Lettore> lettori, ArrayList<Luogo> luoghi, ArrayList<Libro> elencolibri) {
         this.lettori.clear();
         this.lettori.addAll(lettori);
@@ -344,6 +402,12 @@ public class EventoViewLettore {
         });
     }
 
+    /**
+     * Aggiorna l'interfaccia utente della scaletta dell'evento.
+     *
+     * @param scalettaBox il contenitore VBox della scaletta
+     * @param scaletta    la lista di LibroLettore che compone la scaletta
+     */
     private void refreshScalettaUI(VBox scalettaBox, ArrayList<LibroLettore> scaletta) {
         scalettaBox.getChildren().clear();
 
@@ -443,6 +507,11 @@ public class EventoViewLettore {
         }
     }
 
+    /**
+     * Aggiorna il numero di iscritti all'evento.
+     *
+     * @param numIscritti il nuovo numero di iscritti
+     */
     public void aggiornaIscritti(int numIscritti) {
         evento.setIscritti(numIscritti);
         Platform.runLater(() -> {

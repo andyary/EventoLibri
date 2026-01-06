@@ -459,12 +459,15 @@ public class Client {
                                 ((NotificaAggiornamentoEvento) msg).getEvento());
                     }
                 }
+                Platform .runLater(() -> {
+                    homeGenitore.aggiornaEventi(homeGenitore.getEventiProssimi());
+                });
             }
             if (utente instanceof Lettore) {
-                if (((NotificaAggiornamentoEvento) msg).getEvento().isIscritto(eventoViewLettore.getLettore())) {
+                if (((NotificaAggiornamentoEvento) msg).getEvento().isIscritto(homeLettore.getLettore())) {
                     homeLettore.getLettore().aggiungiIscrizioneLettura(((NotificaAggiornamentoEvento) msg).getEvento());
                 }
-                if (!((NotificaAggiornamentoEvento) msg).getEvento().isIscritto(eventoViewLettore.getLettore())) {
+                if (!((NotificaAggiornamentoEvento) msg).getEvento().isIscritto(homeLettore.getLettore())) {
                     homeLettore.getLettore().rimuoviIscrizioneLettura(((NotificaAggiornamentoEvento) msg).getEvento());
                 }
                 for (Evento e :homeLettore.getEventiProssimi()) {
@@ -473,6 +476,9 @@ public class Client {
                                 ((NotificaAggiornamentoEvento) msg).getEvento());
                     }
                 }
+                Platform .runLater(() -> {
+                    homeLettore.aggiornaEventi(homeLettore.getEventiProssimi());
+                });
             }
         }
     }

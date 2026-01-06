@@ -42,6 +42,7 @@ public class EventoDAO {
                         Evento evento = new Evento(result.getInt("e.id"), lettore, result.getString("e.nome"), luogo, result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")));
                         EventoDAO eventoDAO = new EventoDAO(connection);
                         evento.addListeners(eventoDAO.getGenitoriIscritti(evento));
+                        evento.setIscritti(eventoDAO.getIscrittiEvento(evento));
                         eventiCreati.add(evento);
                     }
                     return eventiCreati;
@@ -82,6 +83,7 @@ public class EventoDAO {
                         Evento evento = new Evento(result.getInt("e.id"), creatore, result.getString("e.nome"), luogo, result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")));
                         EventoDAO eventoDAO = new EventoDAO(connection);
                         evento.addListeners(eventoDAO.getGenitoriIscritti(evento));
+                        evento.setIscritti(eventoDAO.getIscrittiEvento(evento));
                         nextEventi.add(evento);
                     }
                     return nextEventi;
@@ -125,6 +127,7 @@ public class EventoDAO {
                         Evento evento = new Evento(result.getInt("e.id"), creatore, result.getString("e.nome"), luogo, result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")));
                         EventoDAO eventoDAO = new EventoDAO(connection);
                         evento.addListeners(eventoDAO.getGenitoriIscritti(evento));
+                        evento.setIscritti(eventoDAO.getIscrittiEvento(evento));
                         nextEventi.add(evento);
                     }
                     return nextEventi;
@@ -160,6 +163,7 @@ public class EventoDAO {
                     Evento evento = new Evento(result.getInt("e.id"), creatore, result.getString("e.nome"), luogo, result.getTimestamp("e.data").toLocalDateTime(), libroLettoreDAO.getScaletta(result.getInt("e.id")));
                     EventoDAO eventoDAO = new EventoDAO(connection);
                     evento.addListeners(eventoDAO.getGenitoriIscritti(evento));
+                    evento.setIscritti(eventoDAO.getIscrittiEvento(evento));
                     return evento;
                 } else {
                     return null;

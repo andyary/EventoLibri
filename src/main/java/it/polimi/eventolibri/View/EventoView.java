@@ -24,6 +24,10 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+/**
+ * Classe View per la visualizzazione dei dettagli di un evento dal punto di vista dell'utente genitore
+ * e la gestione delle iscrizioni dei figli.
+ */
 public class EventoView {
     private Client client;
     private Stage stage;
@@ -33,6 +37,11 @@ public class EventoView {
     private Label messaggioerrore;
     private Label iscritti;
 
+    /**
+     * Costruttore della classe EventoView.
+     *
+     * @param client l'istanza del client per la comunicazione con il server
+     */
     public EventoView(Client client) {
         this.client = client;
         this.messaggioerrore = new Label("");
@@ -40,24 +49,49 @@ public class EventoView {
         this.iscritti = new Label("Iscritti: TBD");
     }
 
+    /**
+     * Restituisce il genitore associato alla view.
+     *
+     * @return il genitore
+     */
     public Genitore getGenitore() {
         return genitore;
     }
 
+    /**
+     * Imposta il genitore associato alla view.
+     *
+     * @param genitore il genitore da impostare
+     */
     public void setGenitore(Genitore genitore) {
         this.genitore = genitore;
     }
 
+    /**
+     * Restituisce l'evento associato alla view.
+     *
+     * @return l'evento
+     */
     public Evento getEvento() {
         return evento;
     }
 
+    /**
+     * Imposta l'evento associato alla view.
+     *
+     * @param evento l'evento da impostare
+     */
     public void setEvento(Evento evento) {
         this.evento = evento;
     }
 
     /**
-     * Mostra la finestra dei dettagli evento con iscrizione/disiscrizione figli
+     * Mostra la schermata dei dettagli dell'evento, con iscrizione/disiscrizione figli
+     *
+     * @param stage    lo stage principale dell'applicazione
+     * @param evento   l'evento di cui visualizzare i dettagli
+     * @param genitore il genitore che gestisce le iscrizioni dei figli
+     * @param onBack   l'azione da eseguire quando si preme il pulsante "Indietro"
      */
     public void show(Stage stage, Evento evento, Genitore genitore, Runnable onBack) {
         this.stage = stage;
@@ -65,6 +99,7 @@ public class EventoView {
         this.genitore = genitore;
         this.onBack = onBack;
 
+        // Richiesta numero iscritti aggiornato
         RichiestaIscrittiEvento richiestaIscritti = new RichiestaIscrittiEvento(evento);
         try {
             client.sendMessage(richiestaIscritti);
@@ -127,8 +162,6 @@ public class EventoView {
                     }
                 }
             }
-
-            // if (onBack != null) onBack.run();
         });
 
         Button backButton = new Button("Indietro");
@@ -176,6 +209,11 @@ public class EventoView {
         });
     }
 
+    /**
+     * Mostra un messaggio di errore nella view.
+     *
+     * @param msgerrore il messaggio di errore da visualizzare
+     */
     public void mostraErrore(String msgerrore) {
         Platform.runLater(()->{
             System.out.println("dalla mostraerrore contenuto di this.messaggio errore:" + this.messaggioerrore);
@@ -184,6 +222,11 @@ public class EventoView {
         });
     }
 
+    /**
+     * Aggiorna il numero di iscritti visualizzato nella view.
+     *
+     * @param numIscritti il nuovo numero di iscritti
+     */
     public void aggiornaIscritti(int numIscritti) {
         evento.setIscritti(numIscritti);
         Platform.runLater(() -> {

@@ -1,7 +1,6 @@
 package it.polimi.eventolibri.View;
 
 import it.polimi.eventolibri.Message.RichiestaLettoriELuoghiELibri;
-import it.polimi.eventolibri.Message.RichiestaNextEventi;
 import it.polimi.eventolibri.Message.RichiestaRecensioniERecensibilita;
 import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.Network.Client;
@@ -18,13 +17,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-
+/**
+ * Classe View per la schermata principale dell'amministratore.
+ */
 public class HomeAmministratore {
 
     private final Client client;
@@ -43,7 +39,15 @@ public class HomeAmministratore {
 
     private Label messaggioerrore;
 
-
+    /**
+     * Costruttore della classe HomeAmministratore.
+     *
+     * @param client                    l'istanza del client per la comunicazione con il server
+     * @param profiloAmministratore     la view per il profilo dell'amministratore
+     * @param registraNewLettore       la view per la registrazione di un nuovo lettore
+     * @param registraNewAmministratore la view per la registrazione di un nuovo amministratore
+     * @param libroDetailedView        la view per il dettaglio del libro
+     */
     public HomeAmministratore(Client client, ProfiloAmministratore profiloAmministratore,
                               RegistraNewLettore registraNewLettore, RegistraNewAmministratore registraNewAmministratore, LibroDetailedView libroDetailedView) {
         this.client = client;
@@ -55,31 +59,64 @@ public class HomeAmministratore {
         this.messaggioerrore.setStyle("-fx-text-fill: red;");
     }
 
+    /**
+     * Imposta l'elenco dei libri disponibili.
+     *
+     * @param elencoLibri l'elenco dei libri
+     */
     public void setElencoLibri(ArrayList<Libro> elencoLibri) {
         this.elencoLibri = elencoLibri == null ? new ArrayList<>() : elencoLibri;
     }
 
+    /**
+     * Imposta se il libro è recensibile.
+     *
+     * @param recensibile true se il libro è recensibile, false altrimenti
+     */
     public void setRecensibile(boolean recensibile) {
         this.recensibile = recensibile;
     }
 
+    /**
+     * Imposta l'elenco delle recensioni.
+     *
+     * @param recensioni l'elenco delle recensioni
+     */
     public void setRecensioni(ArrayList<Recensione> recensioni) {
         this.recensioni = recensioni;
     }
 
+    /**
+     * Rimuove una recensione dall'elenco delle recensioni.
+     *
+     * @param recensione la recensione da rimuovere
+     */
     public void delRecensione(Recensione recensione) {
         if (this.recensioni != null) this.recensioni.remove(recensione);
     }
 
+    /**
+     * Imposta lo stato di attesa.
+     *
+     * @param attendi true se in attesa, false altrimenti
+     */
     public void setAttendi(boolean attendi) {
         this.attendi = attendi;
     }
 
+    /**
+     * Mostra la schermata principale dell'amministratore.
+     *
+     * @param stage          lo stage principale dell'applicazione
+     * @param amministratore l'amministratore che ha effettuato l'accesso
+     * @param onBack         l'azione da eseguire quando si preme il pulsante "Logout"
+     */
     public void show(Stage stage, Amministratore amministratore, Runnable onBack) {
         this.stage = stage;
         this.amministratore = amministratore;
         this.onBack = onBack;
 
+        // richiedi lettori, luoghi e libri
         RichiestaLettoriELuoghiELibri richiestaLettoriELuoghiELibri = new RichiestaLettoriELuoghiELibri();
         try {
             client.sendMessage(richiestaLettoriELuoghiELibri);
@@ -182,7 +219,6 @@ public class HomeAmministratore {
 
         VBox topBar = new VBox(topBar1, topBar2, topBar3, topBar4, messaggioerrore);
 
-//        HBox topBar = new HBox(new Label("  Benvenuto, (admin) " + amministratore.getNome() + "!          "), profiloButton, newLettoreButton, newAmministratoreButton, scegliLibroBtn, backButton);
         topBar.setPadding(new Insets(20));
         topBar.setAlignment(Pos.TOP_RIGHT);
 
@@ -204,10 +240,20 @@ public class HomeAmministratore {
         });
     }
 
+    /**
+     * Aggiorna l'elenco dei libri disponibili.
+     *
+     * @param elencolibri l'elenco dei libri
+     */
     public void aggiornaLibri(ArrayList<Libro> elencolibri) {
         Platform.runLater(() -> this.elencoLibri = elencolibri);
     }
 
+    /**
+     * Mostra un messaggio di errore nella schermata principale.
+     *
+     * @param msgerrore il messaggio di errore da visualizzare
+     */
     public void mostraErrore(String msgerrore) {
         Platform.runLater(()->{
             this.messaggioerrore.setText(msgerrore);

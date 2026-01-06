@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Classe View per la home di un lettore.
+ */
 public class HomeLettore {
 
     private final Client client;
@@ -47,6 +50,14 @@ public class HomeLettore {
 
     private Label messaggioerrore;
 
+    /**
+     * Costruttore della classe HomeLettore.
+     *
+     * @param client          l'istanza del client per la comunicazione con il server
+     * @param eventoView      la view per la visualizzazione degli eventi
+     * @param profiloLettore  la view per la visualizzazione del profilo del lettore
+     * @param libroDetailedView la view per la visualizzazione dettagliata del libro
+     */
     public HomeLettore(Client client, EventoViewLettore eventoView, ProfiloLettore profiloLettore, LibroDetailedView libroDetailedView) {
         this.client = client;
         this.eventoView = eventoView;
@@ -56,45 +67,93 @@ public class HomeLettore {
         this.messaggioerrore.setStyle("-fx-text-fill: red;");
     }
 
+    /**
+     * Imposta l'elenco dei libri disponibili.
+     *
+     * @param elencoLibri l'elenco dei libri
+     */
     public void setElencoLibri(ArrayList<Libro> elencoLibri) {
         this.elencoLibri = elencoLibri == null ? new ArrayList<>() : elencoLibri;
     }
 
+    /**
+     * Imposta se il lettore può recensire il libro selezionato.
+     *
+     * @param recensibile true se il lettore può recensire, false altrimenti
+     */
     public void setRecensibile(boolean recensibile) {
         this.recensibile = recensibile;
     }
 
+    /**
+     * Imposta l'elenco delle recensioni del libro selezionato.
+     *
+     * @param recensioni l'elenco delle recensioni
+     */
     public void setRecensioni(ArrayList<Recensione> recensioni) {
         this.recensioni = recensioni;
     }
 
+    /**
+     * Aggiunge una recensione all'elenco delle recensioni.
+     *
+     * @param recensione la recensione da aggiungere
+     */
     public void addRecensione(Recensione recensione) {
         if (this.recensioni != null) this.recensioni.add(recensione);
     }
 
+    /**
+     * Rimuove una recensione dall'elenco delle recensioni.
+     *
+     * @param recensione la recensione da rimuovere
+     */
     public void delRecensione(Recensione recensione) {
         if (this.recensioni != null) this.recensioni.remove(recensione);
     }
 
+    /**
+     * Restituisce il lettore associato alla home.
+     *
+     * @return il lettore
+     */
     public Lettore getLettore() {
         return lettore;
     }
 
+    /**
+     * Restituisce l'elenco dei prossimi eventi disponibili.
+     *
+     * @return l'elenco dei prossimi eventi
+     */
     public ArrayList<Evento> getEventiProssimi() {
         return eventiProssimi;
     }
 
+    /**
+     * Imposta lo stato di attesa per le operazioni asincrone.
+     *
+     * @param attendi true se si è in attesa, false altrimenti
+     */
     public void setAttendi(boolean attendi) {
         this.attendi = attendi;
     }
 
-
+    /**
+     * Mostra la schermata principale della home del lettore.
+     *
+     * @param stage          lo stage principale dell'applicazione
+     * @param lettore        il lettore di cui visualizzare la home
+     * @param eventiProssimi l'elenco dei prossimi eventi disponibili
+     * @param onBack         l'azione da eseguire quando si preme il pulsante "Logout"
+     */
     public void show(Stage stage, Lettore lettore, ArrayList<Evento> eventiProssimi, Runnable onBack) {
         this.stage = stage;
         this.lettore = lettore;
         this.eventiProssimi = eventiProssimi != null ? eventiProssimi : new ArrayList<>();
         this.onBack = onBack;
 
+        // richiesta lettori, luoghi, libri al server (per aggiornare le liste nel client)
         RichiestaLettoriELuoghiELibri richiestaLettoriELuoghiELibri = new RichiestaLettoriELuoghiELibri();
         try {
             client.sendMessage(richiestaLettoriELuoghiELibri);
@@ -102,8 +161,6 @@ public class HomeLettore {
             System.out.println("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage());
             messaggioerrore.setText("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage());
         }
-
-
 
         // ---------- TOP BAR CON PROFILO ----------
         Button profiloButton = new Button("Profilo lettore");
@@ -248,17 +305,21 @@ public class HomeLettore {
         });
     }
 
+    //* Nasconde il bottone per caricare più eventi.
+     */
     public void nascondiBottoneNextEventi() {
         if (nextEventiButton != null) nextEventiButton.setVisible(false);
     }
 
-
-
-    /**
+    /** Crea una TableView per visualizzare gli eventi.
      * Crea TableView<Evento> con colonne: Data, Ora inizio, Ora fine (calcolaOraFine), Titolo.
      * visibleRows indica il numero di righe visibili. TableView gestisce lo scrolling interno se ci sono più righe.
+     * @param eventi       l'elenco degli eventi da visualizzare
+     * @param visibleRows il numero di righe visibili nella tabella
+     * @param formatoData il formato per la visualizzazione della data
+     * @param formatoOra  il formato per la visualizzazione dell'ora
+     * @return la TableView contenente gli eventi
      */
-    // java
     private TableView<Evento> createEventoTableView(List<Evento> eventi, int visibleRows, DateTimeFormatter formatoData, DateTimeFormatter formatoOra) {
         TableView<Evento> table = new TableView<>();
 
@@ -351,17 +412,29 @@ public class HomeLettore {
         return table;
     }
 
-
+    /**
+     * Aggiorna l'elenco dei prossimi eventi disponibili.
+     *
+     * @param prossimiEventi l'elenco dei prossimi eventi
+     */
     public void aggiornaEventi(ArrayList<Evento> prossimiEventi) {
         if (this.eventiProssimi == null) this.eventiProssimi = new ArrayList<>();
         this.eventiProssimi.addAll(prossimiEventi);
         Platform.runLater(() -> this.show(stage, lettore, this.eventiProssimi, onBack));
     }
 
+    /**
+     * Aggiorna l'elenco dei libri disponibili.
+     *
+     * @param elencolibri l'elenco dei libri
+     */
     public void aggiornaLibri(ArrayList<Libro> elencolibri) {
         Platform.runLater(() -> this.elencoLibri = elencolibri);
     }
 
+    /**
+     * Ricarica l'elenco dei prossimi eventi dal server.
+     */
     public void reloadEventiFromServer() {
         if (eventiProssimi == null) eventiProssimi = new ArrayList<>();
         eventiProssimi.clear();
@@ -375,6 +448,11 @@ public class HomeLettore {
         Platform.runLater(() -> this.show(stage, lettore, eventiProssimi, onBack));
     }
 
+    /**
+     * Mostra un messaggio di errore nella home del lettore.
+     *
+     * @param msgerrore il messaggio di errore da visualizzare
+     */
     public void mostraErrore(String msgerrore) {
         Platform.runLater(()->{
             this.messaggioerrore.setText(msgerrore);
