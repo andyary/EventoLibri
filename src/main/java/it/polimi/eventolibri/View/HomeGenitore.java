@@ -31,6 +31,7 @@ public class HomeGenitore {
 
     private final Client client;
     private Stage stage;
+    private Scene scene;
     private Genitore genitore;
     private ArrayList<Evento> eventiProssimi;
     private Button nextEventiButton;
@@ -304,11 +305,29 @@ public class HomeGenitore {
 
         Scene scene = new Scene(scrollPane, 800, 750);
         Platform.runLater(() -> {
+            this.scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle("Home Genitore");
             stage.show();
         });
     }
+
+    /**
+     * Verifica se la view è attualmente visualizzata sullo stage specificato.
+     *
+     * @param stage lo stage da verificare
+     * @return true se la view è visualizzata sullo stage, false altrimenti
+     */
+
+    /**
+     * Restituisce lo stage associato alla view.
+     *
+     * @return lo stage
+     */
+    public Stage getStage() {
+        return stage;
+    }
+
 
     /**
      * Nasconde il pulsante "Carica Eventi Successivi".
@@ -318,8 +337,6 @@ public class HomeGenitore {
             if (nextEventiButton != null) nextEventiButton.setVisible(false);
         });
     }
-
-    /***/
 
     /**
      * Crea una TableView per visualizzare gli eventi.

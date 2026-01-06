@@ -35,6 +35,7 @@ public class HomeLettore {
 
     private final Client client;
     private Stage stage;
+    private Scene scene;
     private Lettore lettore;
     private ArrayList<Evento> eventiProssimi;
     private Button nextEventiButton;
@@ -299,11 +300,22 @@ public class HomeLettore {
 
         Scene scene = new Scene(scrollPane, 800, 750);
         Platform.runLater(() -> {
+            this.scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle("Home Lettore");
             stage.show();
         });
     }
+
+    /**
+     * Restituisce lo stage associato alla view.
+     *
+     * @return lo stage
+     */
+    public Stage getStage() {
+        return stage;
+    }
+
 
     /* Nasconde il bottone per caricare più eventi.
      */

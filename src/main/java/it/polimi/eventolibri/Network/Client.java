@@ -4,8 +4,10 @@ import it.polimi.eventolibri.Message.*;
 import it.polimi.eventolibri.Model.*;
 import it.polimi.eventolibri.View.*;
 import javafx.application.Platform;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -439,6 +441,23 @@ public class Client {
         }
 
         if (msg instanceof NotificaAggiornamentoEvento) {
+            Stage stage = loginView.getStage();
+            Scene scene = stage.getScene();
+
+            // Verifica se vista attualmente visualizzata è compatibile con un refresh
+            boolean ViewCoerente = false;
+            if (stage != null && stage.isShowing()) {
+                if (utente instanceof Genitore) {
+                    if (stage == homeGenitore.getStage() && scene == homeGenitore.getStage().getScene()) {
+                        ViewCoerente = true;
+                    }
+                }
+                if (utente instanceof Lettore) {
+                    if (stage == homeLettore.getStage() && scene == homeLettore.getStage().getScene()) {
+                        ViewCoerente = true;
+                    }}
+            }
+
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
                 alert.setTitle("Aggiornamento Live Evento");
@@ -453,19 +472,21 @@ public class Client {
                         f.aggiornaEvento(((NotificaAggiornamentoEvento) msg).getEvento());
                     }
                 }
-                for (Evento e :homeGenitore.getEventiProssimi()) {
+                for (Evento e : homeGenitore.getEventiProssimi()) {
                     if (e.getId() == ((NotificaAggiornamentoEvento) msg).getEvento().getId()) {
                         homeGenitore.getEventiProssimi().set(homeGenitore.getEventiProssimi().indexOf(e),
                                 ((NotificaAggiornamentoEvento) msg).getEvento());
                     }
                 }
-                Platform .runLater(() -> {
-                    homeGenitore.aggiornaEventi(homeGenitore.getEventiProssimi());
-                });
+                if (ViewCoerente) {
+                    Platform.runLater(() -> {
+                        homeGenitore.aggiornaEventi(homeGenitore.getEventiProssimi());
+                    });
+                }
             }
             if (utente instanceof Lettore) {
                 if (((NotificaAggiornamentoEvento) msg).getEvento().getCreatore().getId() == utente.getId()) {
-                    for (Evento e : homeLettore.getLettore().getEventiCreati()){
+                    for (Evento e : homeLettore.getLettore().getEventiCreati()) {
                         if (e.getId() == ((NotificaAggiornamentoEvento) msg).getEvento().getId()) {
                             e.aggiornaEvento(((NotificaAggiornamentoEvento) msg).getEvento());
                         }
@@ -477,15 +498,17 @@ public class Client {
                 if (!((NotificaAggiornamentoEvento) msg).getEvento().isIscritto(homeLettore.getLettore())) {
                     homeLettore.getLettore().rimuoviIscrizioneLettura(((NotificaAggiornamentoEvento) msg).getEvento());
                 }
-                for (Evento e :homeLettore.getEventiProssimi()) {
+                for (Evento e : homeLettore.getEventiProssimi()) {
                     if (e.getId() == ((NotificaAggiornamentoEvento) msg).getEvento().getId()) {
                         homeLettore.getEventiProssimi().set(homeLettore.getEventiProssimi().indexOf(e),
                                 ((NotificaAggiornamentoEvento) msg).getEvento());
                     }
                 }
-                Platform .runLater(() -> {
-                    homeLettore.aggiornaEventi(homeLettore.getEventiProssimi());
-                });
+                if (ViewCoerente) {
+                    Platform.runLater(() -> {
+                        homeLettore.aggiornaEventi(homeLettore.getEventiProssimi());
+                    });
+                }
             }
         }
     }
