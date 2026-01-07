@@ -40,6 +40,7 @@ public class RegistraNewGenitore {
      */
     public void show(Stage stage, Runnable onBack) {
         this.stage = stage;
+        this.messaggioerrore.setText("");
         // ===========================
         // TITOLO
         // ===========================

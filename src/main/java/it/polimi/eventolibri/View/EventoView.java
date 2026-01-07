@@ -127,15 +127,15 @@ public class EventoView {
             System.out.println("Errore nel richiestaIscrittiEvento" + e.getMessage());
         }
 
-        titolo.setText(evento.getNome());
-        titolo.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
+        Label titolopagina = new Label("Partecipazione Evento");
+        titolopagina.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
 
+        titolo.setText("Titolo: " + evento.getNome());
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMMM yyyy 'alle' HH:mm");
         data.setText("Data: " + evento.getData().format(fmt));
         luogo.setText("Luogo: " + evento.getLuogo().getNome());
         capienza.setText("Capienza: " + evento.getLuogo().getCapienza());
         iscritti.setText("Iscritti: " + evento.getIscritti());
-
 
         // ---------- CHECKBOX PER TUTTI I FIGLI ----------
         VBox figliBox = new VBox(5);
@@ -217,8 +217,20 @@ public class EventoView {
         HBox mainBtnBox = new HBox(5, new Label("  Benvenuto, (genitore) " + genitore.getNome() + "!          "), backButton);
         mainBtnBox.setAlignment(Pos.CENTER_RIGHT);
 
-        VBox layout = new VBox(15, mainBtnBox, titolo, data, luogo, capienza, iscritti, figliBox, aggiornaButton, messaggioerrore, scalettaBox);
-        layout.setAlignment(Pos.TOP_CENTER);
+        VBox layout = new VBox(15,
+                mainBtnBox,
+                titolopagina,
+                titolo,
+                data,
+                luogo,
+                capienza,
+                iscritti,
+                figliBox,
+                aggiornaButton,
+                messaggioerrore,
+                scalettaBox
+        );
+        layout.setAlignment(Pos.TOP_LEFT);
         layout.setPadding(new Insets(20));
 
         this.scene = new Scene(layout, 800, 750);

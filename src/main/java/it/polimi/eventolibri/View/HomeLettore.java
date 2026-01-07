@@ -175,9 +175,7 @@ public class HomeLettore {
         // ---------- TOP BAR CON PROFILO ----------
         Button profiloButton = new Button("Profilo lettore");
         profiloButton.setOnAction(e -> {
-            profiloLettore.show(stage, lettore, () -> {
-                this.show(stage, lettore, this.eventiProssimi, onBack);
-            });
+            profiloLettore.show(stage, lettore, () -> reloadEventiFromServer());
         });
 
         Button newEventoButton = new Button("Crea Nuovo Evento");

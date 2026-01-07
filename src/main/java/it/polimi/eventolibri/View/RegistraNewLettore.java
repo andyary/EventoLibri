@@ -43,6 +43,7 @@ public class RegistraNewLettore {
     public void show(Stage stage, Amministratore amministratore, Runnable onBack) {
         this.stage = stage;
         this.amministratore = amministratore;
+        this.messaggioerrore.setText("");
         // ===========================
         // TITOLO
         // ===========================

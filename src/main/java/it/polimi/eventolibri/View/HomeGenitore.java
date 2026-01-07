@@ -172,9 +172,7 @@ public class HomeGenitore {
         Button profiloButton = new Button("Profilo e figli");
         profiloButton.setOnAction(e -> {
             System.out.println("Apertura schermata profilo...");
-            profiloGenitore.show(stage, genitore, () -> {
-                this.show(stage, genitore, this.eventiProssimi, onBack);
-            });
+            profiloGenitore.show(stage, genitore, () -> reloadEventiFromServer());
         });
 
         Button backButton = new Button("Logout");
@@ -439,7 +437,7 @@ public class HomeGenitore {
             row.setOnMouseClicked(ev -> {
                 if (!row.isEmpty() && ev.getButton() == MouseButton.PRIMARY && ev.getClickCount() == 2) {
                     Evento selected = row.getItem();
-                    eventoView.show(stage, selected, genitore, () -> this.show(stage, genitore, this.eventiProssimi, onBack));
+                    eventoView.show(stage, selected, genitore, () -> reloadEventiFromServer());
                 }
             });
             return row;
@@ -496,6 +494,23 @@ public class HomeGenitore {
             this.messaggioerrore.setText(msgerrore);
         });
     }
+
+    /**
+     * Ricarica l'elenco dei prossimi eventi dal server.
+     */
+    public void reloadEventiFromServer() {
+        if (eventiProssimi == null) eventiProssimi = new ArrayList<>();
+        eventiProssimi.clear();
+
+        try {
+            client.sendMessage(new RichiestaNextEventi(null));
+        } catch (Exception ex) {
+            System.out.println("Errore richiesta eventi: " + ex.getMessage());
+        }
+
+        Platform.runLater(() -> this.show(stage, genitore, eventiProssimi, onBack));
+    }
+
 
 }
 
