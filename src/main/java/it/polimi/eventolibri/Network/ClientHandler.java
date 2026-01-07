@@ -9,6 +9,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+/**
+ * Handles communication with a connected client.
+ */
 public class ClientHandler extends Thread {
 
     private Socket socket;
@@ -18,10 +21,21 @@ public class ClientHandler extends Thread {
     private Utente utente;
     private Server server;
 
+    /**
+     * Returns the user associated with this client handler.
+     *
+     * @return the Utente object
+     */
     public Utente getUtente() {
         return utente;
     }
 
+    /**
+     * Constructs a ClientHandler for the given socket and server.
+     *
+     * @param socket the socket connected to the client
+     * @param server the server instance
+     */
     public ClientHandler(Socket socket, Server server) {
         this.server = server;
         this.socket = socket;
@@ -29,6 +43,9 @@ public class ClientHandler extends Thread {
 
     }
 
+    /**
+     * Runs the client handler thread, listening for messages from the client.
+     */
     @Override
     public void run() {
         try {
@@ -44,8 +61,16 @@ public class ClientHandler extends Thread {
 
     }
 
+    /**
+     * Handles incoming messages from the client.
+     *
+     * @param msg the message received from the client
+     * @throws IOException if an I/O error occurs
+     */
     private void handleMessage(Messaggio msg) throws IOException {
-        // esempio di DAO
+        System.out.println("Messaggio ricevuto dal client: " + msg);
+
+        // gestisce messaggio di richiesta login dal client
         if (msg instanceof RichiestaLogin) {
             RispostaLogin risposta = controller.controllaLogin(((RichiestaLogin) msg).getUsername(), ((RichiestaLogin) msg).getPassword());
             if (risposta.isSuccesso()){
@@ -66,12 +91,14 @@ public class ClientHandler extends Thread {
             sendMessage(risposta);
         }
 
+        // gestisce messaggio di chiusura connessione dal client
         if (msg instanceof CloseUI) {
             server.getClients().remove(this);
             socket.close();
             System.out.println("Connessione chiusa con il client: " + socket);
         }
 
+        // gestisce la richiesta dei prossimi eventi
         if (msg instanceof RichiestaNextEventi) {
             // gestisci la richiesta di next eventi
             Evento ultimoEvento = ((RichiestaNextEventi) msg).getUltimoEvento();
@@ -79,6 +106,7 @@ public class ClientHandler extends Thread {
             sendMessage(risposta);
         }
 
+        // gestisce la richiesta di iscrizione di un figlio ad un evento, implementa il pattern observer per notificare ai listeners connessi
         if (msg instanceof RichiestaIscrizioneEvento) {
             Evento evento = ((RichiestaIscrizioneEvento) msg).getEvento();
             Figlio figlio = ((RichiestaIscrizioneEvento) msg).getFiglio();
@@ -98,11 +126,13 @@ public class ClientHandler extends Thread {
             }
         }
 
+        // gestisce la richiesta del numero di iscritti e dei listeners (genitori) associati alle iscrizioni ad un evento
         if (msg instanceof RichiestaIscrittiEvento) {
             RispostaIscrittiEvento risposta = controller.getIscrittiEvento(((RichiestaIscrittiEvento) msg).getEvento());
             sendMessage(risposta);
         }
 
+        // gestisce la richiesta di disiscrizione di un figlio da un evento, implementa il pattern observer per notificare ai listeners connessi
         if (msg instanceof RichiestaDisiscrizioneEvento) {
             Evento evento = ((RichiestaDisiscrizioneEvento) msg).getEvento();
             Figlio figlio = ((RichiestaDisiscrizioneEvento) msg).getFiglio();
@@ -122,12 +152,14 @@ public class ClientHandler extends Thread {
             }
         }
 
+        // gestisce la richiesta di aggiornamento del profilo genitore
         if (msg instanceof RichiestaAggiornaGenitore) {
             Genitore genitore = ((RichiestaAggiornaGenitore) msg).getGenitore();
             RispostaAggiornaGenitore risposta = controller.aggiornaGenitore(genitore);
             sendMessage(risposta);
         }
 
+        // gestisce la richiesta di aggiunta di un figlio al profilo genitore
         if (msg instanceof RichiestaAggiungiFiglio) {
             Genitore genitore = ((RichiestaAggiungiFiglio) msg).getGenitore();
             Figlio nuovoFiglio = ((RichiestaAggiungiFiglio) msg).getFiglioNuovo();
@@ -135,41 +167,48 @@ public class ClientHandler extends Thread {
             sendMessage(risposta);
         }
 
+        // gestisce la richiesta di registrazione di un nuovo genitore
         if (msg instanceof RichiestaNuovoGenitore) {
             Genitore nuovoGenitore = ((RichiestaNuovoGenitore) msg).getNuovoGenitore();
             RispostaNuovoGenitore risposta = controller.registraNuovoGenitore(nuovoGenitore, ((RichiestaNuovoGenitore) msg).getPassword());
             sendMessage(risposta);
         }
 
+        // gestisce la richiesta di registrazione di un nuovo lettore
         if (msg instanceof RichiestaNuovoLettore) {
             Lettore nuovoLettore = ((RichiestaNuovoLettore) msg).getNuovoLettore();
             RispostaNuovoLettore risposta = controller.registraNuovoLettore(nuovoLettore, ((RichiestaNuovoLettore) msg).getPassword());
             sendMessage(risposta);
         }
 
+        // gestisce la richiesta di registrazione di un nuovo amministratore
         if (msg instanceof RichiestaNuovoAmministratore) {
             Amministratore nuovoAmministratore = ((RichiestaNuovoAmministratore) msg).getNuovoAmministratore();
             RispostaNuovoAmministratore risposta = controller.registraNuovoAmministratore(nuovoAmministratore, ((RichiestaNuovoAmministratore) msg).getPassword());
             sendMessage(risposta);
         }
 
+        // gestisce la richiesta di lettori, luoghi e libri per la gestione dei menu a tendina
         if (msg instanceof RichiestaLettoriELuoghiELibri) {
             RispostaLettoriELuoghiELibri risposta = controller.richiestaLettoriELuoghiELibri();
             sendMessage(risposta);
         }
 
+        // gestisce la richiesta di aggiornamento del profilo lettore
         if (msg instanceof RichiestaAggiornaLettore) {
             Lettore lettore = ((RichiestaAggiornaLettore) msg).getLettore();
             RispostaAggiornaLettore risposta = controller.aggiornaLettore(lettore);
             sendMessage(risposta);
         }
 
+        // gestisce la richiesta di aggiornamento del profilo amministratore
         if (msg instanceof RichiestaAggiornaAmministratore) {
             Amministratore amministratore = ((RichiestaAggiornaAmministratore) msg).getAmministratore();
             RispostaAggiornaAmministratore risposta = controller.aggiornaAmministratore(amministratore);
             sendMessage(risposta);
         }
 
+        // gestisce la richiesta di salvataggio di un evento, implementa il pattern observer per notificare ai listeners connessi
         if (msg instanceof RichiestaSalvaEvento) {
             Evento evento = ((RichiestaSalvaEvento) msg).getEvento();
             RispostaSalvaEvento risposta = controller.salvaEvento(evento);
@@ -188,6 +227,7 @@ public class ClientHandler extends Thread {
             }
         }
 
+        // gestisce la richiesta di recensioni e recensibilita di un libro
         if (msg instanceof RichiestaRecensioniERecensibilita) {
             RispostaRecensioniERecensibilita risposta = controller.richiestaRecensioniERecensibilita(
                     ((RichiestaRecensioniERecensibilita) msg).getLibro(),
@@ -196,25 +236,31 @@ public class ClientHandler extends Thread {
             sendMessage(risposta);
         }
 
+        // gestisce la richiesta di aggiunta di una recensione da parte di un genitore
         if (msg instanceof RichiestaAggiungiRecensione) {
             Recensione recensione = ((RichiestaAggiungiRecensione) msg).getRecensione();
             RispostaAggiungiRecensione risposta = controller.aggiungiRecensione(recensione);
             sendMessage(risposta);
         }
 
+        // gestisce la richiesta di cancellazione di una recensione da parte di un amministratore
         if (msg instanceof RichiestaCancellaRecensione) {
             Recensione recensione = ((RichiestaCancellaRecensione) msg).getRecensione();
             RispostaCancellaRecensione risposta = controller.cancellaRecensione(recensione);
             sendMessage(risposta);
         }
-
-        // QUI CONTINUI AD AGGIUNGERE I MESSAGGI
+        // QUI CONTINUI AD AGGIUNGERE I NUOVI MESSAGGI
     }
 
+    /**
+     * Sends a message to the client.
+     *
+     * @param msg the message to send
+     * @throws IOException if an I/O error occurs
+     */
     public void sendMessage(Messaggio msg) throws IOException {
         out.writeObject(msg);
         out.flush();
         out.reset();
     }
-
 }

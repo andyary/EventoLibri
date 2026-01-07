@@ -16,6 +16,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+/**
+ * Client class that manages the connection to the server and handles communication.
+ */
 public class Client {
 
     private Socket socket;
@@ -34,7 +37,7 @@ public class Client {
     private RegistraNewLettore registraNewLettore;
     private RegistraNewAmministratore registraNewAmministratore;
     private LibroDetailedView libroDetailedView;
-    // add altre viste qui
+    // add le nuove viste qui
     private ArrayList<Evento> eventi;
     private Utente utente;
 
@@ -108,8 +111,9 @@ public class Client {
      * @param msg Il messaggio ricevuto.
      */
     private void handleMessage(Messaggio msg) {
-        // Gestisci il messaggio ricevuto dal server
-        System.out.println("Messaggio ricevuto dal server: " + msg);
+        System.out.println("Messaggio ricevuto dal client: " + msg);
+
+        // gestisce messaggio di risposta dal server dopo verifica credenziali al login, e in base al tipo di utente apre la vista corrispondente
         if (msg instanceof RispostaLogin) {
             if (((RispostaLogin) msg).isSuccesso()) {
                 System.out.println("Login riuscito!");
@@ -160,6 +164,7 @@ public class Client {
             System.out.println("Ricevuto risposta login ");
         }
 
+        // gestisce messaggio di risposta dal server con i prossimi eventi e aggiorna la vista corrispondente
         if (msg instanceof RispostaNextEventi) {
             if (((RispostaNextEventi) msg).isSuccesso()) {
                 System.out.println("Next Eventi Arrivati!");
@@ -183,6 +188,7 @@ public class Client {
             }
         }
 
+        // gestisce messaggio di risposta dal server di iscrizione evento e aggiorna la vista corrispondente
         if (msg instanceof RispostaIscrizioneEvento) {
             if (((RispostaIscrizioneEvento) msg).isSuccesso()) {
                 for (Figlio f : eventoView.getGenitore().getFigli()) {
@@ -203,6 +209,7 @@ public class Client {
             }
         }
 
+        // gestisce messaggio di risposta dal server con il numero di iscritti e i listeners (genitori) ad un evento e aggiorna la vista corrispondente
         if (msg instanceof RispostaIscrittiEvento) {
             if (((RispostaIscrittiEvento) msg).isSuccesso()) {
                 if (utente instanceof Genitore) {
@@ -222,6 +229,7 @@ public class Client {
             }
         }
 
+        // gestisce messaggio di risposta dal server di disiscrizione evento e aggiorna la vista corrispondente
         if (msg instanceof RispostaDisiscrizioneEvento) {
             if (((RispostaDisiscrizioneEvento) msg).isSuccesso()) {
                 for (Figlio f : eventoView.getGenitore().getFigli()) {
@@ -242,6 +250,7 @@ public class Client {
             }
         }
 
+        // gestisce messaggio di risposta dal server di aggiornamento profilo genitore e aggiorna la vista corrispondente
         if (msg instanceof RispostaAggiornaGenitore) {
             if (((RispostaAggiornaGenitore) msg).isSuccesso()) {
                 profiloGenitore.getGenitore().setNome(((RispostaAggiornaGenitore) msg).getGenitore().getNome());
@@ -261,6 +270,7 @@ public class Client {
             }
         }
 
+        // gestisce messaggio di risposta dal server di aggiunta figlio e aggiorna la vista corrispondente
         if (msg instanceof RispostaAggiungiFiglio) {
             if (((RispostaAggiungiFiglio) msg).isSuccesso()) {
                 profiloGenitore.getGenitore().aggiungiFiglio((((RispostaAggiungiFiglio) msg).getNuovoFiglio()));
@@ -280,6 +290,7 @@ public class Client {
             }
         }
 
+        // gestisce messaggio di risposta dal server di registrazione nuovo genitore e aggiorna la vista corrispondente
         if (msg instanceof RispostaNuovoGenitore) {
             if (((RispostaNuovoGenitore) msg).isSuccesso()) {
                 registraNewGenitore.mostraSuccesso("Nuovo genitore registrato!");
@@ -289,6 +300,7 @@ public class Client {
             }
         }
 
+        // gestisce messaggio di risposta dal server con l'elenco di lettori, luoghi e libri (per menu a tendina) e aggiorna la vista corrispondente
         if (msg instanceof RispostaLettoriELuoghiELibri) {
             if (((RispostaLettoriELuoghiELibri) msg).isSuccesso()) {
                 eventoViewLettore.aggiornaLettoriELuoghiELibri(((RispostaLettoriELuoghiELibri) msg).getLettori(),
@@ -306,6 +318,7 @@ public class Client {
 
         }
 
+        // gestisce messaggio di risposta dal server con le recensioni e la recensibilità di un libro e aggiorna la vista corrispondente
         if (msg instanceof RispostaRecensioniERecensibilita) {
             if (((RispostaRecensioniERecensibilita) msg).isSuccesso()) {
                 homeGenitore.setRecensibile(((RispostaRecensioniERecensibilita) msg).isRecensibile());
@@ -326,6 +339,7 @@ public class Client {
             homeLettore.setAttendi(false);
         }
 
+        // gestisce messaggio di risposta dal server di registrazione nuovo lettore e aggiorna la vista corrispondente
         if (msg instanceof RispostaNuovoLettore) {
             if (((RispostaNuovoLettore) msg).isSuccesso()) {
                 registraNewLettore.mostraSuccesso("Nuovo lettore registrato!");
@@ -335,6 +349,7 @@ public class Client {
             }
         }
 
+        // gestisce messaggio di risposta dal server di registrazione nuovo amministratore e aggiorna la vista corrispondente
         if (msg instanceof RispostaNuovoAmministratore) {
             if (((RispostaNuovoAmministratore) msg).isSuccesso()) {
                 registraNewAmministratore.mostraSuccesso("Nuovo amministratore registrato!");
@@ -344,6 +359,7 @@ public class Client {
             }
         }
 
+        // gestisce messaggio di risposta dal server di aggiornamento profilo lettore e aggiorna la vista corrispondente
         if (msg instanceof RispostaAggiornaLettore) {
             if (((RispostaAggiornaLettore) msg).isSuccesso()) {
                 profiloLettore.getLettore().setNome(((RispostaAggiornaLettore) msg).getLettore().getNome());
@@ -363,6 +379,7 @@ public class Client {
             }
         }
 
+        // gestisce messaggio di risposta dal server di aggiornamento profilo amministratore e aggiorna la vista corrispondente
         if (msg instanceof RispostaAggiornaAmministratore) {
             if (((RispostaAggiornaAmministratore) msg).isSuccesso()) {
                 profiloAmministratore.getAmministratore().setNome(((RispostaAggiornaAmministratore) msg).getAmministratore().getNome());
@@ -382,6 +399,7 @@ public class Client {
             }
         }
 
+        // gestisce messaggio di risposta dal server di salvataggio evento e aggiorna i dati nella view e la vista corrispondente
         if (msg instanceof RispostaSalvaEvento) {
             if (((RispostaSalvaEvento) msg).isSuccesso()) {
                 Platform.runLater(() -> {
@@ -407,6 +425,7 @@ public class Client {
             }
         }
 
+        // gestisce messaggio di risposta dal server di aggiunta recensione e aggiorna la vista corrispondente
         if (msg instanceof RispostaAggiungiRecensione) {
             if (((RispostaAggiungiRecensione) msg).isSuccesso()) {
                 libroDetailedView.aggiornaRecensioni(((RispostaAggiungiRecensione) msg).getRecensione());
@@ -424,6 +443,7 @@ public class Client {
             }
         }
 
+        // gestisce messaggio di risposta dal server di cancellazione recensione e aggiorna la vista corrispondente
         if (msg instanceof RispostaCancellaRecensione) {
             if (((RispostaCancellaRecensione) msg).isSuccesso()) {
                 libroDetailedView.cancellaRecensione(((RispostaCancellaRecensione) msg).getId());
@@ -443,6 +463,7 @@ public class Client {
             libroDetailedView.setAttendi(false);
         }
 
+        // gestisce notifica di aggiornamento evento e aggiorna i dati nella view e la vista corrispondente
         if (msg instanceof NotificaAggiornamentoEvento) {
             Stage stage = loginView.getStage();
             Scene scene = stage.getScene();
@@ -523,6 +544,8 @@ public class Client {
         }
     }
 
+    /** Chiude le risorse del client.
+     */
     private void close() {
         try {
             if (in != null) in.close();
@@ -533,6 +556,11 @@ public class Client {
         }
     }
 
+    /** Invia un messaggio al server.
+     *
+     * @param msg Il messaggio da inviare.
+     * @throws IOException In caso di errore durante l'invio.
+     */
     public void sendMessage(Messaggio msg) throws IOException {
         out.writeObject(msg);
         out.flush();

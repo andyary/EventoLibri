@@ -39,34 +39,66 @@ public abstract class Utente implements Serializable {
         this.id = id;
     }
 
+    /** Imposta l'id dell'utente.
+     *
+     * @param id Identificativo univoco dell'utente.
+     */
     public void setId(int id) {
         this.id = id;
     }
 
+    /** Restituisce l'id dell'utente.
+     *
+     * @return Identificativo univoco dell'utente.
+     */
     public int getId() {
         return id;
     }
 
+    /** Restituisce il nome dell'utente.
+     *
+     * @return Nome dell'utente.
+     */
     public String getNome() {
         return nome;
     }
 
+    /** Restituisce il cognome dell'utente.
+     *
+     * @return Cognome dell'utente.
+     */
     public String getCognome() {
         return cognome;
     }
 
+    /** Restituisce lo username dell'utente.
+     *
+     * @return Nome utente (username) dell'utente.
+     */
     public String getUserName() {
         return userName;
     }
 
+    /** Imposta il nome dell'utente.
+     *
+     * @param nome Nome dell'utente.
+     */
     public void setNome(String nome) {
         this.nome = nome;
     }
 
+    /** Imposta il cognome dell'utente.
+     *
+     * @param cognome Cognome dell'utente.
+     */
     public void setCognome(String cognome) {
         this.cognome = cognome;
     }
 
+    /** Imposta lo username dell'utente.
+     *
+     * @param userName Nome utente (username) dell'utente.
+     */
     public void setUserName(String userName) {
         this.userName = userName;
     }

@@ -127,6 +127,7 @@ public class EventoView {
             System.out.println("Errore nel richiestaIscrittiEvento" + e.getMessage());
         }
 
+        // ---------- DETTAGLI EVENTO ----------
         Label titolopagina = new Label("Partecipazione Evento");
         titolopagina.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
 
@@ -153,8 +154,6 @@ public class EventoView {
             checkFigli.add(cb);
             figliBox.getChildren().add(cb);
         }
-
-
 
         Button aggiornaButton = new Button("Aggiorna iscrizioni");
         aggiornaButton.setOnAction(e -> {
@@ -217,6 +216,7 @@ public class EventoView {
         HBox mainBtnBox = new HBox(5, new Label("  Benvenuto, (genitore) " + genitore.getNome() + "!          "), backButton);
         mainBtnBox.setAlignment(Pos.CENTER_RIGHT);
 
+        // Layout principale
         VBox layout = new VBox(15,
                 mainBtnBox,
                 titolopagina,
@@ -234,7 +234,7 @@ public class EventoView {
         layout.setPadding(new Insets(20));
 
         this.scene = new Scene(layout, 800, 750);
-
+        // Mostra la scena
         Platform.runLater(() -> {
             stage.setScene(scene);
             stage.setTitle("Dettagli Evento");
