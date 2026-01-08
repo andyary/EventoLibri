@@ -21,7 +21,6 @@ public class ModelTest {
         Lettore lettore2 = creaLettore.nuovoUtente(12,"Giulia", "Neri", "lettore2");
         Lettore lettore3 = creaLettore.nuovoUtente(13,"Francesca", "Rosa", "lettore3");
         Lettore lettore4 = creaLettore.nuovoUtente(14,"Alessandro", "Marroni", "lettore4");
-        // TODO aggiungere eventiCreati e iscrizioniLettura
 
         CreaUtente<Genitore> creaGenitore = new CreaGenitore();
         Genitore genitore1 = creaGenitore.nuovoUtente(21,"Paolo", "Gialli", "genitore1");

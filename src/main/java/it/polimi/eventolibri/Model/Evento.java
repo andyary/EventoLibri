@@ -235,6 +235,7 @@ public class Evento extends EventoAstratto implements Serializable {
             }
         }
         this.scaletta = evento.scaletta;
+        // Notifica i listener dell'evento riguardo l'aggiornamento
         updateAll(this);
     }
 

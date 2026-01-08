@@ -418,6 +418,7 @@ public class Client {
                 if (!((RispostaSalvaEvento) msg).getEvento().isIscritto(eventoViewLettore.getLettore())) {
                     eventoViewLettore.getLettore().rimuoviIscrizioneLettura(((RispostaSalvaEvento) msg).getEvento());
                 }
+                // aggiorna i dati nell'eventoViewLettore (che è anche un elemento dell'arraylist eventiprossimi del homeLettore)
                 eventoViewLettore.setEvento(((RispostaSalvaEvento) msg).getEvento());
             } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaSalvaEvento) msg).getMessaggioErrore());

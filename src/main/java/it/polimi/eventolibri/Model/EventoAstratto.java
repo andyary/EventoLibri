@@ -18,12 +18,11 @@ public abstract class EventoAstratto  implements Serializable {
 	public void addListener(Listener listener) {
         // cicla su tutti i listeners per verificare se gia uno è equal a quello da aggiungere
         for (Listener l : listeners){
-            if (l.equals(listener)){
+            if (l.getId() == listener.getId()){
                 return; // esci dal metodo se lo trovi
             }
         }
         listeners.add(listener);
-        // if (!listeners.contains(listener)){listeners.add(listener);}
     }
 
     /** Metodo per aggiungere una lista di listener (tipo Genitori) alla lista dei listener.
@@ -49,7 +48,7 @@ public abstract class EventoAstratto  implements Serializable {
      */
 	public void removeListener(Listener listener) {
         for (Listener l : listeners){
-            if (l.equals(listener)){
+            if (l.getId() == listener.getId()){
                 listeners.remove(l);
                 return; // esci dal metodo dopo aver rimosso
             }

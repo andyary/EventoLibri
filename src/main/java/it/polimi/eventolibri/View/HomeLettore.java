@@ -163,6 +163,12 @@ public class HomeLettore {
         this.eventiProssimi = eventiProssimi != null ? eventiProssimi : new ArrayList<>();
         this.onBack = onBack;
 
+        // lista l'id degli eventi nell'arraylist eventicreati del lettore
+        for (Evento evento : lettore.getEventiCreati()) {
+            System.out.println(evento.getId() + ", ");
+        }
+
+
         // richiesta lettori, luoghi, libri al server (per aggiornare le liste nel client)
         RichiestaLettoriELuoghiELibri richiestaLettoriELuoghiELibri = new RichiestaLettoriELuoghiELibri();
         try {
@@ -469,7 +475,7 @@ public class HomeLettore {
             System.out.println("Errore richiesta eventi: " + ex.getMessage());
         }
 
-        Platform.runLater(() -> this.show(stage, lettore, eventiProssimi, onBack));
+        // Platform.runLater(() -> this.show(stage, lettore, eventiProssimi, onBack));
     }
 
     /**

@@ -508,7 +508,7 @@ public class HomeGenitore {
             System.out.println("Errore richiesta eventi: " + ex.getMessage());
         }
 
-        Platform.runLater(() -> this.show(stage, genitore, eventiProssimi, onBack));
+        // Platform.runLater(() -> this.show(stage, genitore, eventiProssimi, onBack));
     }
 
 

@@ -343,7 +343,7 @@ public class EventoViewLettore {
             // imposto il creatore e lo aggiungo come listener
             eventoTemp.setCreatore(evento.getCreatore());
             eventoTemp.addListenersGenitori(evento.getListenersGenitori());
-
+            // recupera id esistente dal evento originale (in caso di modifica)
             if (evento.getId() != 0) {
                 eventoTemp.setId(evento.getId());
             }
