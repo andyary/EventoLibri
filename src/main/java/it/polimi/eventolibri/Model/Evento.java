@@ -31,6 +31,7 @@ public class Evento extends EventoAstratto implements Serializable {
         this.nome = nome;
         this.luogo = luogo;
         this.data = data;
+        this.iscritti = 0;
         this.scaletta = new ArrayList<>();
     }
 
@@ -42,6 +43,7 @@ public class Evento extends EventoAstratto implements Serializable {
      */
     public void setCreatore(Lettore creatore) {
         this.creatore = creatore;
+        // creatore.aggiungiEventiCreati(this);
         this.addListener(creatore);
     }
 
@@ -58,8 +60,10 @@ public class Evento extends EventoAstratto implements Serializable {
         this.nome = nome;
         this.luogo = luogo;
         this.data = data;
+        this.iscritti = 0;
         this.scaletta = new ArrayList<>();
         creatore.aggiungiEventiCreati(this);
+        this.addListener(creatore);
     }
 
     /**
@@ -76,11 +80,14 @@ public class Evento extends EventoAstratto implements Serializable {
         this.nome = nome;
         this.luogo = luogo;
         this.data = data;
+        this.iscritti = 0;
         this.scaletta = scaletta;
         creatore.aggiungiEventiCreati(this);
-        for (LibroLettore ll : scaletta) {
-            this.addListener(ll.getLettore());
-        }
+        this.addListener(creatore);
+        this.setScaletta(scaletta);
+//        for (LibroLettore ll : scaletta) {
+//            this.addListener(ll.getLettore());
+//        }
     }
 
     /**
@@ -99,10 +106,14 @@ public class Evento extends EventoAstratto implements Serializable {
         this.luogo = luogo;
         this.data = data;
         this.scaletta = scaletta;
+        this.iscritti = 0;
         creatore.aggiungiEventiCreati(this);
-        for (LibroLettore ll : scaletta) {
-            if (ll.getLettore() != null) this.addListener(ll.getLettore());
-        }
+        this.addListener(creatore);
+
+        this.setScaletta(scaletta);
+//        for (LibroLettore ll : scaletta) {
+//            if (ll.getLettore() != null) this.addListener(ll.getLettore());
+//        }
         this.id = id;
     }
 
@@ -258,7 +269,10 @@ public class Evento extends EventoAstratto implements Serializable {
     public void setScaletta(ArrayList<LibroLettore> scaletta) {
         this.scaletta = scaletta;
         for (LibroLettore ll : scaletta) {
-            if (ll.getLettore() != null) this.addListener(ll.getLettore());
+            if (ll.getLettore() != null) {
+                // this.addListener(ll.getLettore());
+                ll.getLettore().aggiungiIscrizioneLettura(this);
+            }
         }
     }
 

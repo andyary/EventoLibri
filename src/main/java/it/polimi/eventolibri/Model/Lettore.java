@@ -69,7 +69,7 @@ public class Lettore extends Utente implements Listener, Serializable {
                 eventiCreati.set(i, eventoCreato);
                 eventoCreato.addListener(this);
                 eventiCreati.sort((e1, e2) -> e1.getData().compareTo(e2.getData()));
-                return;
+                return; // evita duplicati
             }
         }
         eventiCreati.add(eventoCreato);

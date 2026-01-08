@@ -74,6 +74,7 @@ public class Figlio implements Serializable {
     public void iscrivi(Evento evento, Genitore genitore) {
         iscrizioni.add(evento);
         evento.addListener(genitore);
+        evento.setIscritti(evento.getIscritti() + 1);
     }
 
     /** Metodo per disiscrivere il figlio da un evento, rimuovendo il listener del genitore dall'evento
@@ -82,6 +83,7 @@ public class Figlio implements Serializable {
      *  @param genitore Genitore del figlio, per rimuovere il listener dall'evento se necessario.
      */
 	public void disiscrivi(Evento evento, Genitore genitore) {
+        evento.setIscritti(evento.getIscritti() - 1);
         iscrizioni.removeIf(e -> e.getId() == evento.getId());
         for (Figlio figlio : genitore.getFigli()) {
             if (figlio.getIscrizioni().stream().anyMatch(ev -> ev.getId() == evento.getId())) {
