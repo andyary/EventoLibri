@@ -31,9 +31,9 @@ public class Recensione  implements Serializable {
      * @param libro Libro recensito.
      */
     public Recensione(Genitore genitore, String testo, Libro libro) {
-        this.genitore = genitore;
-        this.testo = testo;
-        this.libro = libro;
+        this.setGenitore(genitore);
+        this.setTesto(testo);
+        this.setLibro(libro);
     }
 
     /** Restituisce il testo della recensione.

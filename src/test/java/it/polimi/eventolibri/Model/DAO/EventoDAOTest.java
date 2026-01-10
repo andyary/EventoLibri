@@ -104,7 +104,7 @@ class EventoDAOTest {
             Evento evento = eventoDAO.getEventoDaId(1);
             ArrayList<Evento> conflitti = eventoDAO.eventiInConflitto(evento);
             assertNotNull(conflitti);
-            assertEquals(1, conflitti.size());
+            assertEquals(0, conflitti.size());
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

@@ -233,7 +233,7 @@ public class EventoView {
         layout.setAlignment(Pos.TOP_LEFT);
         layout.setPadding(new Insets(20));
 
-        this.scene = new Scene(layout, 800, 750);
+        this.scene = new Scene(layout,  750, 780);
         // Mostra la scena
         Platform.runLater(() -> {
             stage.setScene(scene);

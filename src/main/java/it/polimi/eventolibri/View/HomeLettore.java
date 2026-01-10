@@ -311,7 +311,7 @@ public class HomeLettore {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        this.scene = new Scene(scrollPane, 800, 750);
+        this.scene = new Scene(scrollPane,  750, 780);
         Platform.runLater(() -> {
             stage.setScene(scene);
             stage.setTitle("Home Lettore");

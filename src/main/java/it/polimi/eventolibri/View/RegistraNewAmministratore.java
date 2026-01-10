@@ -98,7 +98,7 @@ public class RegistraNewAmministratore {
         contenuto.setPadding(new Insets(20));
         ScrollPane scrollPane = new ScrollPane(contenuto);
         scrollPane.setFitToWidth(true);
-        Scene scene = new Scene(scrollPane, 800, 750);
+        Scene scene = new Scene(scrollPane,  750, 780);
         Platform.runLater(() -> {
             stage.setTitle("Registra Nuovo Amministratore");
             stage.setScene(scene);

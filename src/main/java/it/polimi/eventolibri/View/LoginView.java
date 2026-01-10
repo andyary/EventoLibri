@@ -112,7 +112,7 @@ public class LoginView {
         layout.setAlignment(Pos.TOP_CENTER); // centra orizzontalmente ma posiziona in alto
         layout.setPadding(new Insets(40, 40, 20, 40)); // margini: top, right, bottom, left
 
-        Scene scene = new Scene(layout, 800, 750);
+        Scene scene = new Scene(layout, 750, 780);
         stage.setScene(scene);
         stage.setTitle("Login");
         stage.show();

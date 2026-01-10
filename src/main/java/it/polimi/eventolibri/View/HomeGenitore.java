@@ -242,21 +242,23 @@ public class HomeGenitore {
         DateTimeFormatter formatoOra = DateTimeFormatter.ofPattern("HH:mm");
 
         // ---------- EVENTI FIGLI: usa TableView per ciascun figlio ----------
-        VBox figliSection = new VBox(25);
+        VBox figliSection = new VBox(10);
         figliSection.setPadding(new Insets(10));
-        Label titoloFigli = new Label("Eventi a cui sono iscritti i tuoi figli:");
-        titoloFigli.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-        figliSection.getChildren().add(titoloFigli);
+        // Label titoloFigli = new Label("Eventi a cui sono iscritti i tuoi figli:");
+        // titoloFigli.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+        // figliSection.getChildren().add(titoloFigli);
 
         if (genitore.getFigli().isEmpty()) {
             figliSection.getChildren().add(new Label("Nessun figlio oppure nessuna iscrizione."));
         } else {
+            int countFigli = 1;
             for (Figlio f : genitore.getFigli()) {
                 List<Evento> listaEventi = f.getIscrizioni();
                 VBox boxFiglio = new VBox(10);
                 boxFiglio.setPadding(new Insets(5, 0, 5, 10));
-                Label titoloFiglio = new Label("Eventi di " + f.getNome() + ":");
-                titoloFiglio.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+                Label titoloFiglio = new Label("Eventi di " + f.getNome() + " (figlio"+countFigli+"):");
+                // titoloFiglio.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+                countFigli++;
                 boxFiglio.getChildren().add(titoloFiglio);
                 if (listaEventi == null || listaEventi.isEmpty()) {
                     boxFiglio.getChildren().add(new Label("Nessun evento iscritto."));
@@ -310,7 +312,7 @@ public class HomeGenitore {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        this.scene = new Scene(scrollPane, 800, 750);
+        this.scene = new Scene(scrollPane,  750, 780);
         Platform.runLater(() -> {
             stage.setScene(scene);
             stage.setTitle("Home Genitore");

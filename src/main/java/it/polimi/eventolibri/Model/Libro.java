@@ -25,12 +25,8 @@ public class Libro  implements Serializable {
      * @param recensioni Array di recensioni del libro.
      */
     public Libro(String titolo, int tempoLettura, String link, String autore, int id, ArrayList<Recensione> recensioni) {
-        this.titolo = titolo;
-        this.tempoLettura = tempoLettura;
-        this.link = link;
-        this.autore = autore;
-        this.id = id;
-        this.recensioni = recensioni;
+        this(titolo, tempoLettura, link, autore, id);
+        this.aggiungiRecensioni(recensioni);
     }
 
     /** Costruttori della classe Libro.
@@ -59,13 +55,8 @@ public class Libro  implements Serializable {
      * @param recensioni Array di recensioni del libro.
      */
     public Libro(String titolo, int tempoLettura, String link, String autore, int id, String isbn, ArrayList<Recensione> recensioni) {
-        this.titolo = titolo;
+        this(titolo, tempoLettura, link, autore, id, recensioni);
         this.isbn = isbn;
-        this.tempoLettura = tempoLettura;
-        this.link = link;
-        this.autore = autore;
-        this.id = id;
-        this.recensioni = recensioni;
     }
 
     /** Costruttori della classe Libro.

@@ -56,10 +56,8 @@ public class Evento extends EventoAstratto implements Serializable {
      * @param data     Data e ora dell'evento.
      */
     public Evento(Lettore creatore, String nome, Luogo luogo, LocalDateTime data) {
-        this.creatore = creatore;
-        this.nome = nome;
-        this.luogo = luogo;
-        this.data = data;
+        this(nome, luogo, data);
+        this.setCreatore(creatore);
         this.iscritti = 0;
         this.scaletta = new ArrayList<>();
         creatore.aggiungiEventiCreati(this);
@@ -76,18 +74,8 @@ public class Evento extends EventoAstratto implements Serializable {
      * @param scaletta Lista di libri e lettori associati all'evento.
      */
     public Evento(Lettore creatore, String nome, Luogo luogo, LocalDateTime data, ArrayList<LibroLettore> scaletta) {
-        this.creatore = creatore;
-        this.nome = nome;
-        this.luogo = luogo;
-        this.data = data;
-        this.iscritti = 0;
-        this.scaletta = scaletta;
-        creatore.aggiungiEventiCreati(this);
-        this.addListener(creatore);
+        this(creatore, nome, luogo, data);
         this.setScaletta(scaletta);
-//        for (LibroLettore ll : scaletta) {
-//            this.addListener(ll.getLettore());
-//        }
     }
 
     /**
@@ -101,20 +89,8 @@ public class Evento extends EventoAstratto implements Serializable {
      * @param scaletta Lista di libri e lettori associati all'evento.
      */
     public Evento(int id, Lettore creatore, String nome, Luogo luogo, LocalDateTime data, ArrayList<LibroLettore> scaletta) {
-        this.creatore = creatore;
-        this.nome = nome;
-        this.luogo = luogo;
-        this.data = data;
-        this.scaletta = scaletta;
-        this.iscritti = 0;
-        creatore.aggiungiEventiCreati(this);
-        this.addListener(creatore);
-
-        this.setScaletta(scaletta);
-//        for (LibroLettore ll : scaletta) {
-//            if (ll.getLettore() != null) this.addListener(ll.getLettore());
-//        }
-        this.id = id;
+        this(creatore, nome, luogo, data, scaletta);
+        this.setId(id);
     }
 
     /**

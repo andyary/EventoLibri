@@ -59,6 +59,7 @@ class EventoTest {
         Libro libro2 = new Libro("Libro2", 9, "link2.com", "Autore2", 2);
         Lettore lettore1 = new Lettore(2,"Luca", "Bianchi", "lucabianchi");
         Lettore lettore2 = new Lettore(3,"Anna", "Verdi", "annaverdi");
+        Lettore lettoreX = new Lettore(4,"Paolo", "Neri", "paoloneri");
         LibroLettore ll1 = new LibroLettore(libro1, lettore1, 1);
         LibroLettore ll2 = new LibroLettore(libro2, lettore2, 2);
         ArrayList<LibroLettore> scaletta = new ArrayList<LibroLettore>();
@@ -67,6 +68,9 @@ class EventoTest {
         Evento evento1= new Evento(creatore, "Evento di prova", luogo, date, scaletta);
         evento1.setId(5);
 
+        assertTrue(evento1.isIscritto(lettore1));
+        assertTrue(evento1.isIscritto(lettore2));
+        assertFalse(evento1.isIscritto(lettoreX));
         assertEquals(creatore, evento1.getListeners().get(0));
         assertEquals(lettore1, evento1.getListeners().get(1));
         assertEquals(lettore2, evento1.getListeners().get(2));
@@ -85,6 +89,17 @@ class EventoTest {
 
         // evento1.addListener(genitore1);
         // dobbiamo testare observer pattern lato lettore e verificare lato figli/genitori
+
+        assertEquals(2, evento1.getListenersGenitori().size());
+        ArrayList<Listener> Listeners = new ArrayList<>(evento1.getListeners());
+        assertEquals(5, Listeners.size());
+        evento1.removeAllListeners();
+        assertEquals(0, evento1.getListeners().size());
+        evento1.addListener(creatore);
+        assertEquals(1, evento1.getListeners().size());
+        evento1.addListeners(Listeners);
+        assertEquals(5, evento1.getListeners().size());
+
 
 
         Lettore creatore2 = new Lettore(6,"Mario2", "Rossi2", "mariorossi2");
