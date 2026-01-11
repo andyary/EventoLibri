@@ -199,6 +199,15 @@ public class UtenteDAO {
         }
     }
 
+
+    public void cancellaAmministratore(Amministratore amministratore) throws SQLException {
+        String query = "DELETE FROM utenti WHERE id = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, amministratore.getId());
+            pstatement.executeUpdate();
+        }
+    }
+
     /** Metodo per modificare i dati (nome e cognome) di un genitore nel database.
      * @param genitore Genitore da modificare.
      * @return Numero di righe modificate.

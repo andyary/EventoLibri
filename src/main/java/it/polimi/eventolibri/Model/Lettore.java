@@ -32,7 +32,8 @@ public class Lettore extends Utente implements Listener, Serializable {
      * Array di eventi a cui il lettore è iscritto per leggere e array di eventi creati dal lettore inizializzati vuoti.
      */
     public Lettore(int id, String nome, String cognome, String userName) {
-        super(id, nome, cognome, userName);
+        this(nome, cognome, userName);
+        this.setId(id);
         this.iscrizioniLettura = new ArrayList<Evento>();
         this.eventiCreati = new ArrayList<Evento>();
     }

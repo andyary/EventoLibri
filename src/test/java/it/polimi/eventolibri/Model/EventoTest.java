@@ -68,6 +68,13 @@ class EventoTest {
         Evento evento1= new Evento(creatore, "Evento di prova", luogo, date, scaletta);
         evento1.setId(5);
 
+        assertEquals(1, creatore.getEventiCreati().size());
+        assertEquals(1, lettore1.getIscrizioniLettura().size());
+
+
+        assertEquals("Sala A", evento1.getLuogo().getNome());
+        assertEquals(15, evento1.getLuogo().getCapienza());
+        assertEquals(2, evento1.getLuogo().getId());
         assertTrue(evento1.isIscritto(lettore1));
         assertTrue(evento1.isIscritto(lettore2));
         assertFalse(evento1.isIscritto(lettoreX));

@@ -31,13 +31,20 @@ public class Figlio implements Serializable {
         this.iscrizioni = new ArrayList<>();
     }
 
+    /** Imposta l'ID del figlio.
+     * @param id ID univoco del figlio.
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
+
     /** Costruttori della classe Figlio.
      * @param id ID univoco del figlio.
      * @param nome Nome del figlio.
      * @param dataNascita Data di nascita del figlio.
      */
     public Figlio(int id, String nome, LocalDate dataNascita) {
-        this.id = id;
+        this.setId(id);
         this.nome = nome;
         this.dataNascita = dataNascita;
         this.iscrizioni = new ArrayList<>();
@@ -51,20 +58,11 @@ public class Figlio implements Serializable {
      * @param genitore Genitore del figlio, per aggiungere i listener agli eventi.
      */
     public Figlio(int id, String nome, LocalDate dataNascita, ArrayList<Evento> iscrizioni, Genitore genitore) {
-        this.id = id;
-        this.nome = nome;
-        this.dataNascita = dataNascita;
+        this(id, nome, dataNascita);
         this.iscrizioni = iscrizioni;
         for (Evento evento : iscrizioni) {
             evento.addListener(genitore);
         }
-    }
-
-    /** Imposta l'ID del figlio.
-     * @param id ID univoco del figlio.
-     */
-    public void setId(int id) {
-        this.id = id;
     }
 
     /** Metodo per iscrivere il figlio ad un evento, aggiungendo anche il listener del genitore all'evento.

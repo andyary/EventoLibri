@@ -1,21 +1,32 @@
 package it.polimi.eventolibri.Model.DAO;
 
 import it.polimi.eventolibri.Model.*;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class EventoDAOTest {
 
+    Connection conn;
+
+    {
+        try {
+            conn = DBGestore.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Test
     void getNextEventi() {
         try {
-            Connection conn = DBGestore.getConnection();
             EventoDAO eventoDAO = new EventoDAO(conn);
             ArrayList<Evento> result1 = eventoDAO.getNextEventi(LocalDateTime.parse("2025-01-02T00:00:00"));
             assertNotNull(result1);
@@ -32,7 +43,6 @@ class EventoDAOTest {
 
     @Test
     void CRUD_Evento() {
-        Connection conn = null;
         try {
             conn = DBGestore.getConnection();
             UtenteDAO utenteDAO = new UtenteDAO(conn);
@@ -54,6 +64,8 @@ class EventoDAOTest {
             RecensioneDAO recensioneDAO = new RecensioneDAO(conn);
             recensioneDAO.creaRecensione("Ottimo libro!", libro1, genitore);
             recensioneDAO.creaRecensione("Non mi è piaciuto.", libro2, genitore);
+
+            ArrayList<Recensione> recensione2 = recensioneDAO.getRecensione(libro2);
 
             assertEquals(1, libroDAO.getLibro(3).getRecensioni().size());
             assertEquals(1, libroDAO.getLibro(4).getRecensioni().size());
@@ -82,7 +94,7 @@ class EventoDAOTest {
             assertEquals(4, evento2.getScaletta().size());
 
             recensioneDAO.cancellaRecensione(libro1, genitore);
-            recensioneDAO.cancellaRecensione(libro2, genitore);
+            recensioneDAO.cancellaRecensione(recensione2.getFirst());
 
             assertEquals(0, libroDAO.getLibro(3).getRecensioni().size());
             assertEquals(0, libroDAO.getLibro(4).getRecensioni().size());
@@ -99,7 +111,6 @@ class EventoDAOTest {
     @Test
     void eventiInConflitto() {
         try {
-            Connection conn = DBGestore.getConnection();
             EventoDAO eventoDAO = new EventoDAO(conn);
             Evento evento = eventoDAO.getEventoDaId(1);
             ArrayList<Evento> conflitti = eventoDAO.eventiInConflitto(evento);
@@ -109,5 +120,53 @@ class EventoDAOTest {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    void getLuoghieLibrieLettori() {
+        try {
+            UtenteDAO utenteDAO = new UtenteDAO(conn);
+            LuogoDAO luogoDAO = new LuogoDAO(conn);
+            LibroDAO libroDAO = new LibroDAO(conn);
+            ArrayList<Luogo> luoghi = new ArrayList<>();
+            ArrayList<Libro> libri = new ArrayList<>();
+            ArrayList<Lettore> lettori = new ArrayList<>();
+
+            assertEquals(0, luoghi.size());
+            assertEquals(0, libri.size());
+            assertEquals(0, lettori.size());
+
+            luoghi = luogoDAO.getLuoghi();
+            libri = libroDAO.getLibri();
+            lettori = utenteDAO.getLettori();
+
+            assertEquals(10, luoghi.size());
+            assertEquals(100, libri.size());
+            assertNotNull(luoghi);
+            assertNull(luogoDAO.getLuogo(11));
+            assertNull(libroDAO.getLibro(101));
+
+        } catch (SQLException ec) {
+        }
+        ;
+    }
+
+    @Test
+    void getRecensibilita() {
+        try {
+            RecensioneDAO recensioneDAO = new RecensioneDAO(conn);
+            UtenteDAO utenteDAO = new UtenteDAO(conn);
+            LibroDAO libroDAO = new LibroDAO(conn);
+            Libro libro1 = libroDAO.getLibro(5);
+            Libro libro2 = libroDAO.getLibro(22);
+            Genitore genitore1 = (Genitore) utenteDAO.checkCredentials("genitore1", "2222");
+            assertTrue(recensioneDAO.getRecensibilita(libro1, genitore1));
+            assertFalse(recensioneDAO.getRecensibilita(libro2, genitore1));
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 }

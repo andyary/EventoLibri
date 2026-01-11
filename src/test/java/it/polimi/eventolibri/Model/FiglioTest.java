@@ -51,6 +51,17 @@ class FiglioTest {
         figlio1.iscrivi(evento1, genitore1);
         figlio1.iscrivi(evento2, genitore1);
         figlio2.iscrivi(evento2, genitore1);
+
+        assertNotEquals(1, figlio1.getId());
+        figlio1.setId(1);
+        assertEquals(1, figlio1.getId());
+        assertEquals("Mario", figlio1.getNome());
+        assertEquals(LocalDate.of(2015, 1, 1), figlio1.getDataNascita());
+        assertTrue(figlio1.isIscritto(evento1));
+        assertTrue(figlio1.isIscritto(evento2));
+        assertTrue(figlio2.isIscritto(evento2));
+        assertFalse(figlio2.isIscritto(evento1));
+
         assertEquals(evento1, figlio1.getIscrizioni().get(0));
         assertEquals(evento2, figlio1.getIscrizioni().get(1));
         assertEquals(evento2, figlio2.getIscrizioni().get(0));

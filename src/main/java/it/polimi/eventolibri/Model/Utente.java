@@ -33,10 +33,10 @@ public abstract class Utente implements Serializable {
      * @param userName Nome utente (username) dell'utente.
      */
     public Utente(int id, String nome, String cognome, String userName) {
-        this.nome = nome;
-        this.cognome = cognome;
-        this.userName = userName;
-        this.id = id;
+        this.setId(id);
+        this.setNome(nome);
+        this.setCognome(cognome);
+        this.setUserName(userName);
     }
 
     /** Imposta l'id dell'utente.
