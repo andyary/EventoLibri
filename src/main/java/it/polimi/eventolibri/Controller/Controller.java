@@ -55,8 +55,7 @@ public class Controller {
             }
         } catch (Exception e) {
             risposta.setSuccesso(false);
-            risposta.setMessaggioerrore("Errore richiesta al server.");
-            e.printStackTrace();
+            risposta.setMessaggioerrore("Errore richiesta al server.");// e.printStackTrace();
         }
         return risposta;
     }
@@ -78,7 +77,7 @@ public class Controller {
         } catch (Exception e) {
             risposta.setSuccesso(false);
             risposta.setMessaggioErrore("Errore richiesta al server.");
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return risposta;
     }
@@ -100,7 +99,7 @@ public class Controller {
         } catch (Exception e) {
             risposta.setSuccesso(false);
             risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return risposta;
     }
@@ -122,7 +121,7 @@ public class Controller {
         } catch (Exception e) {
             risposta.setSuccesso(false);
             risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return risposta;
     }
@@ -141,7 +140,7 @@ public class Controller {
         } catch (Exception e) {
             risposta.setSuccesso(false);
             risposta.setMessaggioerrore("Errore richiesta al server." + e.getMessage());
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return risposta;
     }
@@ -165,7 +164,7 @@ public class Controller {
         } catch (Exception e) {
             risposta.setSuccesso(false);
             risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return risposta;
     }
@@ -193,7 +192,7 @@ public class Controller {
         } catch (Exception e) {
             risposta.setSuccesso(false);
             risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return risposta;
     }
@@ -225,7 +224,7 @@ public class Controller {
         } catch (Exception e) {
             risposta.setSuccesso(false);
             risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return risposta;
     }
@@ -259,7 +258,7 @@ public class Controller {
         } catch (Exception e) {
             risposta.setSuccesso(false);
             risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return risposta;
     }
@@ -293,7 +292,7 @@ public class Controller {
         } catch (Exception e) {
             risposta.setSuccesso(false);
             risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return risposta;
     }
@@ -312,7 +311,7 @@ public class Controller {
             risposta.setSuccesso(true);
         } catch (Exception e) {
             risposta.setSuccesso(false);
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return risposta;
     }
@@ -332,7 +331,7 @@ public class Controller {
         } catch (Exception e) {
             risposta.setSuccesso(false);
             risposta.setMessaggioerrore("Errore richiesta al server." + e.getMessage());
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return risposta;
     }
@@ -356,7 +355,7 @@ public class Controller {
         } catch (Exception e) {
             risposta.setSuccesso(false);
             risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return risposta;
     }
@@ -380,7 +379,7 @@ public class Controller {
         } catch (Exception e) {
             risposta.setSuccesso(false);
             risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return risposta;
     }
@@ -426,7 +425,7 @@ public class Controller {
         } catch (Exception e) {
             risposta.setSuccesso(false);
             risposta.setMessaggioErrore("Errore richiesta al server." + e.getMessage());
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return risposta;
     }
@@ -452,7 +451,7 @@ public class Controller {
         } catch (Exception e) {
             risposta.setSuccesso(false);
             risposta.setMessaggioErrore("Errore richiesta nuova recensione al server." + e.getMessage());
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return risposta;
     }
@@ -470,7 +469,7 @@ public class Controller {
         } catch (Exception e) {
             risposta.setSuccesso(false);
             risposta.setMessaggioErrore("Errore richiesta cancellazione recensione al server." + e.getMessage());
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return risposta;
     }

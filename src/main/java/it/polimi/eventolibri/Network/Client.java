@@ -38,7 +38,6 @@ public class Client {
     private RegistraNewAmministratore registraNewAmministratore;
     private LibroDetailedView libroDetailedView;
     // add le nuove viste qui
-    private ArrayList<Evento> eventi;
     private Utente utente;
 
     /**
@@ -84,10 +83,21 @@ public class Client {
 
     }
 
+    //** Costruttore di default
+    public Client() {
+    }
+
+    //** Costruisce un client con socket e stream specificati (usato per i test).
+    public Client(Socket socket, ObjectOutputStream out, ObjectInputStream in) {
+        this.socket = socket;
+        this.out = out;
+        this.in = in;
+    }
+
     /**
      * Inizia l'ascolto dei messaggi dal server in un thread separato.
      */
-    public void startListening() {
+    public Thread startListening() {
         Thread listenerThread = new Thread(() -> {
             try {
                 Messaggio msg;
@@ -103,6 +113,7 @@ public class Client {
             }
         });
         listenerThread.start();
+        return listenerThread;
     }
 
     /**
