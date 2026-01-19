@@ -92,8 +92,8 @@ public class Controller {
     public RispostaIscrizioneEvento iscriviFiglioEvento(Figlio figlio, Evento evento, Genitore genitore) {
         RispostaIscrizioneEvento risposta = new RispostaIscrizioneEvento(figlio, evento, genitore);
         try {
-            figlioDAO.iscriviFiglioEvento(figlio, evento);
             evento.setIscritti(eventoDAO.getIscrittiEvento(evento));
+            figlioDAO.iscriviFiglioEvento(figlio, evento);
             figlio.iscrivi(evento, genitore);
             risposta.setSuccesso(true);
         } catch (Exception e) {
@@ -114,8 +114,8 @@ public class Controller {
     public RispostaDisiscrizioneEvento disiscriviFiglioEvento(Figlio figlio, Evento evento, Genitore genitore) {
         RispostaDisiscrizioneEvento risposta = new RispostaDisiscrizioneEvento(figlio, evento, genitore);
         try {
-            figlioDAO.cancellaFiglioEvento(figlio, evento);
             evento.setIscritti(eventoDAO.getIscrittiEvento(evento));
+            figlioDAO.cancellaFiglioEvento(figlio, evento);
             figlio.disiscrivi(evento, genitore);
             risposta.setSuccesso(true);
         } catch (Exception e) {

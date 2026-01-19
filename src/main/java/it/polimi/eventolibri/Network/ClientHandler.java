@@ -9,8 +9,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-/**
- * Handles communication with a connected client.
+/** Il ClientHandler gestisce la comunicazione con un client connesso.
+ * Riceve i messaggi dal client, li elabora e invia le risposte appropriate.
+ * Ogni client connesso ha una propria istanza di ClientHandler che gira in un thread separato.
  */
 public class ClientHandler extends Thread {
 
@@ -21,20 +22,18 @@ public class ClientHandler extends Thread {
     private Utente utente;
     private Server server;
 
-    /**
-     * Returns the user associated with this client handler.
+    /** Restituisce l'utente associato a questo client handler.
      *
-     * @return the Utente object
+     * @return oggetto Utente
      */
     public Utente getUtente() {
         return utente;
     }
 
-    /**
-     * Constructs a ClientHandler for the given socket and server.
+    /** Costruttore della classe ClientHandler per un dato socket e server.
      *
-     * @param socket the socket connected to the client
-     * @param server the server instance
+     * @param socket socket connesso al client
+     * @param server istanza del server
      */
     public ClientHandler(Socket socket, Server server) {
         this.server = server;
@@ -43,10 +42,9 @@ public class ClientHandler extends Thread {
 
     }
 
-    /**
-     * Runs the client handler thread, listening for messages from the client.
-     */
-    @Override
+
+    /** Avvoia il thread per gestire la comunicazione con il client. */
+        @Override
     public void run() {
         try {
             out = new ObjectOutputStream(socket.getOutputStream());
@@ -61,11 +59,10 @@ public class ClientHandler extends Thread {
 
     }
 
-    /**
-     * Handles incoming messages from the client.
+    /** Gestisce i messaggi ricevuti dal client e invia le risposte appropriate.
      *
-     * @param msg the message received from the client
-     * @throws IOException if an I/O error occurs
+     * @param msg il messaggio ricevuto dal client
+     * @throws IOException se si verifica un errore di I/O
      */
     private void handleMessage(Messaggio msg) throws IOException {
         System.out.println("Messaggio ricevuto dal client: " + msg);
@@ -252,11 +249,10 @@ public class ClientHandler extends Thread {
         // QUI CONTINUI AD AGGIUNGERE I NUOVI MESSAGGI
     }
 
-    /**
-     * Sends a message to the client.
+    /** Invia un messaggio al client.
      *
-     * @param msg the message to send
-     * @throws IOException if an I/O error occurs
+     * @param msg il messaggio da inviare
+     * @throws IOException se si verifica un errore di I/O
      */
     public void sendMessage(Messaggio msg) throws IOException {
         out.writeObject(msg);

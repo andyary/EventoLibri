@@ -236,6 +236,7 @@ public class Evento extends EventoAstratto implements Serializable {
      */
     public void setIscritti(int iscritti) {
         this.iscritti = iscritti;
+        updateAll(this);
     }
 
     /**
