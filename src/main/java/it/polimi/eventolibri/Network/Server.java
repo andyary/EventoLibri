@@ -6,19 +6,18 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
-/**
- * Server class that listens for client connections and manages connected clients.
+/** Classe che rappresenta il server dell'applicazione Eventolibri.
+ * Si occupa di accettare connessioni dai client e gestire le comunicazioni.
  */
 public class Server {
     // mappa dei client connessi e i relativi utenti
     private HashMap<ClientHandler, Utente> clients= new HashMap<>();
-
     private ServerSocket serverSocket;
-    /**
-     * Starts the server on the specified port and listens for client connections.
+
+    /** Avvia il server sulla porta specificata e ascolta le connessioni dei client.
      *
-     * @param port the port number to listen on
-     * @throws IOException if an I/O error occurs when opening the socket
+     * @param port la porta su cui ascoltare
+     * @throws IOException se si verifica un errore di I/O durante l'apertura del socket
      */
     public void start(int port) throws IOException {
         serverSocket = new ServerSocket(port);
@@ -32,20 +31,18 @@ public class Server {
         }
     }
 
-    /**
-     * Main method to start the server.
+    /** Metodo principale per avviare il server.
      *
-     * @param args command line arguments
-     * @throws IOException if an I/O error occurs
+     * @param args argomenti della riga di comando
+     * @throws IOException se si verifica un errore di I/O
      */
     public static void main(String[] args) throws IOException {
         new Server().start(5000);
     }
 
-    /**
-     * Returns the map of connected clients and their associated users.
+    /** Restituisce la mappa dei client connessi e i relativi utenti.
      *
-     * @return a HashMap of ClientHandler and Utente
+     * @return mappa dei client e utenti
      */
     public HashMap<ClientHandler, Utente> getClients() {
         return clients;
