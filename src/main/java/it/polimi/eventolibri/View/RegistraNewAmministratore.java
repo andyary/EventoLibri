@@ -26,6 +26,7 @@ public class RegistraNewAmministratore {
     public RegistraNewAmministratore(Client client) {
         this.client = client;
         this.messaggioerrore = new Label("");
+        this.messaggioerrore.setId("errorLabel"); // id per test
     }
 
     /**
@@ -50,9 +51,13 @@ public class RegistraNewAmministratore {
         VBox datiBox = new VBox(10);
         datiBox.setPadding(new Insets(10));
         TextField nomeField = new TextField("");
+        nomeField.setId("nomeField"); // id per test
         TextField cognomeField = new TextField("");
+        cognomeField.setId("cognomeField"); // id per test
         TextField usernameField = new TextField("");
+        usernameField.setId("usernameField"); // id per test
         PasswordField pswField = new PasswordField();
+        pswField.setId("pswField");
         datiBox.getChildren().addAll(
                 new Label("Nome:"),
                 nomeField,
@@ -64,6 +69,7 @@ public class RegistraNewAmministratore {
                 pswField
         );
         Button salvaDati = new Button("Registra nuovo amministratore");
+        salvaDati.setId("saveButton"); // id per test
         salvaDati.setOnAction(e -> {
             if ((!nomeField.getText().isBlank()) && (!cognomeField.getText().isBlank()) && (!usernameField.getText().isBlank()) && (!pswField.getText().isBlank())) {
                 this.messaggioerrore.setText("");
@@ -87,6 +93,7 @@ public class RegistraNewAmministratore {
         // INDIETRO
         // ===========================
         Button back = new Button("Indietro");
+        back.setId("backButton");  // id per test
         back.setOnAction(e -> onBack.run());
         HBox backBox = new HBox(new Label("  Benvenuto, (admin) " + amministratore.getNome() + "!          "), back);
         backBox.setAlignment(Pos.TOP_RIGHT);

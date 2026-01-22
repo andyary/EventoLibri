@@ -22,14 +22,43 @@ public class LibroView {
 
     private Libro libroSelezionato = null;
 
+//    /**
+//     * Mostra la finestra di selezione del libro.
+//     *
+//     * @param owner lo stage proprietario della finestra modale
+//     * @param libri la lista di libri da cui selezionare
+//     * @return il libro selezionato, o null se l'operazione è stata annullata
+//     */
+//    public Libro show(Stage owner, List<Libro> libri) {
+
     /**
-     * Mostra la finestra di selezione del libro.
+     * Mostra la finestra di selezione del libro (bloccante).
      *
      * @param owner lo stage proprietario della finestra modale
      * @param libri la lista di libri da cui selezionare
      * @return il libro selezionato, o null se l'operazione è stata annullata
      */
     public Libro show(Stage owner, List<Libro> libri) {
+        Stage stage = buildStage(owner, libri);
+        stage.showAndWait(); // bloccante
+        return libroSelezionato;
+    }
+
+    /**
+     * Mostra la finestra di selezione del libro in modo non bloccante (utile per i test).
+     *
+     * @param owner lo stage proprietario della finestra
+     * @param libri la lista di libri da cui selezionare
+     * @return lo Stage creato (ancora aperto)
+     */
+    public Stage showNonBlocking(Stage owner, List<Libro> libri) {
+        Stage stage = buildStage(owner, libri);
+        stage.show(); // non bloccante
+        return stage;
+    }
+
+    private Stage buildStage(Stage owner, List<Libro> libri) {
+
 
         Stage stage = new Stage();
         stage.initOwner(owner);
@@ -41,12 +70,14 @@ public class LibroView {
 
         // Campo filtro in alto
         TextField txtFiltro = new TextField();
+        txtFiltro.setId("filterTextField");
         txtFiltro.setPromptText("Filtra per titolo, usa * come jolly");
 
         // Lista filtrata
         FilteredList<Libro> filtered = new FilteredList<>(FXCollections.observableArrayList(libri), l -> true);
 
         ListView<Libro> listView = new ListView<>();
+        listView.setId("bookListView");
         listView.setItems(filtered);
 
         // Come mostrare i libri
@@ -95,9 +126,10 @@ public class LibroView {
         layout.setPadding(new Insets(15));
 
         stage.setScene(new Scene(layout, 400, 400));
-        stage.showAndWait();   // blocca la view chiamante
+        // stage.showAndWait();   // blocca la view chiamante
 
-        return libroSelezionato;
+        // return libroSelezionato;
+        return  stage;
     }
 
     // Trasforma una stringa con '*' in una regex sicura

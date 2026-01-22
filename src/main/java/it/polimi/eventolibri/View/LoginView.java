@@ -56,10 +56,12 @@ public class LoginView {
 
         TextField usernameField = new TextField();
         usernameField.setPromptText("username");
+        usernameField.setId("usernameField");
         usernameField.setMaxWidth(320);
 
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Password");
+        passwordField.setId("passwordField");
         passwordField.setMaxWidth(320);
 
         Label title = new Label("Login");
@@ -68,13 +70,14 @@ public class LoginView {
         title.setAlignment(Pos.CENTER);
 
         Button loginButton = new Button("Login");
+        loginButton.setId("loginButton");
         loginButton.setMaxWidth(160);
         loginButton.setOnAction(e -> {
 
             String username = usernameField.getText().trim();
             String password = passwordField.getText().trim();
             this.messaggioerrore.setText("");
-
+            System.out.println("Username: " + username + ", Password: " + password);
             if (username.isEmpty() || password.isEmpty()) {
                 System.out.println("Campi mancanti.");
 
@@ -96,6 +99,7 @@ public class LoginView {
         messaggioerrore = new Label("");
         messaggioerrore.setStyle("-fx-text-fill: red;");
         messaggioerrore.setMaxWidth(320);
+        messaggioerrore.setId("messaggioerrore");
 
         // ---------- REGISTRA NUOVO GENITORE BUTTON ----------
         Button newGenitoreButton = new Button("Registra nuovo genitore");
