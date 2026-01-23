@@ -8,16 +8,16 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-/**
- * Main class for the JavaFX application.
- * It initializes the client and various views, and starts the application.
+/** Classe principale per l'avvio dell'applicazione JavaFX.
+ * Estende la classe Application di JavaFX.
  */
 public class Window extends Application {
 
-    /** Starts the JavaFX application.
+    /**
+     * Avvia l'applicazione JavaFX.
      *
-     * @param stage the primary stage for this application
-     * @throws Exception if an error occurs during initialization
+     * @param stage il palco primario per questa applicazione
+     * @throws Exception se si verifica un errore durante l'inizializzazione
      */
     @Override
     public void start(Stage stage) throws Exception {
@@ -63,9 +63,9 @@ public class Window extends Application {
 
     }
 
-    /** Main method to launch the JavaFX application (Front End).
+    /** Metodo principale per avviare l'applicazione JavaFX (Front End).
      *
-     * @param args command line arguments
+     * @param args argomenti della riga di comando
      */
     public static void main(String[] args) {
         launch(args);

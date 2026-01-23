@@ -16,8 +16,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
-/**
- * Client class that manages the connection to the server and handles communication.
+/** Classe che rappresenta il client dell'applicazione Eventolibri.
+ * Si occupa di gestire la connessione con il server e le comunicazioni.
  */
 public class Client {
 

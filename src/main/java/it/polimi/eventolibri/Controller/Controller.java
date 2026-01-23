@@ -8,6 +8,10 @@ import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+/** Classe Controller che gestisce la logica di business dell'applicazione.
+ * Si occupa di interagire con i DAO per eseguire operazioni sul database
+ * e di elaborare le richieste ricevute dai client.
+ */
 public class Controller {
 
     private UtenteDAO utenteDAO;
