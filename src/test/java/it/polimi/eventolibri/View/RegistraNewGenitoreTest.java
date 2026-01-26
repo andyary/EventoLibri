@@ -23,23 +23,21 @@ import static org.mockito.Mockito.*;
 class RegistraNewGenitoreTest {
 
     @Mock
+    // mock usati nei test
     private Client mockClient;
-
     private RegistraNewGenitore view;
-
     private boolean backCalled;
-
     private final AutoCloseable mocks; // per chiudere openMocks
 
-    // Inizializzare i mock QUI, ma SENZA creare la view (evitare uso di JavaFX nel costruttore)
+    // inizializza i mock prima di ogni test
     public RegistraNewGenitoreTest() {
         this.mocks = MockitoAnnotations.openMocks(this);
-        // view non istanziata qui
         backCalled = false;
     }
 
+    // chiude i mock dopo ogni test
     @AfterEach
-    void tearDown() throws Exception {
+    void chiudi() throws Exception {
         backCalled = false;
         mocks.close();
     }
@@ -49,26 +47,32 @@ class RegistraNewGenitoreTest {
     public void start(Stage stage) {
         // crea la view solo sul FX thread (toolkit già inizializzato da TestFX)
         view = new RegistraNewGenitore(mockClient);
-
+        // mostra la view
         view.show(stage, () -> backCalled = true);
+        // attende che tutti gli eventi JavaFX siano processati
         WaitForAsyncUtils.waitForFxEvents();
     }
 
     @Test
-    void testValidationShowsError(FxRobot robot) {
+    // verifica che venga mostrato l'errore quando i campi sono vuoti
+    void testMostraErrore(FxRobot robot) {
+        // clicca sul pulsante salva senza compilare i campi
         robot.clickOn("#saveButton");
+        // verifica che l'etichetta di errore mostri il messaggio di campo obbligatorio
         Label error = robot.lookup("#errorLabel").queryAs(Label.class);
         assertEquals("Tutti i campi sono obbligatori.", error.getText());
     }
 
     @Test
-    void testSendsMessageOnValidInput(FxRobot robot) throws Exception {
+    // verifica che venga inviato il messaggio corretto quando i campi sono compilati
+    void testInvioMessaggio_campiCorretti(FxRobot robot) throws Exception {
+        // compila i campi
         robot.clickOn("#nomeField").write("TestNome");
         robot.clickOn("#cognomeField").write("TestCognome");
         robot.clickOn("#usernameField").write("testuser");
         robot.clickOn("#pswField").write("password");
         robot.clickOn("#saveButton");
-
+        // verifica che il messaggio corretto sia stato inviato
         verify(mockClient, timeout(1000)).sendMessage(argThat(arg -> arg instanceof RichiestaNuovoGenitore));
     }
 }

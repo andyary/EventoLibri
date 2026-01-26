@@ -47,6 +47,15 @@ public class Window extends Application {
         client.startListening();
         loginView.show(stage);
 
+        // Gestione della chiusura della finestra
+        // Invia un messaggio di chiusura al server prima di chiudere l'applicazione
+        // Utilizza un thread separato per evitare di bloccare il thread dell'interfaccia utente
+        // durante l'invio del messaggio
+        // Dopo aver inviato il messaggio, chiude effettivamente la finestra sul thread JavaFX
+        // Utilizza Platform.runLater per eseguire la chiusura della finestra sul thread JavaFX
+        // Questo garantisce che tutte le operazioni dell'interfaccia utente siano eseguite correttamente
+        // senza causare problemi di concorrenza
+
         stage.setOnCloseRequest(event -> {
             event.consume(); // blocca temporaneamente la chiusura
             new Thread(() -> {

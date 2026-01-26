@@ -98,6 +98,7 @@ public class Client {
      * Inizia l'ascolto dei messaggi dal server in un thread separato.
      */
     public Thread startListening() {
+        // crea un nuovo thread per ascoltare i messaggi dal server
         Thread listenerThread = new Thread(() -> {
             try {
                 Messaggio msg;
@@ -112,7 +113,9 @@ public class Client {
                 close();
             }
         });
+        // avvia il thread di ascolto
         listenerThread.start();
+        // restituisci il thread in modo che possa essere gestito esternamente
         return listenerThread;
     }
 
@@ -128,24 +131,32 @@ public class Client {
         if (msg instanceof RispostaLogin) {
             if (((RispostaLogin) msg).isSuccesso()) {
                 System.out.println("Login riuscito!");
+                // determina il tipo di utente e mostra la vista corrispondente
                 switch (((RispostaLogin) msg).getUtente()) {
                     case Genitore gen -> {
+                        // crea un oggetto Genitore usando la factory
                         CreaUtente<Genitore> creaGenitore = new CreaGenitore();
                         Genitore genitore = creaGenitore.nuovoUtente(gen.getId(), gen.getNome(), gen.getCognome(), gen.getUserName());
+                        // imposta i figli del genitore
                         genitore.setFigli(gen.getFigli());
+                        // imposta l'utente corrente
                         utente = genitore;
+                        // mostra la vista home del genitore con i dati ricevuti
                         homeGenitore.show(loginView.getStage(), genitore, ((RispostaLogin) msg).getProssimiEventi(),
                                 () -> {
                                     loginView.show(loginView.getStage());
                                 });
                     }
                     case Lettore let -> {
+                        // crea un oggetto Lettore usando la factory
                         CreaUtente<Lettore> creaLettore = new CreaLettore();
                         Lettore lettore = creaLettore.nuovoUtente(let.getId(), let.getNome(), let.getCognome(), let.getUserName());
+                        // imposta iscrizioni ed eventi creati del lettore
                         lettore.setIscrizioniLettura(let.getIscrizioniLettura());
                         lettore.setEventiCreati(let.getEventiCreati());
+                        // imposta l'utente corrente
                         utente = lettore;
-
+                        // mostra la vista home del lettore con i dati ricevuti
                         homeLettore.show(loginView.getStage(), lettore, ((RispostaLogin) msg).getProssimiEventi(),
                                 () -> {
                                     loginView.show(loginView.getStage());
@@ -153,23 +164,25 @@ public class Client {
                     }
 
                     case Amministratore amm -> {
+                        // crea un oggetto Amministratore usando la factory
                         CreaUtente<Amministratore> creaAmministratore = new CreaAmministratore();
                         Amministratore amministratore = creaAmministratore.nuovoUtente(amm.getId(), amm.getNome(), amm.getCognome(), amm.getUserName());
+                        // imposta l'utente corrente
                         utente = amministratore;
+                        // mostra la vista home dell'amministratore con i dati ricevuti
                         homeAmministratore.show(loginView.getStage(), amministratore,
                                 () -> {
                                     loginView.show(loginView.getStage());
                                 });
                     }
-
+                    // gestisci tipi di utenti non previsti
                     default -> {
                         System.out.println("Tipo di utente non gestito.");
                     }
                     // gestisci altri tipi di utenti qui
                 }
-
-
             } else {
+                // mostra l'errore di login nella vista di login
                 loginView.mostraErrore(((RispostaLogin) msg).getMessaggioerrore());
             }
             System.out.println("Ricevuto risposta login ");
@@ -179,6 +192,7 @@ public class Client {
         if (msg instanceof RispostaNextEventi) {
             if (((RispostaNextEventi) msg).isSuccesso()) {
                 System.out.println("Next Eventi Arrivati!");
+                // caso in cui ci sono meno di 10 eventi (nasconde il bottone "Carica Eventi Successivi")
                 if (((RispostaNextEventi) msg).getProssimiEventi().size() < 10) {
                     if (utente instanceof Lettore) {
                         homeLettore.nascondiBottoneNextEventi();
@@ -186,7 +200,9 @@ public class Client {
                     if (utente instanceof Genitore) {
                         homeGenitore.nascondiBottoneNextEventi();
                     }
-                } else {
+                }
+                // se piu di 10 eventi, aggiorna la lista degli eventi nella vista (lasciando visibile il bottone "Carica Eventi Successivi")
+                else {
                     if (utente instanceof Lettore) {
                         homeLettore.aggiornaEventi(((RispostaNextEventi) msg).getProssimiEventi());
                     }
@@ -202,9 +218,11 @@ public class Client {
         // gestisce messaggio di risposta dal server di iscrizione evento e aggiorna la vista corrispondente
         if (msg instanceof RispostaIscrizioneEvento) {
             if (((RispostaIscrizioneEvento) msg).isSuccesso()) {
+                // per ogni figlio del genitore, se l'id corrisponde a quello del figlio iscritto, esegue l'iscrizione
                 for (Figlio f : eventoView.getGenitore().getFigli()) {
                     if (f.getId() == ((RispostaIscrizioneEvento) msg).getFiglio().getId()) {
                         f.iscrivi(eventoView.getEvento(), eventoView.getGenitore());
+                        // dopo l'iscrizione, richiede il numero aggiornato di iscritti all'evento
                         RichiestaIscrittiEvento richiestaIscritti = new RichiestaIscrittiEvento(eventoView.getEvento());
                         try {
                             this.sendMessage(richiestaIscritti);
@@ -214,7 +232,9 @@ public class Client {
                     }
                 }
                 System.out.println("Iscritto " + ((RispostaIscrizioneEvento) msg).getFiglio().getNome());
-            } else {
+            }
+            // in caso di errore, mostra il messaggio di errore nella vista
+            else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaIscrizioneEvento) msg).getMessaggioErrore());
                 eventoView.mostraErrore(((RispostaIscrizioneEvento) msg).getMessaggioErrore());
             }
@@ -223,6 +243,7 @@ public class Client {
         // gestisce messaggio di risposta dal server con il numero di iscritti e i listeners (genitori) ad un evento e aggiorna la vista corrispondente
         if (msg instanceof RispostaIscrittiEvento) {
             if (((RispostaIscrittiEvento) msg).isSuccesso()) {
+                // aggiorna il numero di iscritti e i listeners nella vista corrispondente, in base al tipo di utente
                 if (utente instanceof Genitore) {
                     eventoView.aggiornaIscritti(((RispostaIscrittiEvento) msg).getEvento().getIscritti());
                     for (Listener l : ((RispostaIscrittiEvento) msg).getEvento().getListeners()) {
@@ -243,6 +264,7 @@ public class Client {
         // gestisce messaggio di risposta dal server di disiscrizione evento e aggiorna la vista corrispondente
         if (msg instanceof RispostaDisiscrizioneEvento) {
             if (((RispostaDisiscrizioneEvento) msg).isSuccesso()) {
+                // per ogni figlio del genitore, se l'id corrisponde a quello del figlio disiscritto, esegue la disiscrizione
                 for (Figlio f : eventoView.getGenitore().getFigli()) {
                     if (f.getId() == ((RispostaDisiscrizioneEvento) msg).getFiglio().getId()) {
                         f.disiscrivi(eventoView.getEvento(), eventoView.getGenitore());
@@ -255,7 +277,9 @@ public class Client {
                     }
                 }
                 System.out.println("Disiscritto " + ((RispostaDisiscrizioneEvento) msg).getFiglio().getNome());
-            } else {
+            }
+            // in caso di errore, mostra il messaggio di errore nella vista
+            else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaDisiscrizioneEvento) msg).getMessaggioErrore());
                 eventoView.mostraErrore(((RispostaDisiscrizioneEvento) msg).getMessaggioErrore());
             }
@@ -264,9 +288,10 @@ public class Client {
         // gestisce messaggio di risposta dal server di aggiornamento profilo genitore e aggiorna la vista corrispondente
         if (msg instanceof RispostaAggiornaGenitore) {
             if (((RispostaAggiornaGenitore) msg).isSuccesso()) {
+                // aggiorna i dati del genitore nella vista profiloGenitore
                 profiloGenitore.getGenitore().setNome(((RispostaAggiornaGenitore) msg).getGenitore().getNome());
                 profiloGenitore.getGenitore().setCognome(((RispostaAggiornaGenitore) msg).getGenitore().getCognome());
-
+                // mostra il messaggio di successo
                 Platform.runLater(() -> {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
                     alert.setTitle("Aggiornamento Genitore");
@@ -274,8 +299,9 @@ public class Client {
                     alert.setContentText(null);
                     alert.showAndWait();
                 });
-
-            } else {
+            }
+            // in caso di errore, mostra il messaggio di errore nella vista
+            else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiornaGenitore) msg).getMessaggioErrore());
                 profiloGenitore.mostraErrore(((RispostaAggiornaGenitore) msg).getMessaggioErrore());
             }
@@ -284,9 +310,10 @@ public class Client {
         // gestisce messaggio di risposta dal server di aggiunta figlio e aggiorna la vista corrispondente
         if (msg instanceof RispostaAggiungiFiglio) {
             if (((RispostaAggiungiFiglio) msg).isSuccesso()) {
+                // aggiunge il nuovo figlio al genitore nella vista profiloGenitore
                 profiloGenitore.getGenitore().aggiungiFiglio((((RispostaAggiungiFiglio) msg).getNuovoFiglio()));
                 profiloGenitore.aggiornaFigli((((RispostaAggiungiFiglio) msg).getNuovoFiglio()));
-
+                // mostra il messaggio di successo
                 Platform.runLater(() -> {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
                     alert.setTitle("Aggiornamento Genitore");
@@ -294,8 +321,9 @@ public class Client {
                     alert.setContentText(null);
                     alert.showAndWait();
                 });
-
-            } else {
+            }
+            // in caso di errore, mostra il messaggio di errore nella vista
+            else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiungiFiglio) msg).getMessaggioErrore());
                 profiloGenitore.mostraErrore2(((RispostaAggiungiFiglio) msg).getMessaggioErrore());
             }

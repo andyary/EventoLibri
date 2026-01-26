@@ -95,7 +95,7 @@ public class LibroView {
 
         // Listener per aggiornare il filtro
         txtFiltro.textProperty().addListener((obs, oldText, newText) -> {
-            Pattern p = buildPatternFromFilter(newText);
+            Pattern p = costrusciPatternDalFiltro(newText);
             if (p == null) {
                 filtered.setPredicate(l -> true);
             } else {
@@ -132,17 +132,21 @@ public class LibroView {
         return  stage;
     }
 
-    // Trasforma una stringa con '*' in una regex sicura
-    String wildcardToRegex(String wildcard) {
+    // Trasforma una stringa con '*' in una regex sicura, pulendo i metacaratteri
+    String daStringaARegex(String asterisco) {
         StringBuilder sb = new StringBuilder();
-        for (char c : wildcard.toCharArray()) {
+        for (char c : asterisco.toCharArray()) {
+            // gestisce il jolly
             if (c == '*') {
+                // aggiunge il jolly regex
                 sb.append(".*");
             } else {
-                // escape dei metacaratteri regex
+                // gestisce i metacaratteri regex
                 if ("\\.[]{}()+-^$|?".indexOf(c) >= 0) {
+                    // aggiunge il backslash di escape
                     sb.append('\\');
                 }
+                // aggiunge il carattere minuscolo
                 sb.append(Character.toLowerCase(c));
             }
         }
@@ -150,12 +154,15 @@ public class LibroView {
     }
 
     // Metodo package\-private per creare la Pattern dal filtro (usato nei test)
-    Pattern buildPatternFromFilter(String filter) {
+    Pattern costrusciPatternDalFiltro(String filter) {
         if (filter == null || filter.trim().isEmpty()) {
             return null;
         }
+        // Pulisce il filtro e crea la regex
         String cleaned = filter.trim().toLowerCase();
-        String pattern = wildcardToRegex(cleaned);
+        // Crea la regex
+        String pattern = daStringaARegex(cleaned);
+        // Assicura jolly iniziale/finale
         if (!pattern.startsWith(".*")) pattern = ".*" + pattern;
         if (!pattern.endsWith(".*")) pattern = pattern + ".*";
         return Pattern.compile(pattern);

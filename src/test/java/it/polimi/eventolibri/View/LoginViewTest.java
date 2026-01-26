@@ -46,11 +46,11 @@ class LoginViewTest extends ApplicationTest {
         // Inizializzazione della classe da testare
         loginView = new LoginView(mockClient, mockRegistraNewGenitore, mockHomeGenitore, mockHomeLettore, mockHomeAmministratore);
         loginView.show(stage);
-        this.stage = stage;
+        // this.stage = stage;
     }
 
     @Test
-    void testLoginWithEmptyFields() {
+    void testLoginConCampiVuoti() {
         // Simula il click sul pulsante "Login" identificato per il suo testo
         clickOn("#loginButton");
 
@@ -63,7 +63,7 @@ class LoginViewTest extends ApplicationTest {
     }
 
     @Test
-    void testLoginWithValidCredentials() throws IOException {
+    void testLoginConCredenzialiCorrette() throws IOException {
         // Inserisci credenziali valide
         clickOn("#usernameField").write("testuser");
         clickOn("#passwordField").write("password");
@@ -71,7 +71,7 @@ class LoginViewTest extends ApplicationTest {
         // Simula il click sul pulsante "Login"
         clickOn("#loginButton");
 
-        // Verifica che il client invii il messaggio `RichiestaLogin`
+        // Verifica che il client invii il messaggio `RichiestaLogin` e quante volte la chiamata
         verify(mockClient, times(1)).sendMessage(any(RichiestaLogin.class));
 
         // Controlla che il messaggio di errore resti vuoto
@@ -79,7 +79,7 @@ class LoginViewTest extends ApplicationTest {
     }
 
     @Test
-    void testRegisterNewGenitore() {
+    void testRegistraNewGenitore() {
         // Simula il click sul pulsante "Registra nuovo genitore"
         clickOn("Registra nuovo genitore");
 
