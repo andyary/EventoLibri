@@ -1,11 +1,14 @@
 package it.polimi.eventolibri.View;
 
 import it.polimi.eventolibri.Message.RichiestaAggiornaGenitore;
+import it.polimi.eventolibri.Message.RichiestaAggiungiFiglio;
 import it.polimi.eventolibri.Model.CreaGenitore;
+import it.polimi.eventolibri.Model.Figlio;
 import it.polimi.eventolibri.Model.Genitore;
 import it.polimi.eventolibri.Network.Client;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -20,6 +23,7 @@ import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -132,5 +136,53 @@ class ProfiloGenitoreTest {
         // cerca la label con il messaggio di errore
         Optional<Label> optLabel = findWithRetry(robot, Label.class, l -> "Errore prova".equals(((Label) l).getText()), 1000);
         assertTrue(optLabel.isPresent(), "La label di errore deve mostrare 'Errore prova'");
+    }
+
+    @Test
+        // verifica che la sezione Aggiungi Figlio invii RichiestaAggiungiFiglio
+    void aggiungi_figlio_invia_richiesta(FxRobot robot) throws Exception {
+        // trova il TextField con prompt "Nome figlio"
+        Optional<TextField> nomeFiglioOpt = findWithRetry(robot, TextField.class,
+                tf -> "Nome figlio".equals(tf.getPromptText()), 1000);
+        assertTrue(nomeFiglioOpt.isPresent(), "Deve esserci il campo Nome figlio");
+
+        // trova il DatePicker con prompt "Data di nascita"
+        Optional<DatePicker> datePickerOpt = findWithRetry(robot, DatePicker.class,
+                dp -> "Data di nascita".equals(dp.getPromptText()), 1000);
+        assertTrue(datePickerOpt.isPresent(), "Deve esserci il DatePicker Data di nascita");
+
+        // inserisce valori
+        TextField nomeField = nomeFiglioOpt.get();
+        DatePicker dp = datePickerOpt.get();
+        robot.interact(() -> {
+            nomeField.clear();
+            nomeField.setText("Mario");
+            dp.setValue(LocalDate.of(2016, 6, 15));
+        });
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // clicca Aggiungi figlio
+        Optional<Button> aggiungiBtn = findWithRetry(robot, Button.class, b -> "Aggiungi figlio".equals(b.getText()), 1000);
+        assertTrue(aggiungiBtn.isPresent(), "Deve esserci il pulsante Aggiungi figlio");
+        clearInvocations(mockClient);
+        robot.clickOn(aggiungiBtn.get());
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // verifica invio richiesta
+        verify(mockClient, timeout(1000)).sendMessage(argThat(arg -> arg instanceof RichiestaAggiungiFiglio));
+    }
+
+    @Test
+        // verifica che aggiornaFigli aggiorni l'interfaccia (mostra il nuovo figlio)
+    void aggiorna_figli_aggiorna_ui(FxRobot robot) {
+        Figlio nuovo = new Figlio("BambinoTest", LocalDate.of(2010, 5, 20));
+        // chiamiamo il metodo che aggiorna l'UI sul thread FX
+        robot.interact(() -> view.aggiornaFigli(nuovo));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // cerchiamo una Label che contenga il nome del nuovo figlio
+        Optional<Label> labelFiglio = findWithRetry(robot, Label.class,
+                l -> l.getText() != null && l.getText().contains("BambinoTest"), 1000);
+        assertTrue(labelFiglio.isPresent(), "La UI deve mostrare il nuovo figlio 'BambinoTest'");
     }
 }

@@ -47,11 +47,11 @@ public class ClientHandler extends Thread {
         @Override
     public void run() {
         try {
-            out = new ObjectOutputStream(socket.getOutputStream());
-            in = new ObjectInputStream(socket.getInputStream());
+            out = new ObjectOutputStream(socket.getOutputStream()); // crea il flusso di output per inviare messaggi al client
+            in = new ObjectInputStream(socket.getInputStream()); // crea il flusso di input per ricevere messaggi dal client
             while (true) {
-                Messaggio msg = (Messaggio) in.readObject();
-                handleMessage(msg);
+                Messaggio msg = (Messaggio) in.readObject(); // legge il messaggio dal client
+                handleMessage(msg); // gestisce il messaggio ricevuto
             }
         } catch (Exception e) {
             System.out.println("Client disconnesso: " + socket);
@@ -71,28 +71,31 @@ public class ClientHandler extends Thread {
         if (msg instanceof RichiestaLogin) {
             RispostaLogin risposta = controller.controllaLogin(((RichiestaLogin) msg).getUsername(), ((RichiestaLogin) msg).getPassword());
             if (risposta.isSuccesso()){
+                // caso genitore
                 if (risposta.getUtente() instanceof Genitore) {
                     CreaUtente<Genitore> creaUtente = new CreaGenitore();
                     this.utente = creaUtente.nuovoUtente(risposta.getUtente().getId(),risposta.getUtente().getNome(),risposta.getUtente().getCognome(),risposta.getUtente().getUserName());
                 }
+                // caso lettore
                 if (risposta.getUtente() instanceof Lettore) {
                     CreaUtente<Lettore> creaUtente = new CreaLettore();
                     this.utente = creaUtente.nuovoUtente(risposta.getUtente().getId(),risposta.getUtente().getNome(),risposta.getUtente().getCognome(),risposta.getUtente().getUserName());
                 }
+                // caso amministratore
                 if (risposta.getUtente() instanceof Amministratore) {
                     CreaUtente<Amministratore> creaUtente = new CreaAmministratore();
                     this.utente = creaUtente.nuovoUtente(risposta.getUtente().getId(),risposta.getUtente().getNome(),risposta.getUtente().getCognome(),risposta.getUtente().getUserName());
                 }
-                server.getClients().put(this, this.utente);
+                server.getClients().put(this, this.utente);  // aggiunge il client handler alla mappa dei client connessi
             }
-            sendMessage(risposta);
+            sendMessage(risposta); // invia la risposta di login al client
         }
 
         // gestisce messaggio di chiusura connessione dal client
         if (msg instanceof CloseUI) {
-            server.getClients().remove(this);
-            socket.close();
-            System.out.println("Connessione chiusa con il client: " + socket);
+            server.getClients().remove(this); // rimuove il client handler dalla mappa dei client connessi
+            socket.close(); // chiude la connessione con il client
+            System.out.println("Connessione chiusa con il client: " + socket); // log di chiusura
         }
 
         // gestisce la richiesta dei prossimi eventi
@@ -255,8 +258,8 @@ public class ClientHandler extends Thread {
      * @throws IOException se si verifica un errore di I/O
      */
     public void sendMessage(Messaggio msg) throws IOException {
-        out.writeObject(msg);
-        out.flush();
-        out.reset();
+        out.writeObject(msg); // scrive l'oggetto nel flusso di output
+        out.flush(); // forza la scrittura immediata
+        out.reset(); // resetta lo stream per evitare problemi di serializzazione con oggetti ripetuti
     }
 }

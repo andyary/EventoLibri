@@ -211,6 +211,7 @@ public class EventoView {
             lbl.setStyle("-fx-font-size: 14px;");
             riga.getChildren().add(lbl);
             scalettaBox.getChildren().add(riga);
+            tempoinizio = tempofine; // aggiorna il tempo di inizio per il prossimo libro
         }
 
         HBox mainBtnBox = new HBox(5, new Label("  Benvenuto, (genitore) " + genitore.getNome() + "!          "), backButton);

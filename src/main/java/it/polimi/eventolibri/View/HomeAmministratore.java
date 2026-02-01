@@ -208,16 +208,14 @@ public class HomeAmministratore {
             }
         });
 
-        HBox topBar1 = new HBox(new Label("  Benvenuto, (admin) " + amministratore.getNome() + "!          "), profiloButton);
+        HBox topBar1 = new HBox(new Label("  Benvenuto, (admin) " + amministratore.getNome() + "!          "), profiloButton, scegliLibroBtn, backButton);
         topBar1.setAlignment(Pos.CENTER_RIGHT);
-        HBox topBar2 = new HBox(newLettoreButton, newAmministratoreButton);
-        topBar2.setAlignment(Pos.CENTER_RIGHT);
-        HBox topBar3 = new HBox(scegliLibroBtn);
-        topBar3.setAlignment(Pos.CENTER_RIGHT);
-        HBox topBar4 = new HBox(backButton);
-        topBar4.setAlignment(Pos.CENTER_RIGHT);
-
-        VBox topBar = new VBox(topBar1, topBar2, topBar3, topBar4, messaggioerrore);
+        HBox topBar2 = new HBox(newLettoreButton);
+        topBar2.setAlignment(Pos.CENTER);
+        HBox topBar3 = new HBox(newAmministratoreButton);
+        topBar3.setAlignment(Pos.CENTER);
+        
+        VBox topBar = new VBox(20,topBar1, topBar2, topBar3, messaggioerrore);
 
         topBar.setPadding(new Insets(20));
         topBar.setAlignment(Pos.TOP_RIGHT);

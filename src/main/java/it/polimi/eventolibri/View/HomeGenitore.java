@@ -415,22 +415,23 @@ public class HomeGenitore {
         titoloCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue() != null ? cell.getValue().getNome() : ""));
         titoloCol.setSortable(true);
 
-        table.getColumns().addAll(dataCol, oraInizioCol, oraFineCol, luogoCol ,titoloCol);
+        table.getColumns().addAll(dataCol, oraInizioCol, oraFineCol, luogoCol ,titoloCol); // aggiungi colonne alla tabella
 
-        ObservableList<Evento> items = FXCollections.observableArrayList(eventi);
-        table.setItems(items);
+        // popola tabella
+        ObservableList<Evento> items = FXCollections.observableArrayList(eventi); // crea ObservableList da lista eventi
+        table.setItems(items); // imposta items nella tabella
 
         // Imposta ordinamento iniziale per data in ordine crescente
-        dataCol.setSortType(TableColumn.SortType.ASCENDING);
-        table.getSortOrder().clear();
-        table.getSortOrder().add(dataCol);
-        table.sort();
+        dataCol.setSortType(TableColumn.SortType.ASCENDING); // ordinamento crescente
+        table.getSortOrder().clear(); // rimuovi ordinamenti precedenti
+        table.getSortOrder().add(dataCol); // aggiungi ordinamento per data
+        table.sort(); // applica l'ordinamento
 
-        // Altezza preferita: approssimazione riga 25px + header 30px
+        // Altezza preferita: riga 25px + header 30px
         double rowHeight = 25;
         double headerHeight = 30;
         table.setPrefHeight(visibleRows * rowHeight + headerHeight);
-
+        // Imposta politica di ridimensionamento delle colonne
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         // doppio clic su riga per aprire l'evento

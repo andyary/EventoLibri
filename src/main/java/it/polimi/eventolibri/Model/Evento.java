@@ -269,4 +269,13 @@ public class Evento extends EventoAstratto implements Serializable {
         }
         return false;
     }
+
+    /**
+     * Imposta il luogo dell'evento.
+     *
+     * @param luogo Luogo dell'evento.
+     */
+    public void setLuogo(Luogo luogo) {
+        this.luogo = luogo;
+    }
 }

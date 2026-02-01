@@ -155,6 +155,7 @@ class ControllerTest {
 
         assertFalse(resp.isSuccesso());
         assertNotNull(resp.getMessaggioErrore());
+        assertEquals("Errore richiesta al server.", resp.getMessaggioErrore());
         verify(eventoDAO).getNextEventi(any(Evento.class));
     }
 
@@ -183,9 +184,9 @@ class ControllerTest {
 
 
         // successo
-        doNothing().when(figlioDAO).iscriviFiglioEvento(f, e);
+        doNothing().when(figlioDAO).iscriviFiglioEvento(f, e); // non lancia eccezioni
         RispostaIscrizioneEvento ok = controller.iscriviFiglioEvento(f, e, g);
-        assertTrue(ok.isSuccesso());
+        assertTrue(ok.isSuccesso()); // successo
         verify(figlioDAO).iscriviFiglioEvento(f, e);
 
         // eccezione

@@ -148,7 +148,6 @@ class EventoDAOTest {
 
         } catch (SQLException ec) {
         }
-        ;
     }
 
     @Test

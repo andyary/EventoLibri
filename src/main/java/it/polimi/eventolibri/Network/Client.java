@@ -360,13 +360,13 @@ public class Client {
         // gestisce messaggio di risposta dal server con le recensioni e la recensibilità di un libro e aggiorna la vista corrispondente
         if (msg instanceof RispostaRecensioniERecensibilita) {
             if (((RispostaRecensioniERecensibilita) msg).isSuccesso()) {
+                // aggiorna la recensibilità e le recensioni del libro nelle viste corrispondenti
                 homeGenitore.setRecensibile(((RispostaRecensioniERecensibilita) msg).isRecensibile());
                 homeGenitore.setRecensioni(((RispostaRecensioniERecensibilita) msg).getRecensioni());
                 homeAmministratore.setRecensibile(((RispostaRecensioniERecensibilita) msg).isRecensibile());
                 homeAmministratore.setRecensioni(((RispostaRecensioniERecensibilita) msg).getRecensioni());
                 homeLettore.setRecensibile(((RispostaRecensioniERecensibilita) msg).isRecensibile());
                 homeLettore.setRecensioni(((RispostaRecensioniERecensibilita) msg).getRecensioni());
-                // Aggiorna le recensioni e la recensibilità nella vista
             } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaRecensioniERecensibilita) msg).getMessaggioerrore());
                 homeGenitore.mostraErrore(((RispostaRecensioniERecensibilita) msg).getMessaggioerrore());
@@ -505,20 +505,20 @@ public class Client {
 
         // gestisce notifica di aggiornamento evento e aggiorna i dati nella view e la vista corrispondente
         if (msg instanceof NotificaAggiornamentoEvento) {
-            Stage stage = loginView.getStage();
-            Scene scene = stage.getScene();
+            Stage stage = loginView.getStage(); // ottiene lo stage principale
+            Scene scene = stage.getScene(); // ottiene la scena attualmente visualizzata
 
             // Verifica se vista attualmente visualizzata è compatibile con un refresh
-            boolean viewCoerente = false;
+            boolean viewCoerente = false; // inizializza come non compatibile
             if (stage != null && stage.isShowing()) {
                 if (utente instanceof Genitore) {
                     if (scene == homeGenitore.getScene()) {
-                        viewCoerente = true;
+                        viewCoerente = true; // compatibile per refresh
                     }
                 }
                 if (utente instanceof Lettore) {
                     if (scene == homeLettore.getScene()) {
-                        viewCoerente = true;
+                        viewCoerente = true; // compatibile per refresh
                     }}
             }
 
@@ -588,9 +588,9 @@ public class Client {
      */
     private void close() {
         try {
-            if (in != null) in.close();
-            if (out != null) out.close();
-            if (socket != null) socket.close();
+            if (in != null) in.close(); // chiude lo stream di input
+            if (out != null) out.close(); // chiude lo stream di output
+            if (socket != null) socket.close(); // chiude il socket
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -602,9 +602,9 @@ public class Client {
      * @throws IOException In caso di errore durante l'invio.
      */
     public void sendMessage(Messaggio msg) throws IOException {
-        out.writeObject(msg);
-        out.flush();
-        out.reset();
+        out.writeObject(msg); // invia il messaggio al server
+        out.flush(); // assicura che tutti i dati siano inviati
+        out.reset(); // resetta lo stream per evitare problemi con oggetti serializzati
     }
 
 }

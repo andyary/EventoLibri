@@ -24,11 +24,12 @@ class EventoTest {
         ArrayList<LibroLettore> scaletta = new ArrayList<LibroLettore>();
         scaletta.add(ll1);
         scaletta.add(ll2);
-        Evento evento1= new Evento(creatore, "Evento di prova", luogo, date, scaletta);
+        Evento evento1= new Evento(creatore, "Evento di prova1", luogo, date, scaletta);
         assertNotNull(evento1);
-        Evento evento2 = new Evento(1, creatore, "Evento di prova", luogo, date, scaletta);
+        Evento evento2 = new Evento(1, creatore, "Evento di prova2", luogo, date, scaletta);
         assertNotNull(evento2);
-
+        assertEquals("Evento di prova1", evento1.getNome()); // verifica nome evento
+        assertEquals(luogo, evento1.getLuogo()); // verifica luogo evento
     }
 
     @Test
