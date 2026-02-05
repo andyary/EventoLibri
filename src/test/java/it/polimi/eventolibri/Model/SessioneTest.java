@@ -9,8 +9,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SessioneTest {
 
+    // Test per il metodo setEventi
     @Test
     void setEventi() {
+        // Crea due eventi di prova
         Lettore creatore = new Lettore("Mario", "Rossi", "mariorossi");
         Luogo luogo = new Luogo("Sala A", 15, 2);
         LocalDateTime date = LocalDateTime.of(2026, 6, 15, 18, 0);
@@ -23,8 +25,8 @@ class SessioneTest {
         ArrayList<LibroLettore> scaletta = new ArrayList<LibroLettore>();
         scaletta.add(ll1);
         scaletta.add(ll2);
-        Evento evento1= new Evento(creatore, "Evento di prova", luogo, date, scaletta);
-
+        Evento evento1 = new Evento(creatore, "Evento di prova", luogo, date, scaletta);
+        // Secondo evento
         Lettore creatore2 = new Lettore("Mario2", "Rossi2", "mariorossi2");
         Luogo luogo2 = new Luogo("Sala B", 10, 3);
         LocalDateTime date2 = LocalDateTime.of(2026, 5, 15, 18, 0);
@@ -37,8 +39,8 @@ class SessioneTest {
         ArrayList<LibroLettore> scaletta2 = new ArrayList<LibroLettore>();
         scaletta2.add(ll3);
         scaletta2.add(ll4);
-        Evento evento2= new Evento(creatore2, "Evento di prova2", luogo2, date2, scaletta2);
-
+        Evento evento2 = new Evento(creatore2, "Evento di prova2", luogo2, date2, scaletta2);
+        // Crea arrayList di eventi e una sessione
         ArrayList<Evento> eventi = new ArrayList<>();
         eventi.add(evento1);
         eventi.add(evento2);
@@ -49,35 +51,35 @@ class SessioneTest {
         assertEquals(2, sessione.getEventi().size());
         assertTrue(sessione.getEventi().contains(evento1));
         assertTrue(sessione.getEventi().contains(evento2));
-
+        // Rimuovi e aggiungi eventi e verifica
         sessione.rimuoviEvento(evento1);
         assertEquals(1, sessione.getEventi().size());
         assertFalse(sessione.getEventi().contains(evento1));
         assertTrue(sessione.getEventi().contains(evento2));
-
+        // Aggiungi di nuovo evento1
         sessione.aggiungiEvento(evento1);
         assertEquals(2, sessione.getEventi().size());
         assertTrue(sessione.getEventi().contains(evento1));
         assertTrue(sessione.getEventi().contains(evento2));
-
+        // Crea una nuova sessione con gli eventi iniziali
         Sessione sessione2 = new Sessione(utente, eventi);
         // Verifica che gli eventi siano stati aggiunti correttamente
         assertEquals(2, sessione2.getEventi().size());
         assertTrue(sessione2.getEventi().contains(evento1));
         assertTrue(sessione2.getEventi().contains(evento2));
-
+        // Rimuovi e aggiungi eventi e verifica
         sessione2.rimuoviEvento(evento1);
         assertEquals(1, sessione2.getEventi().size());
         assertFalse(sessione2.getEventi().contains(evento1));
         assertTrue(sessione2.getEventi().contains(evento2));
-
+        // Aggiungi di nuovo evento1
         sessione2.aggiungiEvento(evento1);
         assertEquals(2, sessione2.getEventi().size());
         assertTrue(sessione2.getEventi().contains(evento1));
         assertTrue(sessione2.getEventi().contains(evento2));
-
     }
 
+    // Test per il metodo aggiungiEvento
     @Test
     void aggiungiEvento() {
     }

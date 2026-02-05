@@ -19,7 +19,7 @@ import java.io.IOException;
  * Classe View per la schermata di login.
  */
 public class LoginView {
-
+    // ----- ATTRIBUTI -----
     private final Client client;
     private VBox layout;
     private Label messaggioerrore;
@@ -29,14 +29,16 @@ public class LoginView {
     private final HomeLettore homeLettore;
     private final HomeAmministratore homeAmministratore;
 
+    // ----- COSTRUTTORE -----
+
     /**
      * Costruttore della classe LoginView.
      *
-     * @param client                l'istanza del client per la comunicazione con il server
-     * @param registraNewGenitore   la view per la registrazione di un nuovo genitore
-     * @param homeGenitore          la view della home del genitore
-     * @param homeLettore           la view della home del lettore
-     * @param homeAmministratore    la view della home dell'amministratore
+     * @param client              l'istanza del client per la comunicazione con il server
+     * @param registraNewGenitore la view per la registrazione di un nuovo genitore
+     * @param homeGenitore        la view della home del genitore
+     * @param homeLettore         la view della home del lettore
+     * @param homeAmministratore  la view della home dell'amministratore
      */
     public LoginView(Client client, RegistraNewGenitore registraNewGenitore, HomeGenitore homeGenitore, HomeLettore homeLettore, HomeAmministratore homeAmministratore) {
         this.registraNewGenitore = registraNewGenitore;
@@ -52,18 +54,19 @@ public class LoginView {
      * @param stage lo stage principale dell'applicazione
      */
     public void show(Stage stage) {
+        // Salva lo stage
         this.stage = stage;
-
+        // ---------- USERNAME E PASSWORD FIELDS ----------
         TextField usernameField = new TextField();
         usernameField.setPromptText("username");
-        usernameField.setId("usernameField");
+        usernameField.setId("usernameField"); // per i test
         usernameField.setMaxWidth(320);
 
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Password");
-        passwordField.setId("passwordField");
+        passwordField.setId("passwordField"); // per i test
         passwordField.setMaxWidth(320);
-
+        // ---------- LOGIN BUTTON ----------
         Label title = new Label("Login");
         title.setStyle("-fx-font-size: 22px;");
         title.setMaxWidth(320);
@@ -73,19 +76,17 @@ public class LoginView {
         loginButton.setId("loginButton");
         loginButton.setMaxWidth(160);
         loginButton.setOnAction(e -> {
-
-            String username = usernameField.getText().trim();
-            String password = passwordField.getText().trim();
-            this.messaggioerrore.setText("");
-            System.out.println("Username: " + username + ", Password: " + password);
-            if (username.isEmpty() || password.isEmpty()) {
-                System.out.println("Campi mancanti.");
-
-                this.messaggioerrore.setText("Campi mancanti.");
-
-                return;
+            // Ottieni username e password dai campi di testo
+            String username = usernameField.getText().trim(); // Rimuovi spazi bianchi iniziali e finali
+            String password = passwordField.getText().trim(); // Rimuovi spazi bianchi iniziali e finali
+            this.messaggioerrore.setText(""); // Pulisci messaggio di errore precedente
+            System.out.println("Username: " + username + ", Password: " + password); // Debug
+            if (username.isEmpty() || password.isEmpty()) { // Controlla campi vuoti
+                System.out.println("Campi mancanti."); // Debug
+                this.messaggioerrore.setText("Campi mancanti."); // Mostra messaggio di errore
+                return; // Esci
             }
-
+            // Crea e invia la richiesta di login al server
             RichiestaLogin req = new RichiestaLogin(username, password);
             try {
                 client.sendMessage(req);
@@ -93,9 +94,9 @@ public class LoginView {
                 System.out.println(ex.getMessage());
             }
 
-            System.out.println("Login sent: " + username);
+            System.out.println("Login sent: " + username); // Debug
         });
-
+        // ---------- MESSAGGIO ERRORE ----------
         messaggioerrore = new Label("");
         messaggioerrore.setStyle("-fx-text-fill: red;");
         messaggioerrore.setMaxWidth(320);
@@ -107,11 +108,11 @@ public class LoginView {
         newGenitoreButton.setOnAction(e -> {
             System.out.println("Apertura schermata registra nuovo genitore...");
             registraNewGenitore.show(stage, () -> {
-                this.show(stage);
+                this.show(stage); // Torna alla schermata di login dopo la registrazione
             });
 
         });
-
+        // ---------- LAYOUT ----------
         layout = new VBox(12, title, usernameField, passwordField, loginButton, messaggioerrore, newGenitoreButton);
         layout.setAlignment(Pos.TOP_CENTER); // centra orizzontalmente ma posiziona in alto
         layout.setPadding(new Insets(40, 40, 20, 40)); // margini: top, right, bottom, left
@@ -119,7 +120,7 @@ public class LoginView {
         Scene scene = new Scene(layout, 750, 780);
         stage.setScene(scene);
         stage.setTitle("Login");
-        stage.show();
+        stage.show(); // mostra la finestra
     }
 
     /**

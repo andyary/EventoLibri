@@ -42,9 +42,10 @@ public class RegistraNewLettore {
      * @param onBack         l'azione da eseguire quando si preme il pulsante "Indietro"
      */
     public void show(Stage stage, Amministratore amministratore, Runnable onBack) {
+        // Imposta lo stage e l'amministratore
         this.stage = stage;
         this.amministratore = amministratore;
-        this.messaggioerrore.setText("");
+        this.messaggioerrore.setText(""); // reset messaggio errore
         // ===========================
         // TITOLO
         // ===========================
@@ -73,20 +74,27 @@ public class RegistraNewLettore {
                 new Label("Password:"),
                 pswField
         );
+        // ===========================
+        // PULSANTE SALVA DATI
+        // ===========================
         Button salvaDati = new Button("Registra nuovo lettore");
         salvaDati.setId("saveButton"); // id per test
-        salvaDati.setOnAction(e -> {
-            if ((!nomeField.getText().isBlank()) && (!cognomeField.getText().isBlank()) && (!usernameField.getText().isBlank()) && (!pswField.getText().isBlank())) {
+        salvaDati.setOnAction(e -> { // azione al click del pulsante
+            if ((!nomeField.getText().isBlank()) && (!cognomeField.getText().isBlank()) &&
+                    (!usernameField.getText().isBlank()) && (!pswField.getText().isBlank())) { // controlla che tutti i campi siano compilati
                 this.messaggioerrore.setText("");
+                // Crea il nuovo lettore
                 CreaUtente<Lettore> creaLettore = new CreaLettore();
                 Lettore lettoreTemp = creaLettore.nuovoUtente(nomeField.getText(), cognomeField.getText(),
                         usernameField.getText());
+                // Invia la richiesta di registrazione al server
                 try {
                     client.sendMessage(new RichiestaNuovoLettore(lettoreTemp, pswField.getText()));
                 } catch (IOException ex) {
                     System.out.println(ex.getMessage());
                 }
             } else {
+                // Mostra messaggio di errore se ci sono campi vuoti
                 messaggioerrore.setText("Tutti i campi sono obbligatori.");
                 messaggioerrore.setStyle("-fx-text-fill: red;");
             }
@@ -97,9 +105,11 @@ public class RegistraNewLettore {
         // ===========================
         // INDIETRO
         // ===========================
+        // Pulsante indietro
         Button back = new Button("Indietro");
         back.setId("backButton");  // id per test
-        back.setOnAction(e -> onBack.run());
+        back.setOnAction(e -> onBack.run()); // azione al click del pulsante
+        // Box per posizionare il pulsante in alto a destra
         HBox backBox = new HBox(new Label("  Benvenuto, (admin) " + amministratore.getNome() + "!          "), back);
         backBox.setAlignment(Pos.TOP_RIGHT);
         backBox.setPadding(new Insets(10));
@@ -108,9 +118,10 @@ public class RegistraNewLettore {
         // ===========================
         VBox contenuto = new VBox(25, backBox, title, datiBox);
         contenuto.setPadding(new Insets(20));
-        ScrollPane scrollPane = new ScrollPane(contenuto);
-        scrollPane.setFitToWidth(true);
-        Scene scene = new Scene(scrollPane,  750, 780);
+        ScrollPane scrollPane = new ScrollPane(contenuto); // Aggiunto ScrollPane per gestire schermi piccoli
+        scrollPane.setFitToWidth(true); // Adatta il contenuto alla larghezza della finestra
+        Scene scene = new Scene(scrollPane, 750, 780); // Dimensioni della scena
+        // Mostra la scena
         Platform.runLater(() -> {
             stage.setTitle("Registra Nuovo Lettore");
             stage.setScene(scene);
@@ -125,7 +136,8 @@ public class RegistraNewLettore {
      * @param messaggioerrore il messaggio di successo da visualizzare
      */
     public void mostraSuccesso(String messaggioerrore) {
-        Platform.runLater(()->{
+        // Aggiorna l'interfaccia grafica nel thread JavaFX
+        Platform.runLater(() -> {
             this.messaggioerrore.setStyle("-fx-text-fill: green;");
             this.messaggioerrore.setText(messaggioerrore);
         });
@@ -137,7 +149,8 @@ public class RegistraNewLettore {
      * @param messaggioerrore il messaggio di errore da visualizzare
      */
     public void mostraErrore(String messaggioerrore) {
-        Platform.runLater(()->{
+        // Aggiorna l'interfaccia grafica nel thread JavaFX
+        Platform.runLater(() -> {
             this.messaggioerrore.setStyle("-fx-text-fill: red;");
             this.messaggioerrore.setText(messaggioerrore);
         });

@@ -28,7 +28,7 @@ import java.util.List;
  * Classe View per la schermata principale del genitore.
  */
 public class HomeGenitore {
-
+    // ------ ATTRIBUTI ------
     private final Client client;
     private Stage stage;
     private Scene scene;
@@ -39,7 +39,7 @@ public class HomeGenitore {
     private ProfiloGenitore profiloGenitore;
     private Runnable onBack;
 
-    private LibroDetailedView libroDetailedView;
+    private LibroDetailedView libroDetailedView; // view per visualizzare i dettagli del libro
     private ArrayList<Libro> elencoLibri = new ArrayList<>();
     private boolean recensibile;
     private ArrayList<Recensione> recensioni = new ArrayList<>(); // da caricare dal server
@@ -50,7 +50,7 @@ public class HomeGenitore {
     /**
      * Costruttore della classe HomeGenitore.
      *
-     * @param client             l'istanza del client per la comunicazione con il server
+     * @param client            l'istanza del client per la comunicazione con il server
      * @param eventoView        la view per la visualizzazione dei dettagli di un evento
      * @param profiloGenitore   la view per la visualizzazione e modifica del profilo del genitore
      * @param libroDetailedView la view per la visualizzazione dei dettagli di un libro
@@ -70,7 +70,7 @@ public class HomeGenitore {
      * @param elencoLibri l'elenco dei libri
      */
     public void setElencoLibri(ArrayList<Libro> elencoLibri) {
-        this.elencoLibri = elencoLibri == null ? new ArrayList<>() : elencoLibri;
+        this.elencoLibri = elencoLibri == null ? new ArrayList<>() : elencoLibri; // imposta elenco libri con lista vuota se null
     }
 
     /**
@@ -106,7 +106,7 @@ public class HomeGenitore {
      * @param recensione la recensione da rimuovere
      */
     public void delRecensione(Recensione recensione) {
-        if (this.recensioni != null) this.recensioni.remove(recensione);
+        if (this.recensioni != null) this.recensioni.remove(recensione); // rimuovi recensione
     }
 
     /**
@@ -154,10 +154,11 @@ public class HomeGenitore {
      * @param onBack         l'azione da eseguire quando si preme il pulsante "Logout"
      */
     public void show(Stage stage, Genitore genitore, ArrayList<Evento> eventiProssimi, Runnable onBack) {
+        // imposta attributi
         this.stage = stage;
         this.genitore = genitore;
-        this.eventiProssimi = eventiProssimi != null ? eventiProssimi : new ArrayList<>();
-        this.onBack = onBack;
+        this.eventiProssimi = eventiProssimi != null ? eventiProssimi : new ArrayList<>(); // imposta lista vuota se null
+        this.onBack = onBack; // azione logout
 
         // richiedi lettori, luoghi, libri per aggiornare dati locali
         RichiestaLettoriELuoghiELibri richiestaLettoriELuoghiELibri = new RichiestaLettoriELuoghiELibri();
@@ -165,37 +166,37 @@ public class HomeGenitore {
             client.sendMessage(richiestaLettoriELuoghiELibri);
         } catch (IOException e) {
             System.out.println("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage());
-            messaggioerrore.setText("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage());
+            messaggioerrore.setText("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage()); // mostra errore
         }
 
         // ---------- TOP BAR CON PROFILO ----------
         Button profiloButton = new Button("Profilo e figli");
         profiloButton.setOnAction(e -> {
             System.out.println("Apertura schermata profilo...");
-            profiloGenitore.show(stage, genitore, () -> reloadEventiFromServer());
+            profiloGenitore.show(stage, genitore, () -> reloadEventiFromServer()); // ricarica eventi al ritorno
         });
-
+        // logout button
         Button backButton = new Button("Logout");
         backButton.setOnAction(e -> {
-            if (onBack != null) onBack.run();
+            if (onBack != null) onBack.run(); // esegui azione logout
         });
-
+        // selezione libro recensioni
         Label libroSelezionatoLabel = new Label("Seleziona libro (recensioni)");
         Button scegliLibroBtn = new Button("Scegli libro");
-        final Libro[] libroSelezionato = new Libro[1];
+        final Libro[] libroSelezionato = new Libro[1]; // array per memorizzare libro selezionato
 
         scegliLibroBtn.setOnAction(e -> {
-            messaggioerrore.setText("");
+            messaggioerrore.setText(""); // reset messaggio errore
             LibroView dialog = new LibroView();
-            Libro libro = dialog.show(stage, elencoLibri);
+            Libro libro = dialog.show(stage, elencoLibri); // mostra finestra selezione libro
             if (libro != null) {
                 libroSelezionatoLabel.setText(
-                        libro.getTitolo() + " (" + libro.getTempoLettura() + " min)"
+                        libro.getTitolo() + " (" + libro.getTempoLettura() + " min)" // aggiorna label libro selezionato
                 );
-                libroSelezionato[0] = libro;
+                libroSelezionato[0] = libro; // memorizza libro selezionato
                 // recupera recensioni libro
-                recensioni.clear();
-                recensibile = false;
+                recensioni.clear(); // reset recensioni
+                recensibile = false; // reset recensibilità
 
                 // recupera recensibilità
                 RichiestaRecensioniERecensibilita richiesta = new RichiestaRecensioniERecensibilita(libro, genitore);
@@ -205,14 +206,15 @@ public class HomeGenitore {
                     messaggioerrore.setText("Errore nell'invio della richiesta recensioni e recensibilità: " + ex.getMessage());
                 }
 
-                this.attendi = true;
+                this.attendi = true; // imposta stato attesa
                 while (attendi) {
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(100); // attende 100ms
                     } catch (InterruptedException ex) {
-                        System.out.println("Errore attesa recensioni: " + ex.getMessage());
+                        System.out.println("Errore attesa recensioni: " + ex.getMessage()); // log errore
                     }
-                };
+                }
+                ;
 
                 // apri dettaglio libro
                 libroDetailedView.show(
@@ -222,13 +224,13 @@ public class HomeGenitore {
                         genitore,
                         recensibile,
                         () -> {
-                            this.show(stage, genitore, this.eventiProssimi, onBack);
+                            this.show(stage, genitore, this.eventiProssimi, onBack); // ricarica home al ritorno
                         }
                 );
             }
         });
 
-
+        // top bar layout
         HBox topBar = new HBox(new Label("  Benvenuto, (genitore) " + genitore.getNome() + "!          "), profiloButton, scegliLibroBtn, backButton);
         topBar.setPadding(new Insets(20));
         topBar.setAlignment(Pos.TOP_RIGHT);
@@ -237,32 +239,29 @@ public class HomeGenitore {
         topBox.setAlignment(Pos.CENTER);
 
 
-        // formatter per colonne
-        DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        DateTimeFormatter formatoOra = DateTimeFormatter.ofPattern("HH:mm");
+        // formato per colonne
+        DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("yyyy/MM/dd"); // formato data
+        DateTimeFormatter formatoOra = DateTimeFormatter.ofPattern("HH:mm"); // formato ora
 
         // ---------- EVENTI FIGLI: usa TableView per ciascun figlio ----------
         VBox figliSection = new VBox(10);
         figliSection.setPadding(new Insets(10));
-        // Label titoloFigli = new Label("Eventi a cui sono iscritti i tuoi figli:");
-        // titoloFigli.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-        // figliSection.getChildren().add(titoloFigli);
 
         if (genitore.getFigli().isEmpty()) {
-            figliSection.getChildren().add(new Label("Nessun figlio oppure nessuna iscrizione."));
+            figliSection.getChildren().add(new Label("Nessun figlio.")); // nessun figlio
         } else {
             int countFigli = 1;
-            for (Figlio f : genitore.getFigli()) {
-                List<Evento> listaEventi = f.getIscrizioni();
+            for (Figlio f : genitore.getFigli()) { // per ogni figlio
+                List<Evento> listaEventi = f.getIscrizioni(); // eventi iscritti del figlio
                 VBox boxFiglio = new VBox(10);
                 boxFiglio.setPadding(new Insets(5, 0, 5, 10));
-                Label titoloFiglio = new Label("Eventi di " + f.getNome() + " (figlio"+countFigli+"):");
-                // titoloFiglio.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
-                countFigli++;
+                Label titoloFiglio = new Label("Eventi di " + f.getNome() + " (figlio" + countFigli + "):"); // titolo figlio
+
+                countFigli++; // incrementa contatore figli
                 boxFiglio.getChildren().add(titoloFiglio);
                 if (listaEventi == null || listaEventi.isEmpty()) {
-                    boxFiglio.getChildren().add(new Label("Nessun evento iscritto."));
-                } else {
+                    boxFiglio.getChildren().add(new Label("Nessun evento iscritto.")); // iscritto a nessun evento
+                } else { // crea tabella eventi iscritto con 3 righe visibili
                     TableView<Evento> tableFiglio = createEventoTableView(listaEventi, 3, formatoData, formatoOra);
                     boxFiglio.getChildren().add(tableFiglio);
                 }
@@ -277,7 +276,7 @@ public class HomeGenitore {
 
         if (this.eventiProssimi == null || this.eventiProssimi.isEmpty()) {
             eventiProssimiBox.getChildren().add(new Label("Nessun evento disponibile."));
-        } else {
+        } else { // crea tabella eventi prossimi con 5 righe visibili
             TableView<Evento> tableProssimi = createEventoTableView(this.eventiProssimi, 5, formatoData, formatoOra);
             eventiProssimiBox.getChildren().add(tableProssimi);
         }
@@ -286,15 +285,15 @@ public class HomeGenitore {
         if (this.eventiProssimi != null && this.eventiProssimi.size() >= 10) {
             nextEventiButton = new Button("Carica Eventi Successivi");
             nextEventiButton.setOnAction(e -> {
-                Evento last = this.eventiProssimi.isEmpty() ? null : this.eventiProssimi.get(this.eventiProssimi.size() - 1);
-                RichiestaNextEventi req = new RichiestaNextEventi(last);
+                Evento last = this.eventiProssimi.isEmpty() ? null : this.eventiProssimi.get(this.eventiProssimi.size() - 1); // prendi ultimo evento
+                RichiestaNextEventi req = new RichiestaNextEventi(last); // crea richiesta eventi successivi
                 try {
-                    client.sendMessage(req);
+                    client.sendMessage(req); // invia richiesta al server
                 } catch (Exception ex) {
-                    System.out.println(ex.getMessage());
+                    System.out.println(ex.getMessage()); // log errore
                 }
             });
-            eventiProssimiBox.getChildren().add(nextEventiButton);
+            eventiProssimiBox.getChildren().add(nextEventiButton); // aggiungi pulsante al box
         }
 
         // ---------- CONTENUTO CENTRALE ----------
@@ -307,12 +306,12 @@ public class HomeGenitore {
         root.setTop(topBox);
         root.setCenter(centro);
 
-        ScrollPane scrollPane = new ScrollPane(root);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        ScrollPane scrollPane = new ScrollPane(root); // Aggiunto ScrollPane
+        scrollPane.setFitToWidth(true); // Adatta il contenuto alla larghezza della finestra
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // barra verticale se necessaria
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // mai barra orizzontale
 
-        this.scene = new Scene(scrollPane,  750, 780);
+        this.scene = new Scene(scrollPane, 750, 780); // crea scena
         Platform.runLater(() -> {
             stage.setScene(scene);
             stage.setTitle("Home Genitore");
@@ -342,7 +341,7 @@ public class HomeGenitore {
      */
     public void nascondiBottoneNextEventi() {
         Platform.runLater(() -> {
-            if (nextEventiButton != null) nextEventiButton.setVisible(false);
+            if (nextEventiButton != null) nextEventiButton.setVisible(false); // nascondi bottone
         });
     }
 
@@ -350,7 +349,8 @@ public class HomeGenitore {
      * Crea una TableView per visualizzare gli eventi.
      * Crea TableView<Evento> con colonne: Data, Ora inizio, Ora fine (calcolaOraFine), Titolo.
      * visibleRows indica il numero di righe visibili. TableView gestisce lo scrolling interno se ci sono più righe.
-     * @param eventi       l'elenco degli eventi da visualizzare
+     *
+     * @param eventi      l'elenco degli eventi da visualizzare
      * @param visibleRows il numero di righe visibili nella tabella
      * @param formatoData il formato per la data
      * @param formatoOra  il formato per l'ora
@@ -358,64 +358,66 @@ public class HomeGenitore {
      */
     private TableView<Evento> createEventoTableView(List<Evento> eventi, int visibleRows, DateTimeFormatter formatoData, DateTimeFormatter formatoOra) {
         TableView<Evento> table = new TableView<>();
-
-        TableColumn<Evento, String> dataCol = new TableColumn<>("Data");
+        // crea colonne
+        TableColumn<Evento, String> dataCol = new TableColumn<>("Data"); // colonna data
         dataCol.setCellValueFactory(cell -> {
-            Evento ev = cell.getValue();
-            String val = (ev != null && ev.getData() != null) ? ev.getData().toLocalDate().format(formatoData) : "";
-            return new SimpleStringProperty(val);
+            Evento ev = cell.getValue(); // ottieni evento
+            String val = (ev != null && ev.getData() != null) ? ev.getData().toLocalDate().format(formatoData) : ""; // formatta data
+            return new SimpleStringProperty(val); // restituisci proprietà stringa
         });
-        dataCol.setSortable(true);
+        dataCol.setSortable(true); // abilita ordinamento
         dataCol.setPrefWidth(90);
         dataCol.setMinWidth(70);
         dataCol.setMaxWidth(120);
         dataCol.setStyle("-fx-alignment: CENTER;");
 
-        TableColumn<Evento, String> oraInizioCol = new TableColumn<>("Ora inizio");
+        TableColumn<Evento, String> oraInizioCol = new TableColumn<>("Ora inizio"); // colonna ora inizio
         oraInizioCol.setCellValueFactory(cell -> {
-            Evento ev = cell.getValue();
-            String val = (ev != null && ev.getData() != null) ? ev.getData().toLocalTime().format(formatoOra) : "";
-            return new SimpleStringProperty(val);
+            Evento ev = cell.getValue(); // ottieni evento
+            String val = (ev != null && ev.getData() != null) ? ev.getData().toLocalTime().format(formatoOra) : ""; // formatta ora inizio
+            return new SimpleStringProperty(val); // restituisci proprietà stringa
         });
-        oraInizioCol.setSortable(true);
+        oraInizioCol.setSortable(true); // abilita ordinamento
         oraInizioCol.setPrefWidth(70);
         oraInizioCol.setMinWidth(50);
         oraInizioCol.setMaxWidth(90);
         oraInizioCol.setStyle("-fx-alignment: CENTER;");
 
-        TableColumn<Evento, String> oraFineCol = new TableColumn<>("Ora fine");
+        TableColumn<Evento, String> oraFineCol = new TableColumn<>("Ora fine"); // colonna ora fine
         oraFineCol.setCellValueFactory(cell -> {
-            Evento ev = cell.getValue();
-            String val = "";
+            Evento ev = cell.getValue(); // ottieni evento
+            String val = ""; // valore di default vuoto
             try {
                 if (ev != null && ev.calcolaOraFine() != null) {
-                    val = ev.calcolaOraFine().format(formatoOra);
+                    val = ev.calcolaOraFine().format(formatoOra); // calcola e formatta ora fine
                 }
-            } catch (Exception ignored) {}
-            return new SimpleStringProperty(val);
+            } catch (Exception ex) {
+                System.out.println(ex); // log errore calcolo ora fine
+            }
+            return new SimpleStringProperty(val); // restituisci proprietà stringa
         });
-        oraFineCol.setSortable(true);
+        oraFineCol.setSortable(true); // abilita ordinamento
         oraFineCol.setPrefWidth(70);
         oraFineCol.setMinWidth(50);
         oraFineCol.setMaxWidth(90);
         oraFineCol.setStyle("-fx-alignment: CENTER;");
 
-        TableColumn<Evento, String> luogoCol = new TableColumn<>("Luogo evento");
+        TableColumn<Evento, String> luogoCol = new TableColumn<>("Luogo evento"); // colonna luogo evento
         luogoCol.setCellValueFactory(cell -> {
-            Evento ev = cell.getValue();
-            String val = (ev != null && ev.getLuogo() != null) ? ev.getLuogo().getNome() : "";
-            return new SimpleStringProperty(val);
+            Evento ev = cell.getValue(); // ottieni evento
+            String val = (ev != null && ev.getLuogo() != null) ? ev.getLuogo().getNome() : ""; // ottieni nome luogo
+            return new SimpleStringProperty(val); // restituisci proprietà stringa
         });
         luogoCol.setPrefWidth(70);
         luogoCol.setMinWidth(50);
         luogoCol.setMaxWidth(90);
-        luogoCol.setSortable(true);
+        luogoCol.setSortable(true); // abilita ordinamento
 
-        TableColumn<Evento, String> titoloCol = new TableColumn<>("Titolo evento");
-        titoloCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue() != null ? cell.getValue().getNome() : ""));
-        titoloCol.setSortable(true);
+        TableColumn<Evento, String> titoloCol = new TableColumn<>("Titolo evento"); // colonna titolo evento
+        titoloCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue() != null ? cell.getValue().getNome() : "")); // ottieni titolo evento se non null
+        titoloCol.setSortable(true); // abilita ordinamento
 
-        table.getColumns().addAll(dataCol, oraInizioCol, oraFineCol, luogoCol ,titoloCol); // aggiungi colonne alla tabella
+        table.getColumns().addAll(dataCol, oraInizioCol, oraFineCol, luogoCol, titoloCol); // aggiungi colonne alla tabella
 
         // popola tabella
         ObservableList<Evento> items = FXCollections.observableArrayList(eventi); // crea ObservableList da lista eventi
@@ -430,27 +432,27 @@ public class HomeGenitore {
         // Altezza preferita: riga 25px + header 30px
         double rowHeight = 25;
         double headerHeight = 30;
-        table.setPrefHeight(visibleRows * rowHeight + headerHeight);
+        table.setPrefHeight(visibleRows * rowHeight + headerHeight); // imposta altezza preferita
         // Imposta politica di ridimensionamento delle colonne
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         // doppio clic su riga per aprire l'evento
         table.setRowFactory(tv -> {
-            TableRow<Evento> row = new TableRow<>();
+            TableRow<Evento> row = new TableRow<>(); // crea nuova riga
             row.setOnMouseClicked(ev -> {
-                if (!row.isEmpty() && ev.getButton() == MouseButton.PRIMARY && ev.getClickCount() == 2) {
-                    Evento selected = row.getItem();
-                    eventoView.show(stage, selected, genitore, () -> reloadEventiFromServer());
+                if (!row.isEmpty() && ev.getButton() == MouseButton.PRIMARY && ev.getClickCount() == 2) // doppio clic
+                {
+                    Evento selected = row.getItem(); // ottieni evento selezionato
+                    eventoView.show(stage, selected, genitore, () -> reloadEventiFromServer()); // mostra dettagli evento e ricarica eventi al ritorno
                 }
             });
-            return row;
+            return row; // restituisci riga
         });
 
         if (items.isEmpty()) {
-            table.setPlaceholder(new Label("Nessun evento."));
+            table.setPlaceholder(new Label("Nessun evento.")); // messaggio se nessun evento
         }
-
-        return table;
+        return table; // restituisci tabella
     }
 
     /**
@@ -459,22 +461,21 @@ public class HomeGenitore {
      * @param prossimiEventi l'elenco degli eventi prossimi da aggiungere
      */
     public void aggiornaEventi(ArrayList<Evento> prossimiEventi) {
-        if (this.eventiProssimi == null) this.eventiProssimi = new ArrayList<>();
+        if (this.eventiProssimi == null) this.eventiProssimi = new ArrayList<>(); // inizializza lista se null
         // aggiungi gli eventi nella nuova lista prossimi eventi se l'id dell'evento
         // non c'è nella vecchia lista
         for (Evento ev : prossimiEventi) {
-            boolean found = false;
+            boolean found = false; // flag per evento trovato
             for (Evento oldEv : this.eventiProssimi) {
-                if (ev.getId() == oldEv.getId()) {
-                    found = true;
-                    break;
+                if (ev.getId() == oldEv.getId()) { // confronto id eventi
+                    found = true; // cambia flag se trovato
+                    break; // esci dal ciclo
                 }
             }
             if (!found) {
-                this.eventiProssimi.add(ev);
+                this.eventiProssimi.add(ev); // aggiungi evento se non trovato
             }
         }
-        // this.eventiProssimi.addAll(prossimiEventi);
         Platform.runLater(() -> this.show(stage, genitore, this.eventiProssimi, onBack));
     }
 
@@ -493,8 +494,8 @@ public class HomeGenitore {
      * @param msgerrore il messaggio di errore da visualizzare
      */
     public void mostraErrore(String msgerrore) {
-        Platform.runLater(()->{
-            this.messaggioerrore.setText(msgerrore);
+        Platform.runLater(() -> {
+            this.messaggioerrore.setText(msgerrore); // mostra messaggio errore
         });
     }
 
@@ -502,18 +503,14 @@ public class HomeGenitore {
      * Ricarica l'elenco dei prossimi eventi dal server.
      */
     public void reloadEventiFromServer() {
-        if (eventiProssimi == null) eventiProssimi = new ArrayList<>();
-        eventiProssimi.clear();
+        if (eventiProssimi == null) eventiProssimi = new ArrayList<>(); // inizializza lista se null
+        eventiProssimi.clear(); // pulisci lista eventi prossimi
 
+        // richiedi al server i prossimi eventi
         try {
             client.sendMessage(new RichiestaNextEventi(null));
         } catch (Exception ex) {
             System.out.println("Errore richiesta eventi: " + ex.getMessage());
         }
-
-        // Platform.runLater(() -> this.show(stage, genitore, eventiProssimi, onBack));
     }
-
-
 }
-

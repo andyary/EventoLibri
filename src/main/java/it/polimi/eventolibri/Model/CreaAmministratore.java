@@ -12,7 +12,7 @@ public class CreaAmministratore extends CreaUtente<Amministratore> {
      * @return Nuovo oggetto Amministratore.
      */
     public Amministratore factory(String nome, String cognome, String userName) {
-        return new Amministratore(nome, cognome, userName);
+        return new Amministratore(nome, cognome, userName); // Chiamata al costruttore di Amministratore senza ID
     }
 
     /** Implementazione del metodo factory per creare un nuovo Amministratore con ID.
@@ -23,6 +23,6 @@ public class CreaAmministratore extends CreaUtente<Amministratore> {
      * @return Nuovo oggetto Amministratore.
      */
     public Amministratore factory(int id, String nome, String cognome, String userName) {
-        return new Amministratore(id, nome, cognome, userName);
+        return new Amministratore(id, nome, cognome, userName); // Chiamata al costruttore di Amministratore con ID
     }
 }

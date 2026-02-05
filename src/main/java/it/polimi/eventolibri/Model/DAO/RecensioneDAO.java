@@ -24,30 +24,31 @@ public class RecensioneDAO {
      * @throws SQLException Se si verifica un errore durante l'accesso al database.
      */
     public ArrayList<Recensione> getRecensione(Libro libro) throws SQLException {
-        ArrayList<Recensione> recensioni = new ArrayList<>();
-        String query = "SELECT * FROM recensioni r JOIN utenti u ON r.id_genitore=u.id WHERE id_libro = ?";
+        ArrayList<Recensione> recensioni = new ArrayList<>(); //lista vuota di recensioni
+        String query = "SELECT * FROM recensioni r JOIN utenti u ON r.id_genitore=u.id WHERE id_libro = ?"; //query per prendere le recensioni di un libro
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
-            pstatement.setInt(1, libro.getId());
+            pstatement.setInt(1, libro.getId()); //imposto id del libro
             try (ResultSet result = pstatement.executeQuery();) {
-                if (!result.isBeforeFirst()) // no risultati, non esiste utente con queste credenziali
-                    return recensioni;
+                if (!result.isBeforeFirst()) // no risultati, non esistono recensioni per questo libro
+                    return recensioni; //ritorno lista vuota
                 else {
+                    // ciclo sui risultati
                     while (result.next()) {
-                        CreaUtente<Genitore> creaGenitore = new CreaGenitore();
-                        Genitore genitore = creaGenitore.nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username"));
-                        FiglioDAO figlioDAO = new FiglioDAO(connection);
-                        genitore.setFigli(figlioDAO.getFigli(genitore));
-                        recensioni.add(new Recensione(result.getInt("id"), genitore, result.getString("testo"), libro));
+                        CreaUtente<Genitore> creaGenitore = new CreaGenitore(); //creo il factory per i genitori
+                        Genitore genitore = creaGenitore.nuovoUtente(result.getInt("u.id"), result.getString("u.nome"), result.getString("u.cognome"), result.getString("u.username")); //creo il genitore
+                        FiglioDAO figlioDAO = new FiglioDAO(connection); //creo il DAO dei figli
+                        genitore.setFigli(figlioDAO.getFigli(genitore)); //aggiungo i figli al genitore
+                        recensioni.add(new Recensione(result.getInt("id"), genitore, result.getString("testo"), libro)); //creo la recensione e la aggiungo alla lista
                     }
-                    return recensioni;
+                    return recensioni; //ritorno la lista di recensioni
                 }
             }catch (SQLException ex) {
-                System.out.println("305" + ex.getMessage());
-                return recensioni;
+                System.out.println("305" + ex.getMessage()); //stampa messaggio di errore
+                return recensioni; //ritorna la lista di recensioni in caso di errore
             }
         }catch (SQLException ex) {
-            System.out.println("306" + ex.getMessage());
-            return recensioni;
+            System.out.println("306" + ex.getMessage()); //stampa messaggio di errore
+            return recensioni; //ritorna la lista di recensioni in caso di errore
         }
     }
 
@@ -59,17 +60,17 @@ public class RecensioneDAO {
      * @throws SQLException Se si verifica un errore durante l'accesso al database.
      */
     public int creaRecensione(String testo, Libro libro, Genitore genitore) throws SQLException {
-        String query = "INSERT into recensioni (testo, id_libro, id_genitore)   VALUES(?, ?, ?)";
+        String query = "INSERT into recensioni (testo, id_libro, id_genitore)   VALUES(?, ?, ?)"; //query per creare una nuova recensione
         try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
-            pstatement.setString(1, testo);
-            pstatement.setInt(2, libro.getId());
-            pstatement.setInt(3, genitore.getId());
-            pstatement.executeUpdate();
-            ResultSet rs = pstatement.getGeneratedKeys();
+            pstatement.setString(1, testo); //imposto il testo della recensione
+            pstatement.setInt(2, libro.getId()); //imposto l'id del libro
+            pstatement.setInt(3, genitore.getId()); //imposto l'id del genitore
+            pstatement.executeUpdate(); //eseguo la query
+            ResultSet rs = pstatement.getGeneratedKeys(); //prendo le chiavi generate
             if (rs.next()) {
-                return rs.getInt(1);
+                return rs.getInt(1); //ritorno l'id della recensione appena creata
             }
-            return -1;
+            return -1; //ritorno -1 in caso di errore
         }
     }
 
@@ -79,11 +80,11 @@ public class RecensioneDAO {
      * @throws SQLException Se si verifica un errore durante l'accesso al database.
      */
     public void cancellaRecensione(Libro libro, Genitore genitore) throws SQLException {
-        String query = "DELETE FROM recensioni WHERE id_libro = ? AND id_genitore = ?";
+        String query = "DELETE FROM recensioni WHERE id_libro = ? AND id_genitore = ?"; //query per cancellare la recensione
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
-            pstatement.setInt(1, libro.getId());
-            pstatement.setInt(2, genitore.getId());
-            pstatement.executeUpdate();
+            pstatement.setInt(1, libro.getId()); //imposto id del libro
+            pstatement.setInt(2, genitore.getId()); //imposto id del genitore
+            pstatement.executeUpdate(); //eseguo l'update
         }
     }
 
@@ -92,10 +93,10 @@ public class RecensioneDAO {
      * @throws SQLException Se si verifica un errore durante l'accesso al database.
      */
     public void cancellaRecensione(Recensione recensione) throws SQLException {
-        String query = "DELETE FROM recensioni WHERE id = ?";
+        String query = "DELETE FROM recensioni WHERE id = ?"; //query per cancellare la recensione
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
-            pstatement.setInt(1, recensione.getId());
-            pstatement.executeUpdate();
+            pstatement.setInt(1, recensione.getId()); //imposto id della recensione
+            pstatement.executeUpdate(); //eseguo l'update
         }
     }
 
@@ -108,31 +109,31 @@ public class RecensioneDAO {
      * @return true se l'utente può recensire il libro, false altrimenti.
      */
     public boolean getRecensibilita(Libro libro, Utente utente) {
-        if (!(utente instanceof Genitore)) return false;
-        Genitore genitore = (Genitore) utente;
+        if (!(utente instanceof Genitore)) return false; //se l'utente non è un genitore ritorno false
+        Genitore genitore = (Genitore) utente; //casto l'utente a genitore
         String query = "" +
                 "SELECT * FROM iscrizioni i " +
                 "JOIN eventi e ON i.id_evento = e.id " +
                 "JOIN figli f ON i.id_figlio = f.id " +
                 "JOIN utenti u ON f.id_genitore = u.id " +
                 "JOIN librolettore ll ON e.id = ll.id_evento " +
-                "WHERE u.id = ? AND ll.id_libro = ?  AND e.data < current_date()";
+                "WHERE u.id = ? AND ll.id_libro = ?  AND e.data < current_date()"; //query per verificare se il genitore ha un figlio che ha partecipato a un evento in cui il libro è stato letto
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
-            pstatement.setInt(1, genitore.getId());
-            pstatement.setInt(2, libro.getId());
+            pstatement.setInt(1, genitore.getId()); //imposto id del genitore
+            pstatement.setInt(2, libro.getId()); //imposto id del libro
             try (ResultSet result = pstatement.executeQuery();) {
-                if (result.next())
-                    return true;
+                if (result.next()) //se c'è almeno un risultato
+                    return true; //ritorno true
                 else {
-                    return false;
+                    return false; //ritorno false
                 }
             }catch (SQLException ex) {
-                System.out.println("Errore recensioneDao.getRecensibilità: " + ex.getMessage());
-                return false;
+                System.out.println("Errore recensioneDao.getRecensibilità: " + ex.getMessage()); //stampa messaggio di errore
+                return false; //ritorna false in caso di errore
             }
         }catch (SQLException ex) {
-            System.out.println("Errore recensioneDao.getRecensibilità: " + ex.getMessage());
-            return false;
+            System.out.println("Errore recensioneDao.getRecensibilità: " + ex.getMessage()); //stampa messaggio di errore
+            return false; //ritorna false in caso di errore
         }
     }
 }

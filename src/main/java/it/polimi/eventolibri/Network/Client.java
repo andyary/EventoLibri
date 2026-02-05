@@ -16,29 +16,30 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
-/** Classe che rappresenta il client dell'applicazione Eventolibri.
+/**
+ * Classe che rappresenta il client dell'applicazione Eventolibri.
  * Si occupa di gestire la connessione con il server e le comunicazioni.
  */
 public class Client {
 
-    private Socket socket;
-    private ObjectOutputStream out;
-    private ObjectInputStream in;
-    private LoginView loginView;
-    private HomeGenitore homeGenitore;
-    private HomeLettore homeLettore;
-    private HomeAmministratore homeAmministratore;
-    private EventoView eventoView;
-    private EventoViewLettore eventoViewLettore;
-    private ProfiloGenitore profiloGenitore;
-    private ProfiloLettore profiloLettore;
-    private ProfiloAmministratore profiloAmministratore;
-    private RegistraNewGenitore registraNewGenitore;
-    private RegistraNewLettore registraNewLettore;
-    private RegistraNewAmministratore registraNewAmministratore;
-    private LibroDetailedView libroDetailedView;
+    private Socket socket; // socket per la connessione con il server
+    private ObjectOutputStream out; // stream di output per inviare messaggi al server
+    private ObjectInputStream in; // stream di input per ricevere messaggi dal server
+    private LoginView loginView; // vista di login
+    private HomeGenitore homeGenitore; // vista home per il genitore
+    private HomeLettore homeLettore; // vista home per il lettore
+    private HomeAmministratore homeAmministratore; // vista home per l'amministratore
+    private EventoView eventoView; // vista dell'evento per il genitore
+    private EventoViewLettore eventoViewLettore; // vista dell'evento per il lettore
+    private ProfiloGenitore profiloGenitore; // vista del profilo del genitore
+    private ProfiloLettore profiloLettore; // vista del profilo del lettore
+    private ProfiloAmministratore profiloAmministratore; // vista del profilo dell'amministratore
+    private RegistraNewGenitore registraNewGenitore; // vista per la registrazione di un nuovo genitore
+    private RegistraNewLettore registraNewLettore; // vista per la registrazione di un nuovo lettore
+    private RegistraNewAmministratore registraNewAmministratore; // vista per la registrazione di un nuovo amministratore
+    private LibroDetailedView libroDetailedView; // vista dettagliata del libro
     // add le nuove viste qui
-    private Utente utente;
+    private Utente utente; // utente corrente (genitore, lettore o amministratore)
 
     /**
      * Inizializza il client e stabilisce la connessione con il server.
@@ -64,9 +65,10 @@ public class Client {
                       ProfiloAmministratore profiloAmministratore,
                       RegistraNewGenitore registraNewGenitore, RegistraNewLettore registraNewLettore,
                       RegistraNewAmministratore registraNewAmministratore, LibroDetailedView libroDetailedView) throws Exception {
-        socket = new Socket("localhost", 5000);
-        out = new ObjectOutputStream(socket.getOutputStream());
-        in = new ObjectInputStream(socket.getInputStream());
+        socket = new Socket("localhost", 5000); // connessione al server sulla porta 5000
+        out = new ObjectOutputStream(socket.getOutputStream()); // inizializzazione stream di output
+        in = new ObjectInputStream(socket.getInputStream()); // inizializzazione stream di input
+        // inizializzazione delle viste
         this.loginView = loginView;
         this.homeGenitore = homeGenitore;
         this.eventoView = eventoView;
@@ -80,7 +82,6 @@ public class Client {
         this.registraNewLettore = registraNewLettore;
         this.registraNewAmministratore = registraNewAmministratore;
         this.libroDetailedView = libroDetailedView;
-
     }
 
     //** Costruttore di default
@@ -100,14 +101,14 @@ public class Client {
     public Thread startListening() {
         // crea un nuovo thread per ascoltare i messaggi dal server
         Thread listenerThread = new Thread(() -> {
-            try {
+            try { // ciclo di ascolto dei messaggi
                 Messaggio msg;
                 while ((msg = (Messaggio) in.readObject()) != null) { // leggi finché c'è un messaggio
                     handleMessage(msg); // chiama la tua funzione per gestire il messaggio
                 }
-            } catch (EOFException e) {
+            } catch (EOFException e) { // gestisci la chiusura della connessione
                 System.out.println("Connnessione chiusa dal server.");
-            } catch (Exception e) {
+            } catch (Exception e) { // gestisci altre eccezioni
                 e.printStackTrace();
             } finally {
                 close();
@@ -205,13 +206,11 @@ public class Client {
                 else {
                     if (utente instanceof Lettore) {
                         homeLettore.aggiornaEventi(((RispostaNextEventi) msg).getProssimiEventi());
-                    }
+                    } // se l'utente è un lettore
                     if (utente instanceof Genitore) {
                         homeGenitore.aggiornaEventi(((RispostaNextEventi) msg).getProssimiEventi());
-                    }
-
+                    } // se l'utente è un genitore
                 }
-
             }
         }
 
@@ -225,7 +224,7 @@ public class Client {
                         // dopo l'iscrizione, richiede il numero aggiornato di iscritti all'evento
                         RichiestaIscrittiEvento richiestaIscritti = new RichiestaIscrittiEvento(eventoView.getEvento());
                         try {
-                            this.sendMessage(richiestaIscritti);
+                            this.sendMessage(richiestaIscritti); // invia la richiesta al server
                         } catch (IOException e) {
                             System.out.println("Errore nel richiestaIscrittiEvento" + e.getMessage());
                         }
@@ -331,9 +330,9 @@ public class Client {
 
         // gestisce messaggio di risposta dal server di registrazione nuovo genitore e aggiorna la vista corrispondente
         if (msg instanceof RispostaNuovoGenitore) {
-            if (((RispostaNuovoGenitore) msg).isSuccesso()) {
+            if (((RispostaNuovoGenitore) msg).isSuccesso()) { // mostra il messaggio di successo
                 registraNewGenitore.mostraSuccesso("Nuovo genitore registrato!");
-            } else {
+            } else { // in caso di errore, mostra il messaggio di errore nella vista
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaNuovoGenitore) msg).getMessaggioErrore());
                 registraNewGenitore.mostraErrore(((RispostaNuovoGenitore) msg).getMessaggioErrore());
             }
@@ -341,13 +340,13 @@ public class Client {
 
         // gestisce messaggio di risposta dal server con l'elenco di lettori, luoghi e libri (per menu a tendina) e aggiorna la vista corrispondente
         if (msg instanceof RispostaLettoriELuoghiELibri) {
-            if (((RispostaLettoriELuoghiELibri) msg).isSuccesso()) {
+            if (((RispostaLettoriELuoghiELibri) msg).isSuccesso()) { // aggiorna lettori, luoghi e libri nelle viste corrispondenti
                 eventoViewLettore.aggiornaLettoriELuoghiELibri(((RispostaLettoriELuoghiELibri) msg).getLettori(),
                         ((RispostaLettoriELuoghiELibri) msg).getLuoghi(), ((RispostaLettoriELuoghiELibri) msg).getElencolibri());
                 homeGenitore.aggiornaLibri(((RispostaLettoriELuoghiELibri) msg).getElencolibri());
                 homeAmministratore.aggiornaLibri(((RispostaLettoriELuoghiELibri) msg).getElencolibri());
                 homeLettore.aggiornaLibri(((RispostaLettoriELuoghiELibri) msg).getElencolibri());
-            } else {
+            } else { // in caso di errore, mostra il messaggio di errore nella vista
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaLettoriELuoghiELibri) msg).getMessaggioerrore());
                 eventoViewLettore.mostraErrore(((RispostaLettoriELuoghiELibri) msg).getMessaggioerrore());
                 homeGenitore.mostraErrore(((RispostaLettoriELuoghiELibri) msg).getMessaggioerrore());
@@ -367,12 +366,12 @@ public class Client {
                 homeAmministratore.setRecensioni(((RispostaRecensioniERecensibilita) msg).getRecensioni());
                 homeLettore.setRecensibile(((RispostaRecensioniERecensibilita) msg).isRecensibile());
                 homeLettore.setRecensioni(((RispostaRecensioniERecensibilita) msg).getRecensioni());
-            } else {
+            } else { // in caso di errore, mostra il messaggio di errore nella vista
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaRecensioniERecensibilita) msg).getMessaggioerrore());
                 homeGenitore.mostraErrore(((RispostaRecensioniERecensibilita) msg).getMessaggioerrore());
                 homeAmministratore.mostraErrore(((RispostaRecensioniERecensibilita) msg).getMessaggioerrore());
                 homeLettore.mostraErrore(((RispostaRecensioniERecensibilita) msg).getMessaggioerrore());
-            }
+            } // imposta lo stato di attesa a false in tutte le viste
             homeGenitore.setAttendi(false);
             homeAmministratore.setAttendi(false);
             homeLettore.setAttendi(false);
@@ -380,9 +379,9 @@ public class Client {
 
         // gestisce messaggio di risposta dal server di registrazione nuovo lettore e aggiorna la vista corrispondente
         if (msg instanceof RispostaNuovoLettore) {
-            if (((RispostaNuovoLettore) msg).isSuccesso()) {
+            if (((RispostaNuovoLettore) msg).isSuccesso()) { // mostra il messaggio di successo
                 registraNewLettore.mostraSuccesso("Nuovo lettore registrato!");
-            } else {
+            } else { // in caso di errore, mostra il messaggio di errore nella vista
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaNuovoLettore) msg).getMessaggioErrore());
                 registraNewLettore.mostraErrore(((RispostaNuovoLettore) msg).getMessaggioErrore());
             }
@@ -390,9 +389,9 @@ public class Client {
 
         // gestisce messaggio di risposta dal server di registrazione nuovo amministratore e aggiorna la vista corrispondente
         if (msg instanceof RispostaNuovoAmministratore) {
-            if (((RispostaNuovoAmministratore) msg).isSuccesso()) {
+            if (((RispostaNuovoAmministratore) msg).isSuccesso()) { // mostra il messaggio di successo
                 registraNewAmministratore.mostraSuccesso("Nuovo amministratore registrato!");
-            } else {
+            } else {  // in caso di errore, mostra il messaggio di errore nella vista
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaNuovoAmministratore) msg).getMessaggioErrore());
                 registraNewAmministratore.mostraErrore(((RispostaNuovoAmministratore) msg).getMessaggioErrore());
             }
@@ -400,18 +399,18 @@ public class Client {
 
         // gestisce messaggio di risposta dal server di aggiornamento profilo lettore e aggiorna la vista corrispondente
         if (msg instanceof RispostaAggiornaLettore) {
-            if (((RispostaAggiornaLettore) msg).isSuccesso()) {
+            if (((RispostaAggiornaLettore) msg).isSuccesso()) { // aggiorna i dati del lettore nella vista profiloLettore
                 profiloLettore.getLettore().setNome(((RispostaAggiornaLettore) msg).getLettore().getNome());
                 profiloLettore.getLettore().setCognome(((RispostaAggiornaLettore) msg).getLettore().getCognome());
 
-                Platform.runLater(() -> {
+                Platform.runLater(() -> { // mostra alert di successo
                     Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
                     alert.setTitle("Aggiornamento Lettore");
                     alert.setHeaderText("Dati Lettore aggiornati!");
                     alert.setContentText(null);
                     alert.showAndWait();
                 });
-
+                // in caso di errore, mostra il messaggio di errore nella vista
             } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiornaLettore) msg).getMessaggioErrore());
                 profiloLettore.mostraErrore(((RispostaAggiornaLettore) msg).getMessaggioErrore());
@@ -420,7 +419,7 @@ public class Client {
 
         // gestisce messaggio di risposta dal server di aggiornamento profilo amministratore e aggiorna la vista corrispondente
         if (msg instanceof RispostaAggiornaAmministratore) {
-            if (((RispostaAggiornaAmministratore) msg).isSuccesso()) {
+            if (((RispostaAggiornaAmministratore) msg).isSuccesso()) { // aggiorna i dati dell'amministratore nella vista profiloAmministratore
                 profiloAmministratore.getAmministratore().setNome(((RispostaAggiornaAmministratore) msg).getAmministratore().getNome());
                 profiloAmministratore.getAmministratore().setCognome(((RispostaAggiornaAmministratore) msg).getAmministratore().getCognome());
 
@@ -430,8 +429,8 @@ public class Client {
                     alert.setHeaderText("Dati Amministratore aggiornati!");
                     alert.setContentText(null);
                     alert.showAndWait();
-                });
-
+                }); // mostra alert di successo
+                // in caso di errore, mostra il messaggio di errore nella vista
             } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiornaAmministratore) msg).getMessaggioErrore());
                 profiloAmministratore.mostraErrore(((RispostaAggiornaAmministratore) msg).getMessaggioErrore());
@@ -447,13 +446,14 @@ public class Client {
                     alert.setHeaderText("Evento salvato con successo!");
                     alert.setContentText(null);
                     alert.showAndWait();
-                });
+                }); // mostra alert di successo
+                // aggiorna i dati del lettore in base all'evento salvato
                 if (eventoViewLettore.getLettore().getId() == (((RispostaSalvaEvento) msg).getEvento().getCreatore().getId())) {
                     eventoViewLettore.getLettore().aggiungiEventiCreati(((RispostaSalvaEvento) msg).getEvento());
-                }
+                } // se il lettore è il creatore dell'evento, aggiunge l'evento agli eventi creati
                 if (((RispostaSalvaEvento) msg).getEvento().isIscritto(eventoViewLettore.getLettore())) {
                     eventoViewLettore.getLettore().aggiungiIscrizioneLettura(((RispostaSalvaEvento) msg).getEvento());
-                }
+                } // se il lettore è iscritto all'evento, aggiunge l'evento alle iscrizioni di lettura
                 if (!((RispostaSalvaEvento) msg).getEvento().isIscritto(eventoViewLettore.getLettore())) {
                     eventoViewLettore.getLettore().rimuoviIscrizioneLettura(((RispostaSalvaEvento) msg).getEvento());
                 }
@@ -467,16 +467,16 @@ public class Client {
 
         // gestisce messaggio di risposta dal server di aggiunta recensione e aggiorna la vista corrispondente
         if (msg instanceof RispostaAggiungiRecensione) {
-            if (((RispostaAggiungiRecensione) msg).isSuccesso()) {
+            if (((RispostaAggiungiRecensione) msg).isSuccesso()) { // aggiunge la nuova recensione alla lista delle recensioni nella vista
                 libroDetailedView.aggiornaRecensioni(((RispostaAggiungiRecensione) msg).getRecensione());
-                Platform.runLater(() -> {
+                Platform.runLater(() -> { // mostra alert di successo
                     Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
                     alert.setTitle("Aggiornamento Recensione");
                     alert.setHeaderText("Aggiunto nuova recensione!");
                     alert.setContentText(null);
                     alert.showAndWait();
                 });
-
+                // in caso di errore, mostra il messaggio di errore nella vista
             } else {
                 System.out.println("Messaggio di errore ricevuto : " + ((RispostaAggiungiRecensione) msg).getMessaggioErrore());
                 libroDetailedView.mostraErrore(((RispostaAggiungiRecensione) msg).getMessaggioErrore());
@@ -484,23 +484,23 @@ public class Client {
         }
 
         // gestisce messaggio di risposta dal server di cancellazione recensione e aggiorna la vista corrispondente
-        if (msg instanceof RispostaCancellaRecensione) {
-            if (((RispostaCancellaRecensione) msg).isSuccesso()) {
+        if (msg instanceof RispostaCancellaRecensione) { // cancella la recensione dalla lista delle recensioni nella vista
+            if (((RispostaCancellaRecensione) msg).isSuccesso()) { // aggiorna la vista rimuovendo la recensione cancellata
                 libroDetailedView.cancellaRecensione(((RispostaCancellaRecensione) msg).getId());
                 System.out.println("Cancellata recensione con ID: " + ((RispostaCancellaRecensione) msg).getId());
                 libroDetailedView.mostraErrore2("Cancellata recensione con ID: " + ((RispostaCancellaRecensione) msg).getId());
-                Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
-                    alert.setTitle("Cancellazione Recensione");
-                    alert.setHeaderText("Recensione cancellata correttamente!");
-                    alert.setContentText(null);
-                    alert.showAndWait();
+                Platform.runLater(() -> { // mostra alert di successo
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK); // crea un alert di successo
+                    alert.setTitle("Cancellazione Recensione"); // titolo dell'alert
+                    alert.setHeaderText("Recensione cancellata correttamente!"); // messaggio di successo
+                    alert.setContentText(null); // nessun contenuto
+                    alert.showAndWait(); // mostra alert di successo
                 });
             } else {
-                System.out.println("Messaggio di errore ricevuto : " + ((RispostaCancellaRecensione) msg).getMessaggioErrore());
-                libroDetailedView.mostraErrore2(((RispostaCancellaRecensione) msg).getMessaggioErrore());
+                System.out.println("Messaggio di errore ricevuto : " + ((RispostaCancellaRecensione) msg).getMessaggioErrore()); // usa mostraErrore2 per non sovrapporsi con l'alert di successo
+                libroDetailedView.mostraErrore2(((RispostaCancellaRecensione) msg).getMessaggioErrore()); // usa mostraErrore2 per non sovrapporsi con l'alert di successo
             }
-            libroDetailedView.setAttendi(false);
+            libroDetailedView.setAttendi(false); // termina l'attesa del client
         }
 
         // gestisce notifica di aggiornamento evento e aggiorna i dati nella view e la vista corrispondente
@@ -511,17 +511,18 @@ public class Client {
             // Verifica se vista attualmente visualizzata è compatibile con un refresh
             boolean viewCoerente = false; // inizializza come non compatibile
             if (stage != null && stage.isShowing()) {
-                if (utente instanceof Genitore) {
+                if (utente instanceof Genitore) { // se l'utente è un genitore
                     if (scene == homeGenitore.getScene()) {
                         viewCoerente = true; // compatibile per refresh
                     }
                 }
-                if (utente instanceof Lettore) {
+                if (utente instanceof Lettore) { // se l'utente è un lettore
                     if (scene == homeLettore.getScene()) {
                         viewCoerente = true; // compatibile per refresh
-                    }}
+                    }
+                }
             }
-
+            // mostra un alert di notifica aggiornamento evento
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
                 alert.setTitle("Aggiornamento Live Evento");
@@ -530,73 +531,84 @@ public class Client {
                 alert.setContentText(null);
                 alert.showAndWait();
             });
-            if (utente instanceof Genitore) {
+            if (utente instanceof Genitore) { // se l'utente è un genitore, aggiorna l'evento per i figli iscritti
                 for (Figlio f : ((Genitore) utente).getFigli()) {
                     if (f.isIscritto(((NotificaAggiornamentoEvento) msg).getEvento())) {
                         f.aggiornaEvento(((NotificaAggiornamentoEvento) msg).getEvento());
                     }
                 }
+                // aggiorna l'evento nell'arraylist eventiProssimi del homeGenitore
                 for (Evento e : homeGenitore.getEventiProssimi()) {
+                    // se l'id corrisponde, aggiorna l'evento
                     if (e.getId() == ((NotificaAggiornamentoEvento) msg).getEvento().getId()) {
                         homeGenitore.getEventiProssimi().set(homeGenitore.getEventiProssimi().indexOf(e),
                                 ((NotificaAggiornamentoEvento) msg).getEvento());
                     }
                 }
-
-                if (eventoView.getScene()!=null && eventoView.getScene()==stage.getScene() && eventoView.getEvento().getId()==((NotificaAggiornamentoEvento) msg).getEvento().getId()) {
+                // aggiorna la vista eventoView se è aperta e corrisponde all'evento aggiornato
+                if (eventoView.getScene() != null && eventoView.getScene() == stage.getScene() && eventoView.getEvento().getId() == ((NotificaAggiornamentoEvento) msg).getEvento().getId()) {
                     eventoView.aggiornaEvento(((NotificaAggiornamentoEvento) msg).getEvento());
                 }
-
+                // aggiorna la lista degli eventi nella vista solo se la vista è coerente
                 if (viewCoerente) {
                     homeGenitore.aggiornaEventi(homeGenitore.getEventiProssimi());
                 }
             }
-            if (utente instanceof Lettore) {
+            if (utente instanceof Lettore) { // se l'utente è il creatore, aggiorna l'evento creato
                 if (((NotificaAggiornamentoEvento) msg).getEvento().getCreatore().getId() == utente.getId()) {
+                    // aggiorna l'evento creato nell'arraylist eventiCreati del lettore
                     for (Evento e : homeLettore.getLettore().getEventiCreati()) {
+                        // se l'id corrisponde, aggiorna l'evento
                         if (e.getId() == ((NotificaAggiornamentoEvento) msg).getEvento().getId()) {
                             e.aggiornaEvento(((NotificaAggiornamentoEvento) msg).getEvento());
                         }
                     }
                 }
+                // aggiunge l'iscrizione se è iscritto
                 if (((NotificaAggiornamentoEvento) msg).getEvento().isIscritto(homeLettore.getLettore())) {
                     homeLettore.getLettore().aggiungiIscrizioneLettura(((NotificaAggiornamentoEvento) msg).getEvento());
                 }
+                // rimuove l'iscrizione se non è più iscritto
                 if (!((NotificaAggiornamentoEvento) msg).getEvento().isIscritto(homeLettore.getLettore())) {
                     homeLettore.getLettore().rimuoviIscrizioneLettura(((NotificaAggiornamentoEvento) msg).getEvento());
                 }
+                // aggiorna l'evento nell'arraylist eventiProssimi del homeLettore
                 for (Evento e : homeLettore.getEventiProssimi()) {
+                    // se l'id corrisponde, aggiorna l'evento
                     if (e.getId() == ((NotificaAggiornamentoEvento) msg).getEvento().getId()) {
                         homeLettore.getEventiProssimi().set(homeLettore.getEventiProssimi().indexOf(e),
                                 ((NotificaAggiornamentoEvento) msg).getEvento());
                     }
                 }
-
-                if (eventoViewLettore.getScene()!=null && eventoViewLettore.getScene()==stage.getScene() && eventoViewLettore.getEvento().getId()==((NotificaAggiornamentoEvento) msg).getEvento().getId()) {
+                // aggiorna la vista eventoViewLettore se è aperta e corrisponde all'evento aggiornato
+                if (eventoViewLettore.getScene() != null && eventoViewLettore.getScene() == stage.getScene() && eventoViewLettore.getEvento().getId() == ((NotificaAggiornamentoEvento) msg).getEvento().getId()) {
                     eventoViewLettore.mostraErrore("Aggiornamento da altro utente: la copia su cui lavori è non aggiornata. \n" +
                             "Il tuo salvataggio potrebbe sovrascrivere le modifiche altrui.");
                 }
-
+                // aggiorna la lista degli eventi nella vista solo se la vista è coerente
                 if (viewCoerente) {
-                        homeLettore.aggiornaEventi(homeLettore.getEventiProssimi());
+                    homeLettore.aggiornaEventi(homeLettore.getEventiProssimi());
                 }
             }
         }
     }
 
-    /** Chiude le risorse del client.
+    /**
+     * Chiude le risorse del client.
      */
     private void close() {
+        // chiude le risorse in modo sicuro
         try {
             if (in != null) in.close(); // chiude lo stream di input
             if (out != null) out.close(); // chiude lo stream di output
             if (socket != null) socket.close(); // chiude il socket
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // stampa lo stack trace in caso di errore
         }
     }
 
-    /** Invia un messaggio al server.
+    /**
+     * Invia un messaggio al server.
      *
      * @param msg Il messaggio da inviare.
      * @throws IOException In caso di errore durante l'invio.

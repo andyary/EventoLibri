@@ -2,21 +2,24 @@ package it.polimi.eventolibri.Model;
 
 import java.io.Serializable;
 
-/** Classe che rappresenta una recensione di un libro scritta da un genitore. Implementa l'interfaccia Serializable.
+/**
+ * Classe che rappresenta una recensione di un libro scritta da un genitore. Implementa l'interfaccia Serializable.
  * Contiene informazioni sull'id della recensione, il genitore che l'ha scritta, il testo della recensione e il libro recensito.
  */
-public class Recensione  implements Serializable {
+public class Recensione implements Serializable {
 
-	private int id;
-	private Genitore genitore;
-	private String testo;
-	private Libro libro;
+    private int id; // ID univoco della recensione
+    private Genitore genitore; // Genitore che ha scritto la recensione
+    private String testo; // Testo della recensione
+    private Libro libro; // Libro recensito
 
-    /** Costruttori della classe Recensione.
-     * @param id ID univoco della recensione.
+    /**
+     * Costruttori della classe Recensione.
+     *
+     * @param id       ID univoco della recensione.
      * @param genitore Genitore che ha scritto la recensione.
-     * @param testo Testo della recensione.
-     * @param libro Libro recensito.
+     * @param testo    Testo della recensione.
+     * @param libro    Libro recensito.
      */
     public Recensione(int id, Genitore genitore, String testo, Libro libro) {
         this.id = id;
@@ -25,10 +28,12 @@ public class Recensione  implements Serializable {
         this.libro = libro;
     }
 
-    /** Costruttori della classe Recensione.
+    /**
+     * Costruttori della classe Recensione.
+     *
      * @param genitore Genitore che ha scritto la recensione.
-     * @param testo Testo della recensione.
-     * @param libro Libro recensito.
+     * @param testo    Testo della recensione.
+     * @param libro    Libro recensito.
      */
     public Recensione(Genitore genitore, String testo, Libro libro) {
         this.setGenitore(genitore);
@@ -36,56 +41,72 @@ public class Recensione  implements Serializable {
         this.setLibro(libro);
     }
 
-    /** Restituisce il testo della recensione.
+    /**
+     * Restituisce il testo della recensione.
+     *
      * @return Testo della recensione.
      */
     public String getTesto() {
         return testo;
     }
 
-    /** Restituisce il genitore che ha scritto la recensione.
+    /**
+     * Restituisce il genitore che ha scritto la recensione.
+     *
      * @return Genitore della recensione.
      */
     public Genitore getGenitore() {
         return genitore;
     }
 
-    /** Restituisce il libro recensito.
+    /**
+     * Restituisce il libro recensito.
+     *
      * @return Libro recensito.
      */
     public Libro getLibro() {
         return libro;
     }
 
-    /** Imposta il genitore che ha scritto la recensione.
+    /**
+     * Imposta il genitore che ha scritto la recensione.
+     *
      * @param genitore Genitore della recensione.
      */
     public void setGenitore(Genitore genitore) {
         this.genitore = genitore;
     }
 
-    /** Imposta il testo della recensione.
+    /**
+     * Imposta il testo della recensione.
+     *
      * @param testo Testo della recensione.
      */
     public void setTesto(String testo) {
         this.testo = testo;
     }
 
-    /** Imposta il libro recensito.
+    /**
+     * Imposta il libro recensito.
+     *
      * @param libro Libro recensito.
      */
     public void setLibro(Libro libro) {
         this.libro = libro;
     }
 
-    /** Imposta l'ID univoco della recensione.
+    /**
+     * Imposta l'ID univoco della recensione.
+     *
      * @param id ID univoco della recensione.
      */
     public void setId(int id) {
         this.id = id;
     }
 
-    /** Restituisce l'ID univoco della recensione.
+    /**
+     * Restituisce l'ID univoco della recensione.
+     *
      * @return ID univoco della recensione.
      */
     public int getId() {

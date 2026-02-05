@@ -11,23 +11,27 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ModelTest {
+
+    // Test completo per la creazione e l'interazione tra le classi del modello
     @Test
     void test() {
+        // Creazione di utenti amministratori, lettori e genitori tramite factory pattern
         CreaUtente<Amministratore> creaAmministratore = new CreaAmministratore();
         Amministratore admin1 = creaAmministratore.nuovoUtente(1, "Andrea", "Bianchi", "admin1");
-        Amministratore admin2 = creaAmministratore.nuovoUtente(2,"Luca", "Rossi", "admin2");
+        Amministratore admin2 = creaAmministratore.nuovoUtente(2, "Luca", "Rossi", "admin2");
         CreaUtente<Lettore> creaLettore = new CreaLettore();
-        Lettore lettore1 = creaLettore.nuovoUtente(11,"Mario", "Verdi", "lettore1");
-        Lettore lettore2 = creaLettore.nuovoUtente(12,"Giulia", "Neri", "lettore2");
-        Lettore lettore3 = creaLettore.nuovoUtente(13,"Francesca", "Rosa", "lettore3");
-        Lettore lettore4 = creaLettore.nuovoUtente(14,"Alessandro", "Marroni", "lettore4");
+        Lettore lettore1 = creaLettore.nuovoUtente(11, "Mario", "Verdi", "lettore1");
+        Lettore lettore2 = creaLettore.nuovoUtente(12, "Giulia", "Neri", "lettore2");
+        Lettore lettore3 = creaLettore.nuovoUtente(13, "Francesca", "Rosa", "lettore3");
+        Lettore lettore4 = creaLettore.nuovoUtente(14, "Alessandro", "Marroni", "lettore4");
 
         CreaUtente<Genitore> creaGenitore = new CreaGenitore();
-        Genitore genitore1 = creaGenitore.nuovoUtente(21,"Paolo", "Gialli", "genitore1");
-        Genitore genitore2 = creaGenitore.nuovoUtente(22,"Sara", "Blu", "genitore2");
-        Genitore genitore3 = creaGenitore.nuovoUtente(23,"Elena", "Viola", "genitore3");
-        Genitore genitore4 = creaGenitore.nuovoUtente(24,"Marco", "Arancioni", "genitore4");
+        Genitore genitore1 = creaGenitore.nuovoUtente(21, "Paolo", "Gialli", "genitore1");
+        Genitore genitore2 = creaGenitore.nuovoUtente(22, "Sara", "Blu", "genitore2");
+        Genitore genitore3 = creaGenitore.nuovoUtente(23, "Elena", "Viola", "genitore3");
+        Genitore genitore4 = creaGenitore.nuovoUtente(24, "Marco", "Arancioni", "genitore4");
 
+        // Creazione di figli e associazione ai rispettivi genitori
         Figlio figlio1 = new Figlio(1, "Figlio1", LocalDate.of(2016, 1, 1));
         Figlio figlio2 = new Figlio(2, "Figlio2", LocalDate.of(2014, 2, 2));
         Figlio figlio3 = new Figlio(3, "Figlio3", LocalDate.of(2017, 3, 3));
@@ -46,11 +50,13 @@ public class ModelTest {
         genitore3.aggiungiFiglio(figlio7);
         genitore4.aggiungiFiglio(figlio8);
 
+        // Creazione di luoghi
         Luogo luogo1 = new Luogo("Sala 1", 10, 1);
         Luogo luogo2 = new Luogo("Sala 2", 10, 2);
         Luogo luogo3 = new Luogo("Sala 3", 10, 3);
         Luogo luogo4 = new Luogo("Sala 4", 10, 4);
 
+        // Creazione di libri e recensioni
         Libro libro1 = new Libro("Il Grande Gatsby", 15, "link1.com", "F. Scott Fitzgerald", 1);
         Libro libro2 = new Libro("1984", 12, "link2.com", "George Orwell", 2);
         Libro libro3 = new Libro("To Kill a Mockingbird", 14, "link3.com", "Harper Lee", 3);
@@ -100,6 +106,7 @@ public class ModelTest {
         Recensione recensione20 = new Recensione(20, genitore3, "Avvincente", libro7);
         libro7.aggiungiRecensione(recensione20);
 
+        // Creazione di scaletta ed eventoi, iscrizione dei figli all'evento
         LibroLettore ll1 = new LibroLettore(libro1, lettore1, 1);
         LibroLettore ll2 = new LibroLettore(libro2, lettore2, 2);
         LibroLettore ll3 = new LibroLettore(libro3, lettore3, 3);
@@ -109,13 +116,13 @@ public class ModelTest {
         scaletta1.add(ll2);
         scaletta1.add(ll3);
         scaletta1.add(ll4);
-        Evento evento1= new Evento(1, lettore1, "Evento 1", luogo1, LocalDateTime.of(2026,01,01,10,00), scaletta1);
+        Evento evento1 = new Evento(1, lettore1, "Evento 1", luogo1, LocalDateTime.of(2026, 01, 01, 10, 00), scaletta1);
         genitore1.getFigli().get(0).iscrivi(evento1, genitore1);
         genitore2.getFigli().get(0).iscrivi(evento1, genitore2);
         genitore1.getFigli().get(1).iscrivi(evento1, genitore1);
         genitore3.getFigli().get(0).iscrivi(evento1, genitore3);
         genitore3.getFigli().get(1).iscrivi(evento1, genitore3);
-
+        // Creazione di un secondo evento
         LibroLettore ll11 = new LibroLettore(libro5, lettore2, 1);
         LibroLettore ll12 = new LibroLettore(libro7, lettore3, 2);
         LibroLettore ll13 = new LibroLettore(libro8, lettore4, 3);
@@ -123,11 +130,11 @@ public class ModelTest {
         scaletta2.add(ll11);
         scaletta2.add(ll12);
         scaletta2.add(ll13);
-        Evento evento2= new Evento(2, lettore2, "Evento 2", luogo2, LocalDateTime.of(2026,02,02,11,00), scaletta2);
+        Evento evento2 = new Evento(2, lettore2, "Evento 2", luogo2, LocalDateTime.of(2026, 02, 02, 11, 00), scaletta2);
         genitore2.getFigli().get(0).iscrivi(evento2, genitore2);
         genitore2.getFigli().get(1).iscrivi(evento2, genitore2);
         genitore4.getFigli().get(0).iscrivi(evento2, genitore4);
-
+        // Creazione di un terzo evento
         LibroLettore ll21 = new LibroLettore(libro1, lettore3, 1);
         LibroLettore ll22 = new LibroLettore(libro2, lettore4, 2);
         LibroLettore ll23 = new LibroLettore(libro3, lettore4, 3);
@@ -137,12 +144,12 @@ public class ModelTest {
         scaletta3.add(ll22);
         scaletta3.add(ll23);
         scaletta3.add(ll24);
-        Evento evento3= new Evento(3, lettore3, "Evento 3", luogo3, LocalDateTime.of(2026,03,03,12,00), scaletta3);
+        Evento evento3 = new Evento(3, lettore3, "Evento 3", luogo3, LocalDateTime.of(2026, 03, 03, 12, 00), scaletta3);
         genitore3.getFigli().get(0).iscrivi(evento3, genitore3);
         genitore3.getFigli().get(1).iscrivi(evento3, genitore3);
         genitore4.getFigli().get(0).iscrivi(evento3, genitore4);
         genitore1.getFigli().get(1).iscrivi(evento3, genitore1);
-
+        // Creazione di un quarto evento
         LibroLettore ll31 = new LibroLettore(libro5, lettore4, 1);
         LibroLettore ll32 = new LibroLettore(libro7, lettore1, 2);
         LibroLettore ll33 = new LibroLettore(libro8, lettore2, 3);
@@ -150,16 +157,15 @@ public class ModelTest {
         scaletta4.add(ll31);
         scaletta4.add(ll32);
         scaletta4.add(ll33);
-        Evento evento4= new Evento(4, lettore4, "Evento 4", luogo4, LocalDateTime.of(2026,04,04,13,00), scaletta4);
+        Evento evento4 = new Evento(4, lettore4, "Evento 4", luogo4, LocalDateTime.of(2026, 04, 04, 13, 00), scaletta4);
         genitore4.getFigli().get(0).iscrivi(evento4, genitore4);
         genitore1.getFigli().get(0).iscrivi(evento4, genitore4);
         genitore1.getFigli().get(1).iscrivi(evento4, genitore1);
         genitore2.getFigli().get(0).iscrivi(evento4, genitore2);
         genitore3.getFigli().get(0).iscrivi(evento4, genitore3);
         genitore2.getFigli().get(1).iscrivi(evento4, genitore2);
-
-
-
+        // Verifiche delle proprietà e delle relazioni tra le classi
+        // Verifiche utenti
         assertNotNull(admin1);
         assertNotNull(admin2);
         assertNotNull(lettore1);
@@ -168,6 +174,7 @@ public class ModelTest {
         assertNotNull(genitore2);
         assertNotNull(genitore3);
         assertNotNull(genitore4);
+        // Verifica figli associati ai genitori
         assertNotNull(figlio1);
         assertNotNull(figlio2);
         assertNotNull(figlio3);
@@ -184,10 +191,12 @@ public class ModelTest {
         assertEquals(figlio6, genitore3.getFigli().get(0));
         assertEquals(figlio7, genitore3.getFigli().get(1));
         assertEquals(figlio8, genitore4.getFigli().get(0));
+        // Verifica luoghi
         assertNotNull(luogo1);
         assertNotNull(luogo2);
         assertNotNull(luogo3);
         assertNotNull(luogo4);
+        // Verifica libri e recensioni
         assertNotNull(libro1);
         assertNotNull(libro2);
         assertNotNull(libro3);
@@ -195,6 +204,7 @@ public class ModelTest {
         assertNotNull(libro5);
         assertNotNull(libro7);
         assertNotNull(libro8);
+        // Verifica recensioni
         assertNotNull(recensione1);
         assertNotNull(recensione2);
         assertNotNull(recensione3);
@@ -219,8 +229,6 @@ public class ModelTest {
         assertNotNull(evento2);
         assertNotNull(evento3);
         assertNotNull(evento4);
-
-
     }
 
 }

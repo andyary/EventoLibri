@@ -44,7 +44,7 @@ public class Evento extends EventoAstratto implements Serializable {
     public void setCreatore(Lettore creatore) {
         this.creatore = creatore;
         // creatore.aggiungiEventiCreati(this);
-        this.addListener(creatore);
+        this.addListener(creatore); // aggiungo il creatore come listener dell'evento
     }
 
     /**
@@ -56,12 +56,12 @@ public class Evento extends EventoAstratto implements Serializable {
      * @param data     Data e ora dell'evento.
      */
     public Evento(Lettore creatore, String nome, Luogo luogo, LocalDateTime data) {
-        this(nome, luogo, data);
-        this.setCreatore(creatore);
-        this.iscritti = 0;
-        this.scaletta = new ArrayList<>();
-        creatore.aggiungiEventiCreati(this);
-        this.addListener(creatore);
+        this(nome, luogo, data); // chiamo il costruttore senza creatore
+        this.setCreatore(creatore); // imposto il creatore dell'evento
+        this.iscritti = 0; // inizializzazione del numero di iscritti a 0
+        this.scaletta = new ArrayList<>(); // inizializzazione della scaletta come lista vuota
+        creatore.aggiungiEventiCreati(this); // aggiunta del'evento alla lista di eventi creati del creatore
+        this.addListener(creatore); // aggiunta del creatore come listener dell'evento
     }
 
     /**
@@ -74,8 +74,8 @@ public class Evento extends EventoAstratto implements Serializable {
      * @param scaletta Lista di libri e lettori associati all'evento.
      */
     public Evento(Lettore creatore, String nome, Luogo luogo, LocalDateTime data, ArrayList<LibroLettore> scaletta) {
-        this(creatore, nome, luogo, data);
-        this.setScaletta(scaletta);
+        this(creatore, nome, luogo, data); // chiamata al costruttore senza scaletta
+        this.setScaletta(scaletta); //impostazione della scaletta
     }
 
     /**
@@ -89,8 +89,8 @@ public class Evento extends EventoAstratto implements Serializable {
      * @param scaletta Lista di libri e lettori associati all'evento.
      */
     public Evento(int id, Lettore creatore, String nome, Luogo luogo, LocalDateTime data, ArrayList<LibroLettore> scaletta) {
-        this(creatore, nome, luogo, data, scaletta);
-        this.setId(id);
+        this(creatore, nome, luogo, data, scaletta); // chiamata al costruttore senza id
+        this.setId(id); // impostazione dell'id
     }
 
     /**
@@ -171,46 +171,50 @@ public class Evento extends EventoAstratto implements Serializable {
      * @param evento Evento con i nuovi dettagli.
      */
     public void aggiornaEvento(Evento evento) {
-        this.nome = evento.nome;
-        this.luogo = evento.luogo;
-        this.data = evento.data;
+        this.nome = evento.nome; // aggiornamento del nome
+        this.luogo = evento.luogo; // aggiornamento del luogo
+        this.data = evento.data; // aggiornamento della data
 
         // se il lettore che c'era nella vecchia scaletta non c'è piu nella nuova scaletta toglilo dai listeners
-        for (LibroLettore ll_old : this.scaletta) {
-            int flag = 0;
-            if (ll_old.getLettore() != null) {
+        for (LibroLettore ll_old : this.scaletta) { // scorro la vecchia scaletta
+            int flag = 0; // flag di controllo impostato a 0
+            if (ll_old.getLettore() != null) { // se il lettore non è null
+                // scorro la nuova scaletta per vedere se il lettore è presente
                 for (LibroLettore ll_new : evento.scaletta) {
+                    // se il lettore è presente imposto il flag a 1
                     if (ll_new.getLettore() != null) {
+                        // confronto gli id dei lettori
                         if (ll_old.getLettore().getId() == (ll_new.getLettore().getId())) {
-                            flag = 1;
+                            flag = 1; // lettore trovato nella nuova scaletta
                         }
                     }
                 }
+                // se il flag è ancora 0 significa che il lettore non è piu nella nuova scaletta
                 if (flag == 0) {
                     // this.removeListener(ll_old.getLettore());
-                    ll_old.getLettore().rimuoviIscrizioneLettura(this);
+                    ll_old.getLettore().rimuoviIscrizioneLettura(this); // rimuovo l'evento dalla lista di eventi di lettura del lettore
                 }
             }
         }
         // se il lettore che non c'era nella vecchia scaletta c'è nella nuova, aggiungilo ai listeners
         for (LibroLettore ll_new : evento.scaletta) {
             int flag = 0;
-            if (ll_new.getLettore() != null) {
-                for (LibroLettore ll_old : this.scaletta) {
-                    if (ll_old.getLettore() != null) {
-                        if (ll_old.getLettore().getId() == (ll_new.getLettore().getId())) {
-                            flag = 1;
+            if (ll_new.getLettore() != null) { // se il lettore non è null
+                for (LibroLettore ll_old : this.scaletta) { // scorrimento della vecchia scaletta
+                    if (ll_old.getLettore() != null) { // se il lettore non è null
+                        if (ll_old.getLettore().getId() == (ll_new.getLettore().getId())) { // se il lettore è presente
+                            flag = 1; // lettore trovato nella vecchia scaletta
                         }
 
                     }
-                    if (flag == 0) {
+                    if (flag == 0) { // se il flag è ancora 0 significa che il lettore non era nella vecchia scaletta
                         // this.addListener(ll_new.getLettore());
-                        ll_new.getLettore().aggiungiIscrizioneLettura(this);
+                        ll_new.getLettore().aggiungiIscrizioneLettura(this); // aggiunta dell'evento alla lista di eventi di lettura del lettore
                     }
                 }
             }
         }
-        this.scaletta = evento.scaletta;
+        this.scaletta = evento.scaletta; // aggiornamento della scaletta
         // Notifica i listener dell'evento riguardo l'aggiornamento
         updateAll(this);
     }
@@ -221,12 +225,14 @@ public class Evento extends EventoAstratto implements Serializable {
      * @return Ora di fine dell'evento.
      */
     public LocalDateTime calcolaOraFine() {
+        // Inizializza l'ora di fine con la data di inizio dell'evento
         LocalDateTime oraFine = data;
+        // Itera attraverso ogni libro nella scaletta
         for (LibroLettore ll : scaletta) {
             // Somma la durata di ogni libro alla data di inizio
             oraFine = oraFine.plusMinutes(ll.getLibro().getTempoLettura());
         }
-        return oraFine;
+        return oraFine; // Ritorna l'ora di fine calcolata
     }
 
     /**
@@ -236,7 +242,7 @@ public class Evento extends EventoAstratto implements Serializable {
      */
     public void setIscritti(int iscritti) {
         this.iscritti = iscritti;
-        updateAll(this);
+        updateAll(this); // notifica i listener dell'evento riguardo l'aggiornamento
     }
 
     /**
@@ -246,10 +252,12 @@ public class Evento extends EventoAstratto implements Serializable {
      */
     public void setScaletta(ArrayList<LibroLettore> scaletta) {
         this.scaletta = scaletta;
+        // aggiungo i lettori della scaletta ai listener dell'evento
         for (LibroLettore ll : scaletta) {
+            // se il lettore non è null lo aggiungo come listener
             if (ll.getLettore() != null) {
                 // this.addListener(ll.getLettore());
-                ll.getLettore().aggiungiIscrizioneLettura(this);
+                ll.getLettore().aggiungiIscrizioneLettura(this); // aggiungo l'evento alla lista di eventi di lettura del lettore
             }
         }
     }
@@ -261,13 +269,14 @@ public class Evento extends EventoAstratto implements Serializable {
      * @return true se il lettore è iscritto, false altrimenti.
      */
     public boolean isIscritto(Lettore lettore) {
+        // scorro la scaletta per verificare se il lettore è presente
         for (LibroLettore ll : scaletta) {
-            if (ll.getLettore() == null) continue;
-            if (ll.getLettore().getId() == lettore.getId()) {
+            if (ll.getLettore() == null) continue; // salto se il lettore è null
+            if (ll.getLettore().getId() == lettore.getId()) { // se il lettore è trovato
                 return true;
-            }
+            } // ritorno true se il lettore è trovato
         }
-        return false;
+        return false; // ritorno false se il lettore non è trovato
     }
 
     /**

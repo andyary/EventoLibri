@@ -22,8 +22,10 @@ import java.io.IOException;
 
 import static org.mockito.Mockito.*;
 
+// Test della classe LoginView utilizzando TestFX e Mockito
+// Estende ApplicationTest per testare le componenti JavaFX
 class LoginViewTest extends ApplicationTest {
-
+    // Mock delle dipendenze
     private Client mockClient;
     private RegistraNewGenitore mockRegistraNewGenitore;
     private HomeGenitore mockHomeGenitore;
@@ -32,23 +34,25 @@ class LoginViewTest extends ApplicationTest {
 
     private LoginView loginView;
 
+    // Instanza di Stage per i test
     private Stage stage;
 
+    // Configurazione iniziale prima di ogni test
     @Override
     public void start(Stage stage) {
         // Mock delle dipendenze
-        mockClient = Mockito.mock(Client.class);
-        mockRegistraNewGenitore = Mockito.mock(RegistraNewGenitore.class);
-        mockHomeGenitore = Mockito.mock(HomeGenitore.class);
-        mockHomeLettore = Mockito.mock(HomeLettore.class);
-        mockHomeAmministratore = Mockito.mock(HomeAmministratore.class);
+        mockClient = Mockito.mock(Client.class); // Mock del client di rete
+        mockRegistraNewGenitore = Mockito.mock(RegistraNewGenitore.class); // Mock della view di registrazione
+        mockHomeGenitore = Mockito.mock(HomeGenitore.class); // Mock della home del genitore
+        mockHomeLettore = Mockito.mock(HomeLettore.class); // Mock della home del lettore
+        mockHomeAmministratore = Mockito.mock(HomeAmministratore.class); // Mock della home dell'amministratore
 
         // Inizializzazione della classe da testare
         loginView = new LoginView(mockClient, mockRegistraNewGenitore, mockHomeGenitore, mockHomeLettore, mockHomeAmministratore);
-        loginView.show(stage);
-        // this.stage = stage;
+        loginView.show(stage); // Mostra la view di login
     }
 
+    // Test del login con campi vuoti
     @Test
     void testLoginConCampiVuoti() {
         // Simula il click sul pulsante "Login" identificato per il suo testo
@@ -58,26 +62,28 @@ class LoginViewTest extends ApplicationTest {
         org.testfx.util.WaitForAsyncUtils.waitForFxEvents();
 
         // Verifica che venga visualizzato il messaggio di errore
-        Label errorLabel = lookup("#messaggioerrore").queryAs(Label.class);
-        FxAssert.verifyThat("#messaggioerrore", LabeledMatchers.hasText("Campi mancanti."));
+        Label errorLabel = lookup("#messaggioerrore").queryAs(Label.class); // lookup per trovare il Label del messaggio di errore
+        FxAssert.verifyThat("#messaggioerrore", LabeledMatchers.hasText("Campi mancanti.")); // Verifica il testo del messaggio di errore
     }
 
+    // Test del login con credenziali corrette
     @Test
     void testLoginConCredenzialiCorrette() throws IOException {
         // Inserisci credenziali valide
-        clickOn("#usernameField").write("testuser");
+        clickOn("#usernameField").write("testuser"); // sfrutta l'ID per trovare il campo username
         clickOn("#passwordField").write("password");
 
         // Simula il click sul pulsante "Login"
         clickOn("#loginButton");
 
-        // Verifica che il client invii il messaggio `RichiestaLogin` e quante volte la chiamata
+        // Verifica che il client invii il messaggio `RichiestaLogin` e quante volte viene inviato
         verify(mockClient, times(1)).sendMessage(any(RichiestaLogin.class));
 
         // Controlla che il messaggio di errore resti vuoto
         FxAssert.verifyThat("#messaggioerrore", LabeledMatchers.hasText(""));
     }
 
+    // Test della registrazione di un nuovo genitore
     @Test
     void testRegistraNewGenitore() {
         // Simula il click sul pulsante "Registra nuovo genitore"

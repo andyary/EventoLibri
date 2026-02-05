@@ -12,8 +12,8 @@ public abstract class CreaUtente<T extends Utente> {
      * @return Nuovo utente di tipo parametrico T.
      */
 	public T nuovoUtente(String nome, String cognome, String userName) {
-        T utente = factory(nome, cognome, userName);
-        return utente;
+        T utente = factory(nome, cognome, userName); // Chiamata al metodo factory astratto
+        return utente; // Restituisce il nuovo utente creato
 	}
 
     /** Metodo parametrico per creare un nuovo utente con ID.
@@ -24,8 +24,8 @@ public abstract class CreaUtente<T extends Utente> {
      * @return Nuovo utente di tipo parametrico T.
      */
     public T nuovoUtente(int id, String nome, String cognome, String userName) {
-        T utente = factory(id, nome, cognome, userName);
-        return utente;
+        T utente = factory(id, nome, cognome, userName); // Chiamata al metodo factory astratto
+        return utente; // Restituisce il nuovo utente creato
     }
 
 

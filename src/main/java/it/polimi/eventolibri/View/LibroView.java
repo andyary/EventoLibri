@@ -19,17 +19,9 @@ import java.util.regex.Pattern;
  * Classe View per la selezione di un libro da una lista con filtro.
  */
 public class LibroView {
-
+    // Libro selezionato dall'utente inizialmente null
     private Libro libroSelezionato = null;
 
-//    /**
-//     * Mostra la finestra di selezione del libro.
-//     *
-//     * @param owner lo stage proprietario della finestra modale
-//     * @param libri la lista di libri da cui selezionare
-//     * @return il libro selezionato, o null se l'operazione è stata annullata
-//     */
-//    public Libro show(Stage owner, List<Libro> libri) {
 
     /**
      * Mostra la finestra di selezione del libro (bloccante).
@@ -51,37 +43,41 @@ public class LibroView {
      * @param libri la lista di libri da cui selezionare
      * @return lo Stage creato (ancora aperto)
      */
-    public Stage showNonBlocking(Stage owner, List<Libro> libri) {
+    public Stage showNonBloccante(Stage owner, List<Libro> libri) {
         Stage stage = buildStage(owner, libri);
         stage.show(); // non bloccante
         return stage;
     }
 
+    /**
+     * Costruisce lo stage per la selezione del libro.
+     *
+     * @param owner lo stage proprietario della finestra modale
+     * @param libri la lista di libri da cui selezionare
+     * @return lo Stage creato
+     */
     private Stage buildStage(Stage owner, List<Libro> libri) {
-
-
+        // Crea la finestra per la selezione del libro
         Stage stage = new Stage();
         stage.initOwner(owner);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("Seleziona libro");
-
+        // Titolo
         Label titolo = new Label("Scegli un libro");
         titolo.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-
         // Campo filtro in alto
         TextField txtFiltro = new TextField();
         txtFiltro.setId("filterTextField");
         txtFiltro.setPromptText("Filtra per titolo, usa * come jolly");
-
         // Lista filtrata
         FilteredList<Libro> filtered = new FilteredList<>(FXCollections.observableArrayList(libri), l -> true);
-
+        // Lista dei libri
         ListView<Libro> listView = new ListView<>();
         listView.setId("bookListView");
         listView.setItems(filtered);
-
         // Come mostrare i libri
         listView.setCellFactory(lv -> new ListCell<>() {
+            // Aggiorna il testo della cella con il titolo e il tempo di lettura
             @Override
             protected void updateItem(Libro libro, boolean empty) {
                 super.updateItem(libro, empty);
@@ -92,7 +88,6 @@ public class LibroView {
                 }
             }
         });
-
         // Listener per aggiornare il filtro
         txtFiltro.textProperty().addListener((obs, oldText, newText) -> {
             Pattern p = costrusciPatternDalFiltro(newText);
@@ -105,43 +100,39 @@ public class LibroView {
                 });
             }
         });
-
+        // Bottoni Conferma/Annulla
         Button btnConferma = new Button("Conferma");
         Button btnAnnulla = new Button("Annulla");
-
+        // Azioni bottoni
         btnConferma.setOnAction(e -> {
             libroSelezionato = listView.getSelectionModel().getSelectedItem();
             stage.close();
         });
-
         btnAnnulla.setOnAction(e -> {
             libroSelezionato = null;
             stage.close();
         });
-
+        // Layout bottoni
         HBox buttons = new HBox(10, btnConferma, btnAnnulla);
         buttons.setAlignment(Pos.CENTER);
-
+        // Layout principale
         VBox layout = new VBox(15, titolo, txtFiltro, listView, buttons);
         layout.setPadding(new Insets(15));
 
         stage.setScene(new Scene(layout, 400, 400));
-        // stage.showAndWait();   // blocca la view chiamante
-
-        // return libroSelezionato;
-        return  stage;
+        return stage; // ritorna lo stage per lo stage non bloccante
     }
 
     // Trasforma una stringa con '*' in una regex sicura, pulendo i metacaratteri
     String daStringaARegex(String asterisco) {
-        StringBuilder sb = new StringBuilder();
-        for (char c : asterisco.toCharArray()) {
+        StringBuilder sb = new StringBuilder(); // StringBuilder per costruire la regex
+        for (char c : asterisco.toCharArray()) { // cicla su ogni carattere della stringa
             // gestisce il jolly
             if (c == '*') {
                 // aggiunge il jolly regex
                 sb.append(".*");
             } else {
-                // gestisce i metacaratteri regex
+                // gestisce i metacaratteri regex scaricandoli
                 if ("\\.[]{}()+-^$|?".indexOf(c) >= 0) {
                     // aggiunge il backslash di escape
                     sb.append('\\');
@@ -150,11 +141,12 @@ public class LibroView {
                 sb.append(Character.toLowerCase(c));
             }
         }
-        return sb.toString();
+        return sb.toString(); // ritorna la regex costruita
     }
 
-    // Metodo package\-private per creare la Pattern dal filtro (usato nei test)
+    // Metodo (package\-private) per creare la Pattern dal filtro (usato nei test)
     Pattern costrusciPatternDalFiltro(String filter) {
+        // Controlla se il filtro è vuoto, e ritorna null
         if (filter == null || filter.trim().isEmpty()) {
             return null;
         }

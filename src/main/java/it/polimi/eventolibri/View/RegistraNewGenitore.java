@@ -70,23 +70,29 @@ public class RegistraNewGenitore {
                 new Label("Password:"),
                 pswField
         );
+        // ===========================
+        // SALVA DATI
+        // ===========================
         Button salvaDati = new Button("Registra nuovo genitore");
         salvaDati.setId("saveButton"); // id per test
-        salvaDati.setOnAction(e -> {
+        salvaDati.setOnAction(e -> { // Azione al click del pulsante
             if ((!nomeField.getText().isBlank()) && (!cognomeField.getText().isBlank()) && (!usernameField.getText().isBlank()) && (!pswField.getText().isBlank())) {
                 this.messaggioerrore.setText("");
+                // Creazione del nuovo genitore usando il Factory Method
                 CreaUtente<Genitore> creaGenitore = new CreaGenitore();
                 Genitore genitoreTemp = creaGenitore.nuovoUtente(nomeField.getText(), cognomeField.getText(), usernameField.getText());
-                try {
+                try { // Invio della richiesta di registrazione al server
                     client.sendMessage(new RichiestaNuovoGenitore(genitoreTemp, pswField.getText()));
                 } catch (IOException ex) {
                     System.out.println(ex.getMessage());
                 }
             } else {
+                // Messaggio di errore se i campi non sono tutti compilati
                 messaggioerrore.setText("Tutti i campi sono obbligatori.");
                 messaggioerrore.setStyle("-fx-text-fill: red;");
             }
         });
+        // Aggiunta del pulsante e del messaggio di errore al layout
         datiBox.getChildren().add(salvaDati);
         datiBox.getChildren().add(messaggioerrore);
 
@@ -95,7 +101,7 @@ public class RegistraNewGenitore {
         // ===========================
         Button back = new Button("Indietro");
         back.setId("backButton"); // id per test
-        back.setOnAction(e -> onBack.run());
+        back.setOnAction(e -> onBack.run()); // Azione al click del pulsante
         HBox backBox = new HBox(back);
         backBox.setAlignment(Pos.TOP_RIGHT);
         backBox.setPadding(new Insets(10));
@@ -104,10 +110,10 @@ public class RegistraNewGenitore {
         // ===========================
         VBox contenuto = new VBox(25, backBox, title, datiBox);
         contenuto.setPadding(new Insets(20));
-        ScrollPane scrollPane = new ScrollPane(contenuto);
-        scrollPane.setFitToWidth(true);
-        Scene scene = new Scene(scrollPane,  750, 780);
-        Platform.runLater(() -> {
+        ScrollPane scrollPane = new ScrollPane(contenuto); // Aggiunta dello scroll pane per gestire schermi piccoli
+        scrollPane.setFitToWidth(true); // Adatta il contenuto alla larghezza della finestra
+        Scene scene = new Scene(scrollPane, 750, 780); // Dimensioni della scena
+        Platform.runLater(() -> { // Esecuzione sul thread dell'interfaccia utente
             stage.setTitle("Registra Nuovo Genitore");
             stage.setScene(scene);
             stage.show();
@@ -121,9 +127,9 @@ public class RegistraNewGenitore {
      * @param messaggioerrore il messaggio di successo da visualizzare
      */
     public void mostraSuccesso(String messaggioerrore) {
-        Platform.runLater(()->{
+        Platform.runLater(() -> { // Esecuzione sul thread dell'interfaccia utente
             this.messaggioerrore.setStyle("-fx-text-fill: green;");
-            this.messaggioerrore.setText(messaggioerrore);
+            this.messaggioerrore.setText(messaggioerrore); // Imposta il messaggio di successo
         });
     }
 
@@ -133,9 +139,9 @@ public class RegistraNewGenitore {
      * @param messaggioerrore il messaggio di errore da visualizzare
      */
     public void mostraErrore(String messaggioerrore) {
-        Platform.runLater(()->{
+        Platform.runLater(() -> { // Esecuzione sul thread dell'interfaccia utente
             this.messaggioerrore.setStyle("-fx-text-fill: red;");
-            this.messaggioerrore.setText(messaggioerrore);
+            this.messaggioerrore.setText(messaggioerrore); // Imposta il messaggio di errore
         });
     }
 

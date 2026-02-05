@@ -20,6 +20,7 @@ import org.testfx.util.WaitForAsyncUtils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+// Estensione di ApplicationExtension per test JavaFX con TestFX
 @ExtendWith(ApplicationExtension.class)
 class RegistraNewLettoreTest {
 
@@ -30,17 +31,18 @@ class RegistraNewLettoreTest {
     private boolean backCalled;
     private final AutoCloseable mocks; // per chiudere openMocks
 
-    // Inizializzare i mock QUI, ma SENZA creare la view (evitare uso di JavaFX nel costruttore)
+    // Inizializzare i mock QUI, ma SENZA creare la view (evitando uso di JavaFX nel costruttore)
     public RegistraNewLettoreTest() {
-        this.mocks = MockitoAnnotations.openMocks(this);
-        backCalled = false;
+        this.mocks = MockitoAnnotations.openMocks(this); // inizializza i mock
+        backCalled = false; // inizializza la variabile di stato, backCalled rappresenta se il callback "indietro" è stato chiamato
     }
 
+    // Dopo ogni test, chiudi i mock
     @AfterEach
     // chiudi ogni test
     void chiudi() throws Exception {
-        backCalled = false;
-        mocks.close();
+        backCalled = false; // resetta la variabile di stato
+        mocks.close(); // chiude i mock
     }
 
     // start viene eseguito sul thread JavaFX: istanzia la view qui
@@ -70,7 +72,7 @@ class RegistraNewLettoreTest {
 
     // Verifica che venga inviato il messaggio corretto quando i campi sono compilati
     @Test
-    void testInvioMessaggio_campiCorretti(FxRobot robot) throws Exception {
+    void testInvioMessaggi(FxRobot robot) throws Exception {
         // Compila i campi
         robot.clickOn("#nomeField").write("TestNome");
         robot.clickOn("#cognomeField").write("TestCognome");

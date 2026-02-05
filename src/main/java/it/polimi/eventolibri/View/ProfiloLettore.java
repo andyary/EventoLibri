@@ -52,6 +52,7 @@ public class ProfiloLettore {
      * @param onBack  l'azione da eseguire quando si preme il pulsante "Indietro"
      */
     public void show(Stage stage, Lettore lettore, Runnable onBack) {
+        // Salva i riferimenti a stage e lettore
         this.stage = stage;
         this.lettore = lettore;
         // ===========================
@@ -60,14 +61,14 @@ public class ProfiloLettore {
         Label title = new Label("Profilo Lettore");
         title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
         // ===========================
-        // DATI GENITORE
+        // DATI  LETTORE
         // ===========================
         VBox datiBox = new VBox(10);
         datiBox.setPadding(new Insets(10));
         TextField nomeField = new TextField(lettore.getNome());
         TextField cognomeField = new TextField(lettore.getCognome());
         TextField usernameField = new TextField(lettore.getUserName());
-        usernameField.setDisable(true); // non si cambia normalmente
+        usernameField.setDisable(true); // lo username non è modificabile
         datiBox.getChildren().addAll(
                 new Label("Nome:"),
                 nomeField,
@@ -76,13 +77,15 @@ public class ProfiloLettore {
                 new Label("Username:"),
                 usernameField
         );
+        // Pulsante Salva Modifiche
         Button salvaDati = new Button("Salva modifiche");
-        salvaDati.setOnAction(e -> {
+        salvaDati.setOnAction(e -> { // Aggiorna i dati del lettore se sono stati modificati
             if (!lettore.getNome().equals(nomeField.getText()) || !lettore.getCognome().equals(cognomeField.getText())) {
-                this.messaggioerrore.setText("");
+                this.messaggioerrore.setText(""); // pulisce il messaggio di errore
+                // Crea un nuovo lettore con i dati aggiornati
                 CreaUtente<Lettore> creaLettore = new CreaLettore();
                 Lettore lettoreTemp = creaLettore.nuovoUtente(lettore.getId(), nomeField.getText(), cognomeField.getText(), lettore.getUserName());
-                try {
+                try { // Invia la richiesta di aggiornamento al server
                     client.sendMessage(new RichiestaAggiornaLettore(lettoreTemp));
                 } catch (IOException ex) {
                     System.out.println(ex.getMessage());
@@ -96,8 +99,8 @@ public class ProfiloLettore {
         // INDIETRO
         // ===========================
         Button back = new Button("Indietro");
-        back.setOnAction(e -> onBack.run());
-        HBox backBox = new HBox(new Label("  Benvenuto, (lettore) " + lettore.getNome() + "!          "),back);
+        back.setOnAction(e -> onBack.run()); // Esegue l'azione di ritorno
+        HBox backBox = new HBox(new Label("  Benvenuto, (lettore) " + lettore.getNome() + "!          "), back);
         backBox.setAlignment(Pos.TOP_RIGHT);
         backBox.setPadding(new Insets(10));
         // ===========================
@@ -105,10 +108,10 @@ public class ProfiloLettore {
         // ===========================
         VBox contenuto = new VBox(25, backBox, title, datiBox);
         contenuto.setPadding(new Insets(20));
-        ScrollPane scrollPane = new ScrollPane(contenuto);
-        scrollPane.setFitToWidth(true);
-        Scene scene = new Scene(scrollPane,  750, 780);
-        Platform.runLater(() -> {
+        ScrollPane scrollPane = new ScrollPane(contenuto); // Aggiunge lo scroll pane per gestire contenuti lunghi
+        scrollPane.setFitToWidth(true); // Adatta il contenuto alla larghezza della finestra
+        Scene scene = new Scene(scrollPane, 750, 780); // Dimensioni della scena
+        Platform.runLater(() -> { // Mostra la scena nel thread dell'interfaccia utente
             stage.setTitle("Profilo Lettore");
             stage.setScene(scene);
             stage.show();
@@ -121,12 +124,8 @@ public class ProfiloLettore {
      * @param msgerrore il messaggio di errore da visualizzare
      */
     public void mostraErrore(String msgerrore) {
-        Platform.runLater(() -> {
+        Platform.runLater(() -> { // Aggiorna il messaggio di errore nel thread dell'interfaccia utente
             this.messaggioerrore.setText(msgerrore);
         });
     }
-
 }
-
-
-

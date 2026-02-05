@@ -26,6 +26,7 @@ import java.util.ArrayList;
  * Classe View per la visualizzazione e gestione di un evento dal punto di vista di un lettore.
  */
 public class EventoViewLettore {
+    // Attributi
     private Client client;
     private Stage stage;
     private Scene scene = null;
@@ -37,9 +38,9 @@ public class EventoViewLettore {
     private Runnable onBack;
     private Label messaggioerrore;
     private Label iscritti;
-    private ComboBox<Luogo> luogoCombo = new ComboBox<>();
-    private ComboBox<Lettore> lettoreCombo = new ComboBox<>();
-    private ComboBox<Lettore> lettoreScalettaCombo = new ComboBox<>();
+    private ComboBox<Luogo> luogoCombo = new ComboBox<>(); // combo box per i luoghi
+    private ComboBox<Lettore> lettoreCombo = new ComboBox<>(); // combo box per i lettori
+    private ComboBox<Lettore> lettoreScalettaCombo = new ComboBox<>(); // combo box per i lettori nella scaletta
 
     /**
      * Costruttore della classe EventoViewLettore.
@@ -134,11 +135,12 @@ public class EventoViewLettore {
      * @param onBack  l'azione da eseguire quando si preme il pulsante "Indietro"
      */
     public void show(Stage stage, Evento evento, Lettore lettore, Runnable onBack) {
+        // Imposta lo stage, l'evento e il lettore
         this.stage = stage;
         this.evento = evento;
         this.lettore = lettore;
-        this.onBack = onBack;
-        this.messaggioerrore.setText("");
+        this.onBack = onBack; // azione da eseguire al ritorno
+        this.messaggioerrore.setText(""); // reset messaggio errore
 
         // Determina se l'utente corrente è il creatore dell'evento
         boolean isCreator = false;
@@ -169,8 +171,8 @@ public class EventoViewLettore {
         titoloField.setPromptText("Titolo evento");
         titoloField.setAlignment(Pos.CENTER_LEFT);
         // Se non è creatore, non può modificare il titolo
-        titoloField.setEditable(isCreator);
-        titoloField.setDisable(!isCreator);
+        titoloField.setEditable(isCreator); // rende il campo non editabile
+        titoloField.setDisable(!isCreator); // disabilita il campo
 
         HBox titoloBox = new HBox(5,
                 new Label("Titolo:"),
@@ -182,22 +184,25 @@ public class EventoViewLettore {
             luogoCombo.setPromptText("Scegli luogo");
         } else {
             luogoCombo.setValue(evento.getLuogo());
+            // Imposta la visualizzazione dei nomi dei luoghi nella ComboBox
             luogoCombo.setCellFactory(cb -> new ListCell<>() {
                 @Override
                 protected void updateItem(Luogo item, boolean empty) {
-                    super.updateItem(item, empty);
-                    setText(empty || item == null ? "" : item.getNome());
+                    super.updateItem(item, empty); // chiamata al metodo della superclasse
+                    setText(empty || item == null ? "" : item.getNome()); // imposta il testo
                 }
             });
+            // Imposta la visualizzazione del nome del luogo selezionato
             luogoCombo.setConverter(new StringConverter<>() {
                 @Override
                 public String toString(Luogo luogo) {
                     return luogo == null ? "" : luogo.getNome();
-                }
+                } // converte il luogo in stringa per la visualizzazione
+
                 @Override
                 public Luogo fromString(String s) {
                     return null;
-                }
+                } // non usato in questo contesto
             });
         }
         // Se non è creatore, non può cambiare il luogo
@@ -231,11 +236,12 @@ public class EventoViewLettore {
                 datePicker
         );
         dataBox.setAlignment(Pos.CENTER_LEFT);
-        Spinner<Integer> hourSpinner = new Spinner<>(0, 23, evento.getData().toLocalTime().getHour());
-        Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, evento.getData().toLocalTime().getMinute());
-        hourSpinner.setEditable(true);
+        // ---------- ORA ---------- //
+        Spinner<Integer> hourSpinner = new Spinner<>(0, 23, evento.getData().toLocalTime().getHour()); // spinner per le ore
+        Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, evento.getData().toLocalTime().getMinute()); // spinner per i minuti
+        hourSpinner.setEditable(true); // rende lo spinner editabile
         minuteSpinner.setEditable(true);
-        hourSpinner.setDisable(!isCreator);
+        hourSpinner.setDisable(!isCreator); // disabilita lo spinner se non è creatore
         minuteSpinner.setDisable(!isCreator);
 
         HBox oraBox = new HBox(5,
@@ -258,23 +264,25 @@ public class EventoViewLettore {
         VBox scalettaBox = new VBox(6);
         scalettaBox.setPadding(new Insets(10));
         scalettaBox.setStyle("-fx-border-color: lightgray;");
-        ArrayList<LibroLettore> scalettaTemp = new ArrayList<>();
+        ArrayList<LibroLettore> scalettaTemp = new ArrayList<>(); // copia temporanea della scaletta
         for (LibroLettore l : evento.getScaletta()) {
-            scalettaTemp.add(new LibroLettore(l.getLibro(), l.getLettore(), l.getProgressivo()));
+            scalettaTemp.add(new LibroLettore(l.getLibro(), l.getLettore(), l.getProgressivo())); // copia profonda
         }
         Label libroSelezionatoLabel = new Label("Nessun libro selezionato");
+        // Combo box per selezionare il lettore della nuova riga
         Button scegliLibroBtn = new Button("Scegli libro");
-        final Libro[] libroSelezionato = new Libro[1];
+        final Libro[] libroSelezionato = new Libro[1]; // array per tenere traccia del libro selezionato
 
         scegliLibroBtn.setOnAction(e -> {
             messaggioerrore.setText("");
             LibroView dialog = new LibroView();
-            Libro libro = dialog.show(stage, elencoLibri);
+            Libro libro = dialog.show(stage, elencoLibri); // mostra la finestra di selezione libro
             if (libro != null) {
+                // aggiorna il libro selezionato
                 libroSelezionatoLabel.setText(
                         libro.getTitolo() + " (" + libro.getTempoLettura() + " min)"
                 );
-                libroSelezionato[0] = libro;
+                libroSelezionato[0] = libro; // aggiorna il libro selezionato
             }
         });
         // solo il creatore può scegliere libri per la scaletta
@@ -284,23 +292,24 @@ public class EventoViewLettore {
         // solo il creatore può assegnare un lettore alla nuova riga
         lettoreCombo.setDisable(!isCreator);
 
+        // Combo box per selezionare il lettore della nuova riga
         Button aggiungiRigaBtn = new Button("Aggiungi riga");
         aggiungiRigaBtn.setOnAction(e -> {
             messaggioerrore.setText("");
             if (libroSelezionato[0] == null) {
-                messaggioerrore.setText("Seleziona un libro");
+                messaggioerrore.setText("Seleziona un libro"); // errore se nessun libro selezionato
                 return;
             }
             LibroLettore ll = new LibroLettore(
                     libroSelezionato[0],
                     lettoreCombo.getValue(),
                     scalettaTemp.size() + 1
-            );
-            scalettaTemp.add(ll);
-            refreshScalettaUI(scalettaBox, scalettaTemp);
-            libroSelezionato[0] = null;
+            ); // crea nuova riga
+            scalettaTemp.add(ll); // aggiunge la riga alla scaletta temporanea
+            refreshScalettaUI(scalettaBox, scalettaTemp); // aggiorna l'interfaccia della scaletta
+            libroSelezionato[0] = null; // reset libro selezionato
             libroSelezionatoLabel.setText("Nessun libro selezionato");
-            lettoreCombo.setValue(null);
+            lettoreCombo.setValue(null); // reset lettore selezionato
         });
         // solo il creatore può aggiungere righe
         aggiungiRigaBtn.setDisable(!isCreator);
@@ -319,6 +328,7 @@ public class EventoViewLettore {
         Button annullaBtn = new Button("Annulla");
         salvaBtn.setOnAction(e -> {
             messaggioerrore.setText("");
+            // controlla campi obbligatori
             if (titoloField.getText().isBlank()
                     || luogoCombo.getValue() == null
                     || datePicker.getValue() == null
@@ -326,6 +336,7 @@ public class EventoViewLettore {
                 messaggioerrore.setText("Compila tutti i campi obbligatori");
                 return;
             }
+            // crea evento temporaneo con i nuovi dati
             LocalDateTime dataOra = LocalDateTime.of(
                     datePicker.getValue(),
                     LocalTime.of(hourSpinner.getValue(), minuteSpinner.getValue())
@@ -356,6 +367,7 @@ public class EventoViewLettore {
         // solo il creatore può salvare modifiche all'evento
         // salvaBtn.setDisable(!isCreator);
 
+        // azione annulla: torna indietro senza salvare
         annullaBtn.setOnAction(e -> {
             if (onBack != null) onBack.run();
         });
@@ -389,16 +401,17 @@ public class EventoViewLettore {
         BorderPane root = new BorderPane();
         root.setTop(layout);
 
-        ScrollPane scrollPane = new ScrollPane(root);
+        ScrollPane scrollPane = new ScrollPane(root); // aggiunto ScrollPane
         scrollPane.setFitToWidth(true);  // adatta la larghezza del contenuto alla finestra
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // scroll verticale solo se serve
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // mai scroll orizzontale
 
-        refreshScalettaUI(scalettaBox, scalettaTemp);
+        refreshScalettaUI(scalettaBox, scalettaTemp); // inizializza l'interfaccia della scaletta
 
-        this.scene=new Scene(scrollPane,  750, 780);
+        this.scene = new Scene(scrollPane, 750, 780); // dimensioni della scena
 
-        Platform.runLater(() -> {;
+        Platform.runLater(() -> {
+            ;
             stage.setScene(scene);
             stage.setTitle("Crea Evento");
             stage.show();
@@ -412,7 +425,7 @@ public class EventoViewLettore {
      * @param msgerrore il messaggio di errore da visualizzare
      */
     public void mostraErrore(String msgerrore) {
-        Platform.runLater(()->{
+        Platform.runLater(() -> {
             this.messaggioerrore.setText(msgerrore);
         });
     }
@@ -420,53 +433,52 @@ public class EventoViewLettore {
     /**
      * Aggiorna le liste di lettori, luoghi e libri disponibili.
      *
-     * @param lettori    la lista dei lettori
-     * @param luoghi     la lista dei luoghi
+     * @param lettori     la lista dei lettori
+     * @param luoghi      la lista dei luoghi
      * @param elencolibri l'elenco dei libri
      */
     public void aggiornaLettoriELuoghiELibri(ArrayList<Lettore> lettori, ArrayList<Luogo> luoghi, ArrayList<Libro> elencolibri) {
-        this.lettori.clear();
-        this.lettori.addAll(lettori);
-        this.luoghi.clear();
-        this.luoghi.addAll(luoghi);
+        this.lettori.clear(); // pulisce la lista esistente
+        this.lettori.addAll(lettori); // aggiunge i nuovi lettori
+        this.luoghi.clear(); // pulisce la lista esistente
+        this.luoghi.addAll(luoghi); // aggiunge i nuovi luoghi
         Platform.runLater(() -> {
             luogoCombo.getItems().clear();
             luogoCombo.getItems().addAll(luoghi);
-            luogoCombo.setCellFactory(cb -> new ListCell<>() {
+            luogoCombo.setCellFactory(cb -> new ListCell<>() { // modifica le celle della ComboBox
                 @Override
                 protected void updateItem(Luogo item, boolean empty) {
                     super.updateItem(item, empty);
-                    setText(empty || item == null ? "" : item.getNome());
+                    setText(empty || item == null ? "" : item.getNome()); // imposta il testo della cella
                 }
             });
-            luogoCombo.setButtonCell(luogoCombo.getCellFactory().call(null));
+            luogoCombo.setButtonCell(luogoCombo.getCellFactory().call(null)); // imposta la cella del pulsante della ComboBox
 
-            lettoreCombo.getItems().clear();
-            lettoreCombo.getItems().addAll(lettori);
-            lettoreCombo.setCellFactory(cb -> new ListCell<>() {
+            lettoreCombo.getItems().clear(); // pulisce la lista esistente
+            lettoreCombo.getItems().addAll(lettori); // aggiunge i nuovi lettori
+            lettoreCombo.setCellFactory(cb -> new ListCell<>() { // modifica le celle della ComboBox
                 @Override
                 protected void updateItem(Lettore item, boolean empty) {
                     super.updateItem(item, empty);
-                    setText(empty || item == null ? "" : item.getNome());
+                    setText(empty || item == null ? "" : item.getNome()); // imposta il testo della cella
                 }
             });
-            lettoreCombo.setButtonCell(lettoreCombo.getCellFactory().call(null));
+            lettoreCombo.setButtonCell(lettoreCombo.getCellFactory().call(null)); // imposta la cella del pulsante della ComboBox
 
-            lettoreScalettaCombo.getItems().clear();
-            Lettore lettorevuoto = null;
-            lettoreScalettaCombo.getItems().addAll(lettorevuoto);
-            lettoreScalettaCombo.getItems().addAll(lettori);
-            lettoreScalettaCombo.setCellFactory(cb -> new ListCell<>() {
+            lettoreScalettaCombo.getItems().clear(); // pulisce la lista esistente
+            Lettore lettorevuoto = null; // opzione per nessun lettore
+            lettoreScalettaCombo.getItems().addAll(lettorevuoto); // aggiunge l'opzione vuota
+            lettoreScalettaCombo.getItems().addAll(lettori); // aggiunge i nuovi lettori
+            lettoreScalettaCombo.setCellFactory(cb -> new ListCell<>() { // modifica le celle della ComboBox
                 @Override
                 protected void updateItem(Lettore item, boolean empty) {
                     super.updateItem(item, empty);
-                    setText(empty || item == null ? "" : item.getNome());
+                    setText(empty || item == null ? "" : item.getNome()); // imposta il testo della cella
                 }
             });
-            lettoreScalettaCombo.setButtonCell(lettoreCombo.getCellFactory().call(null));
+            lettoreScalettaCombo.setButtonCell(lettoreCombo.getCellFactory().call(null)); // imposta la cella del pulsante della ComboBox
 
-            this.elencoLibri = elencolibri;
-
+            this.elencoLibri = elencolibri; // aggiorna l'elenco dei libri
         });
     }
 
@@ -496,72 +508,72 @@ public class EventoViewLettore {
             scalettaBox.getChildren().add(rigaScaletta);
         }
 
-        LocalTime tempoinizio= evento.getData().toLocalTime();
-        LocalTime tempofine;
+        LocalTime tempoinizio = evento.getData().toLocalTime(); // inizio evento
+        LocalTime tempofine; // fine lettura libro
 
-        for (int i = 0; i < scaletta.size(); i++) {
-            LibroLettore ll = scaletta.get(i);
-            ll.setProgressivo(i + 1);
-            tempofine = tempoinizio.plusMinutes(ll.getLibro().getTempoLettura());
-            DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
+        for (int i = 0; i < scaletta.size(); i++) { // per ogni libro nella scaletta
+            LibroLettore ll = scaletta.get(i); // libro lettore corrente
+            ll.setProgressivo(i + 1); // aggiorna il progressivo
+            tempofine = tempoinizio.plusMinutes(ll.getLibro().getTempoLettura()); // calcola il tempo di fine lettura
+            DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm"); // formato orario
             Label orario = new Label(
                     "[" + tempoinizio.format(formato) + " - " + tempofine.format(formato) + "]"
-            );
-            tempoinizio = tempofine;
-            Label titolo = new Label(ll.getLibro().getTitolo());
-            Label durata = new Label("(" + ll.getLibro().getTempoLettura() + " min)");
+            ); // orario lettura
+            tempoinizio = tempofine; // aggiorna il tempo di inizio per il prossimo libro
+            Label titolo = new Label(ll.getLibro().getTitolo()); // titolo del libro
+            Label durata = new Label("(" + ll.getLibro().getTempoLettura() + " min)"); // durata lettura
             Label lettoreLabel = new Label(
                     ll.getLettore() != null ? ll.getLettore().getNome() : ""
-            );
+            ); // nome del lettore
 
             // Bottone cancella riga: solo se creatore e la riga non ha lettore assegnato
             Button eliminaBtn = null;
             if (isCreator && ll.getLettore() == null) {
                 eliminaBtn = new Button("Cancella Riga");
                 eliminaBtn.setOnAction(e -> {
-                    scaletta.remove(ll);
+                    scaletta.remove(ll); // rimuove la riga dalla scaletta
                     refreshScalettaUI(scalettaBox, scaletta);
-                });
+                }); // azione di cancellazione riga
             }
 
             // Bottone modifica lettore: solo se creatore
             Button cambiaLettoreBtn = null;
             if (isCreator) {
                 cambiaLettoreBtn = new Button("Modifica lettore");
-                final int progressivoTemp = i;
-                cambiaLettoreBtn.setOnAction(e -> {
-                    Lettore selezionato = lettoreScalettaCombo.getSelectionModel().getSelectedItem();
-                    ll.modificaLettore(selezionato);
-                    scaletta.set(progressivoTemp,ll);
-                    refreshScalettaUI(scalettaBox, scaletta);
+                final int progressivoTemp = i; // variabile finale per l'uso nel lambda
+                cambiaLettoreBtn.setOnAction(e -> { // azione di modifica lettore
+                    Lettore selezionato = lettoreScalettaCombo.getSelectionModel().getSelectedItem(); // lettore selezionato
+                    ll.modificaLettore(selezionato); // modifica il lettore della riga
+                    scaletta.set(progressivoTemp, ll); // aggiorna la riga nella scaletta
+                    refreshScalettaUI(scalettaBox, scaletta); // aggiorna l'interfaccia della scaletta
                 });
             }
 
             // Bottone iscrivi/disiscrivi: solo se NON creatore e la riga non è già associata ad un altro lettore non null
             Button iscriviBtn = null;
             if (!isCreator) {
-                boolean rigaLiberaOPropria = (ll.getLettore() == null) || (lettore != null && (ll.getLettore() != null) && ll.getLettore().getId() == lettore.getId());
+                boolean rigaLiberaOPropria = (ll.getLettore() == null) || (lettore != null && (ll.getLettore() != null) && ll.getLettore().getId() == lettore.getId()); // controlla se la riga è libera o associata al lettore corrente
                 if (rigaLiberaOPropria) {
-                    iscriviBtn = new Button((ll.getLettore() == null)? "Iscrivi" : "Disiscrivi");
+                    iscriviBtn = new Button((ll.getLettore() == null) ? "Iscrivi" : "Disiscrivi");
                     iscriviBtn.setOnAction(e -> {
-                        if (ll.getLettore() == null) {
-                            ll.modificaLettore(lettore);
+                        if (ll.getLettore() == null) { // se la riga è libera, iscrive il lettore corrente
+                            ll.modificaLettore(lettore); // iscrive il lettore corrente
                         } else {
-                            // se era il lettore corrente, si disiscrive; se era qualcun altro (non previsto dalla condizione) non tocca
+                            // se e' il lettore corrente, si disiscrive; se e' qualcun altro (non previsto dalla condizione) non tocca
                             if (lettore != null && ll.getLettore().getId() == lettore.getId()) {
-                                ll.modificaLettore(null);
+                                ll.modificaLettore(null); // disiscrive il lettore
                             }
                         }
-                        refreshScalettaUI(scalettaBox, scaletta);
+                        refreshScalettaUI(scalettaBox, scaletta);  // aggiorna l'interfaccia della scaletta
                     });
                 }
             }
 
             HBox riga = new HBox(10);
             // Aggiungi i pulsanti nell'ordine richiesto
-            if (eliminaBtn != null) riga.getChildren().add(eliminaBtn);
-            if (cambiaLettoreBtn != null) riga.getChildren().add(cambiaLettoreBtn);
-            if (iscriviBtn != null) riga.getChildren().add(iscriviBtn);
+            if (eliminaBtn != null) riga.getChildren().add(eliminaBtn); // bottone elimina
+            if (cambiaLettoreBtn != null) riga.getChildren().add(cambiaLettoreBtn); // bottone cambia lettore
+            if (iscriviBtn != null) riga.getChildren().add(iscriviBtn); // bottone iscrivi/disiscrivi
 
             riga.getChildren().addAll(
                     new Label((i + 1) + ")"),

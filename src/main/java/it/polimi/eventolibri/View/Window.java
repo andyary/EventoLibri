@@ -8,7 +8,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-/** Classe principale per l'avvio dell'applicazione JavaFX.
+/**
+ * Classe principale per l'avvio dell'applicazione JavaFX.
  * Estende la classe Application di JavaFX.
  */
 public class Window extends Application {
@@ -21,7 +22,7 @@ public class Window extends Application {
      */
     @Override
     public void start(Stage stage) throws Exception {
-
+        // Inizializzazione delle varie viste e del client di rete
         Client client = new Client();
         RegistraNewGenitore registraNewGenitore = new RegistraNewGenitore(client);
         RegistraNewLettore registraNewLettore = new RegistraNewLettore(client);
@@ -36,16 +37,16 @@ public class Window extends Application {
         HomeLettore homeLettore = new HomeLettore(client, eventoViewLettore, profiloLettore, libroDetailedView);
         HomeAmministratore homeAmministratore = new HomeAmministratore(client, profiloAmministratore, registraNewLettore, registraNewAmministratore, libroDetailedView);
         LoginView loginView = new LoginView(client, registraNewGenitore, homeGenitore, homeLettore, homeAmministratore);
-        try {
+        try { // Avvio del client con le varie viste
             client.start(loginView, homeGenitore, homeAmministratore, eventoView, homeLettore, eventoViewLettore,
                     profiloGenitore, profiloLettore, profiloAmministratore,
                     registraNewGenitore, registraNewLettore, registraNewAmministratore, libroDetailedView);
 
-        } catch (Exception e) {
+        } catch (Exception e) { // Gestione degli errori durante l'avvio del client
             System.out.println("Error: " + e.getMessage());
         }
-        client.startListening();
-        loginView.show(stage);
+        client.startListening(); // Inizio l'ascolto dei messaggi dal server
+        loginView.show(stage); // Mostro la vista di login
 
         // Gestione della chiusura della finestra
         // Invia un messaggio di chiusura al server prima di chiudere l'applicazione
@@ -59,6 +60,7 @@ public class Window extends Application {
         stage.setOnCloseRequest(event -> {
             event.consume(); // blocca temporaneamente la chiusura
             new Thread(() -> {
+                // invia il messaggio di chiusura in un thread separato
                 try {
                     client.sendMessage(new CloseUI());
                 } catch (IOException e) {
@@ -66,20 +68,18 @@ public class Window extends Application {
                 }
                 // chiudi davvero la finestra sul FX thread
                 Platform.runLater(() -> stage.close());
-            }).start();
+            }).start(); // avvia il thread
         });
-
-
     }
 
-    /** Metodo principale per avviare l'applicazione JavaFX (Front End).
+    /**
+     * Metodo principale per avviare l'applicazione JavaFX (Front End).
      *
      * @param args argomenti della riga di comando
      */
     public static void main(String[] args) {
-        launch(args);
+        launch(args); // Avvia l'applicazione JavaFX
     }
-
 
 
 }

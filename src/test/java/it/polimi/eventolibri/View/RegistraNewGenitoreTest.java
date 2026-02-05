@@ -19,9 +19,10 @@ import org.testfx.util.WaitForAsyncUtils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+// estende ApplicationExtension per testare componenti JavaFX
 @ExtendWith(ApplicationExtension.class)
 class RegistraNewGenitoreTest {
-
+    // crea i mock con Mockito
     @Mock
     // mock usati nei test
     private Client mockClient;
@@ -32,14 +33,14 @@ class RegistraNewGenitoreTest {
     // inizializza i mock prima di ogni test
     public RegistraNewGenitoreTest() {
         this.mocks = MockitoAnnotations.openMocks(this);
-        backCalled = false;
+        backCalled = false; // inizializza la variabile di controllo, usata per verificare se il callback "back" è stato chiamato
     }
 
     // chiude i mock dopo ogni test
     @AfterEach
     void chiudi() throws Exception {
-        backCalled = false;
-        mocks.close();
+        backCalled = false; // resetta la variabile di controllo
+        mocks.close(); // chiude i mock
     }
 
     // start viene eseguito sul thread JavaFX: istanzia la view qui
@@ -48,13 +49,14 @@ class RegistraNewGenitoreTest {
         // crea la view solo sul FX thread (toolkit già inizializzato da TestFX)
         view = new RegistraNewGenitore(mockClient);
         // mostra la view
-        view.show(stage, () -> backCalled = true);
+        view.show(stage, () -> backCalled = true); // passa un callback che setta backCalled a true
         // attende che tutti gli eventi JavaFX siano processati
         WaitForAsyncUtils.waitForFxEvents();
     }
 
+
     @Test
-    // verifica che venga mostrato l'errore quando i campi sono vuoti
+        // verifica che venga mostrato l'errore quando i campi sono vuoti
     void testMostraErrore(FxRobot robot) {
         // clicca sul pulsante salva senza compilare i campi
         robot.clickOn("#saveButton");
@@ -64,8 +66,8 @@ class RegistraNewGenitoreTest {
     }
 
     @Test
-    // verifica che venga inviato il messaggio corretto quando i campi sono compilati
-    void testInvioMessaggio_campiCorretti(FxRobot robot) throws Exception {
+        // verifica che venga inviato il messaggio corretto quando i campi sono compilati
+    void testInvioMessaggio(FxRobot robot) throws Exception {
         // compila i campi
         robot.clickOn("#nomeField").write("TestNome");
         robot.clickOn("#cognomeField").write("TestCognome");

@@ -9,7 +9,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-/** Il ClientHandler gestisce la comunicazione con un client connesso.
+/**
+ * Il ClientHandler gestisce la comunicazione con un client connesso.
  * Riceve i messaggi dal client, li elabora e invia le risposte appropriate.
  * Ogni client connesso ha una propria istanza di ClientHandler che gira in un thread separato.
  */
@@ -22,7 +23,8 @@ public class ClientHandler extends Thread {
     private Utente utente;
     private Server server;
 
-    /** Restituisce l'utente associato a questo client handler.
+    /**
+     * Restituisce l'utente associato a questo client handler.
      *
      * @return oggetto Utente
      */
@@ -30,7 +32,8 @@ public class ClientHandler extends Thread {
         return utente;
     }
 
-    /** Costruttore della classe ClientHandler per un dato socket e server.
+    /**
+     * Costruttore della classe ClientHandler per un dato socket e server.
      *
      * @param socket socket connesso al client
      * @param server istanza del server
@@ -43,23 +46,25 @@ public class ClientHandler extends Thread {
     }
 
 
-    /** Avvoia il thread per gestire la comunicazione con il client. */
-        @Override
+    /**
+     * Avvoia il thread per gestire la comunicazione con il client.
+     */
+    @Override
     public void run() {
-        try {
+        try { // inizio la comunicazione con il client
             out = new ObjectOutputStream(socket.getOutputStream()); // crea il flusso di output per inviare messaggi al client
             in = new ObjectInputStream(socket.getInputStream()); // crea il flusso di input per ricevere messaggi dal client
-            while (true) {
+            while (true) { // ciclo infinito per ricevere messaggi
                 Messaggio msg = (Messaggio) in.readObject(); // legge il messaggio dal client
                 handleMessage(msg); // gestisce il messaggio ricevuto
             }
-        } catch (Exception e) {
+        } catch (Exception e) { // gestisce eccezioni di I/O e di classe non trovata
             System.out.println("Client disconnesso: " + socket);
         }
-
     }
 
-    /** Gestisce i messaggi ricevuti dal client e invia le risposte appropriate.
+    /**
+     * Gestisce i messaggi ricevuti dal client e invia le risposte appropriate.
      *
      * @param msg il messaggio ricevuto dal client
      * @throws IOException se si verifica un errore di I/O
@@ -70,21 +75,21 @@ public class ClientHandler extends Thread {
         // gestisce messaggio di richiesta login dal client
         if (msg instanceof RichiestaLogin) {
             RispostaLogin risposta = controller.controllaLogin(((RichiestaLogin) msg).getUsername(), ((RichiestaLogin) msg).getPassword());
-            if (risposta.isSuccesso()){
+            if (risposta.isSuccesso()) {
                 // caso genitore
                 if (risposta.getUtente() instanceof Genitore) {
                     CreaUtente<Genitore> creaUtente = new CreaGenitore();
-                    this.utente = creaUtente.nuovoUtente(risposta.getUtente().getId(),risposta.getUtente().getNome(),risposta.getUtente().getCognome(),risposta.getUtente().getUserName());
+                    this.utente = creaUtente.nuovoUtente(risposta.getUtente().getId(), risposta.getUtente().getNome(), risposta.getUtente().getCognome(), risposta.getUtente().getUserName());
                 }
                 // caso lettore
                 if (risposta.getUtente() instanceof Lettore) {
                     CreaUtente<Lettore> creaUtente = new CreaLettore();
-                    this.utente = creaUtente.nuovoUtente(risposta.getUtente().getId(),risposta.getUtente().getNome(),risposta.getUtente().getCognome(),risposta.getUtente().getUserName());
+                    this.utente = creaUtente.nuovoUtente(risposta.getUtente().getId(), risposta.getUtente().getNome(), risposta.getUtente().getCognome(), risposta.getUtente().getUserName());
                 }
                 // caso amministratore
                 if (risposta.getUtente() instanceof Amministratore) {
                     CreaUtente<Amministratore> creaUtente = new CreaAmministratore();
-                    this.utente = creaUtente.nuovoUtente(risposta.getUtente().getId(),risposta.getUtente().getNome(),risposta.getUtente().getCognome(),risposta.getUtente().getUserName());
+                    this.utente = creaUtente.nuovoUtente(risposta.getUtente().getId(), risposta.getUtente().getNome(), risposta.getUtente().getCognome(), risposta.getUtente().getUserName());
                 }
                 server.getClients().put(this, this.utente);  // aggiunge il client handler alla mappa dei client connessi
             }
@@ -115,11 +120,13 @@ public class ClientHandler extends Thread {
             sendMessage(risposta);
             if (risposta.isSuccesso()) {
                 // Implementazione Pattern Observer
-                for (Listener l: evento.getListeners()) {
-                    for (ClientHandler ch: server.getClients().keySet()) {
+                for (Listener l : evento.getListeners()) {
+                    // ciclo su tutti i client connessi
+                    for (ClientHandler ch : server.getClients().keySet()) {
+                        // se il client è un listener dell'evento e non è il client corrente
                         if (ch.getUtente().getId() == l.getId() && /*l.getId()!= utente.getId()*/ ch != this) {
                             NotificaAggiornamentoEvento notifica = new NotificaAggiornamentoEvento(evento);
-                            ch.sendMessage(notifica);
+                            ch.sendMessage(notifica); // invia la notifica di aggiornamento evento
                         }
                     }
                 }
@@ -141,8 +148,10 @@ public class ClientHandler extends Thread {
             sendMessage(risposta);
             if (risposta.isSuccesso()) {
                 // Implementazione Pattern Observer
-                for (Listener l: evento.getListeners()) {
-                    for (ClientHandler ch: server.getClients().keySet()) {
+                for (Listener l : evento.getListeners()) {
+                    // ciclo su tutti i client connessi
+                    for (ClientHandler ch : server.getClients().keySet()) {
+                        // se il client è un listener dell'evento e non è il client corrente
                         if (ch.getUtente().getId() == l.getId() && /*l.getId()!= utente.getId()*/ ch != this) {
                             NotificaAggiornamentoEvento notifica = new NotificaAggiornamentoEvento(evento);
                             ch.sendMessage(notifica);
@@ -216,8 +225,11 @@ public class ClientHandler extends Thread {
             sendMessage(risposta);
             // Implementazione Pattern Observer
             if (risposta.isSuccesso()) {
-                for (Listener l: eventoAggiornato.getListeners()) {
-                    for (ClientHandler ch: server.getClients().keySet()) {
+                // ciclo su tutti i listener dell'evento aggiornato
+                for (Listener l : eventoAggiornato.getListeners()) {
+                    // ciclo su tutti i client connessi
+                    for (ClientHandler ch : server.getClients().keySet()) {
+                        // se il client è un listener dell'evento e non è il client corrente
                         if (ch.getUtente().getId() == l.getId() && /*l.getId()!= utente.getId()*/ ch != this) {
                             NotificaAggiornamentoEvento notifica = new NotificaAggiornamentoEvento(eventoAggiornato);
                             ch.sendMessage(notifica);
@@ -252,7 +264,8 @@ public class ClientHandler extends Thread {
         // QUI CONTINUI AD AGGIUNGERE I NUOVI MESSAGGI
     }
 
-    /** Invia un messaggio al client.
+    /**
+     * Invia un messaggio al client.
      *
      * @param msg il messaggio da inviare
      * @throws IOException se si verifica un errore di I/O

@@ -18,35 +18,37 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
 /**
  * Classe View per la schermata principale dell'amministratore.
  */
 public class HomeAmministratore {
-
+    // Attributi
     private final Client client;
     private Stage stage;
     private Amministratore amministratore;
+    // View collegate
     private ProfiloAmministratore profiloAmministratore;
     private RegistraNewLettore registraNewLettore;
     private RegistraNewAmministratore registraNewAmministratore;
     private Runnable onBack;
 
     private LibroDetailedView libroDetailedView;
-    private ArrayList<Libro> elencoLibri = new ArrayList<>();
+    private ArrayList<Libro> elencoLibri = new ArrayList<>(); // da caricare dal server, creato vuoto per evitare null pointer
     private boolean recensibile;
     private ArrayList<Recensione> recensioni = new ArrayList<>(); // da caricare dal server
-    private boolean attendi;
+    private boolean attendi; // flag di attesa
 
-    private Label messaggioerrore;
+    private Label messaggioerrore; // per messaggi di errore
 
     /**
      * Costruttore della classe HomeAmministratore.
      *
      * @param client                    l'istanza del client per la comunicazione con il server
      * @param profiloAmministratore     la view per il profilo dell'amministratore
-     * @param registraNewLettore       la view per la registrazione di un nuovo lettore
+     * @param registraNewLettore        la view per la registrazione di un nuovo lettore
      * @param registraNewAmministratore la view per la registrazione di un nuovo amministratore
-     * @param libroDetailedView        la view per il dettaglio del libro
+     * @param libroDetailedView         la view per il dettaglio del libro
      */
     public HomeAmministratore(Client client, ProfiloAmministratore profiloAmministratore,
                               RegistraNewLettore registraNewLettore, RegistraNewAmministratore registraNewAmministratore, LibroDetailedView libroDetailedView) {
@@ -119,80 +121,83 @@ public class HomeAmministratore {
         // richiedi lettori, luoghi e libri
         RichiestaLettoriELuoghiELibri richiestaLettoriELuoghiELibri = new RichiestaLettoriELuoghiELibri();
         try {
-            client.sendMessage(richiestaLettoriELuoghiELibri);
+            client.sendMessage(richiestaLettoriELuoghiELibri); // invia richiesta al server
         } catch (IOException e) {
             System.out.println("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage());
-            messaggioerrore.setText("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage());
+            messaggioerrore.setText("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage()); // mostra messaggio di errore
         }
 
 
         // ---------- TOP BAR CON PROFILO ----------
+        // Pulsante profilo amministratore
         Button profiloButton = new Button("Profilo amministratore");
         profiloButton.setOnAction(e -> {
             System.out.println("Apertura schermata profilo...");
             profiloAmministratore.show(stage, amministratore, () -> {
                 this.show(stage, amministratore, onBack);
-            });
+            }); // mostra profilo amministratore
 
         });
-
+        // Pulsante crea nuovo lettore
         Button newLettoreButton = new Button("Crea Nuovo Lettore");
         newLettoreButton.setOnAction(e -> {
             System.out.println("Apertura schermata crea nuovo Lettore...");
             registraNewLettore.show(stage, amministratore, () -> {
                 this.show(stage, amministratore, onBack);
-            });
+            }); // mostra registra nuovo lettore
 
         });
 
+        // Pulsante crea nuovo amministratore
         Button newAmministratoreButton = new Button("Crea Nuovo Amministratore");
         newAmministratoreButton.setOnAction(e -> {
             System.out.println("Apertura schermata crea nuovo Amministratore...");
-            registraNewAmministratore.show(stage, amministratore,() -> {
+            registraNewAmministratore.show(stage, amministratore, () -> {
                 this.show(stage, amministratore, onBack);
-            });
-
+            }); // mostra registra nuovo amministratore
         });
 
+        // Pulsante logout
         Button backButton = new Button("Logout");
         backButton.setOnAction(e -> {
-            if (onBack != null) onBack.run();
+            if (onBack != null) onBack.run(); // esegue l'azione di logout
         });
 
-
+        // Sezione selezione libro
         Label libroSelezionatoLabel = new Label("Seleziona libro (recensioni)");
         Button scegliLibroBtn = new Button("Scegli libro");
-        final Libro[] libroSelezionato = new Libro[1];
+        final Libro[] libroSelezionato = new Libro[1]; // array per contenere il libro selezionato
 
         scegliLibroBtn.setOnAction(e -> {
-            messaggioerrore.setText("");
+            messaggioerrore.setText(""); // pulisce messaggio di errore
             LibroView dialog = new LibroView();
-            Libro libro = dialog.show(stage, elencoLibri);
+            Libro libro = dialog.show(stage, elencoLibri); // mostra finestra per selezionare libro
             if (libro != null) {
                 libroSelezionatoLabel.setText(
                         libro.getTitolo() + " (" + libro.getTempoLettura() + " min)"
-                );
-                libroSelezionato[0] = libro;
+                ); // aggiorna etichetta con il libro selezionato se non è null
+                libroSelezionato[0] = libro; // salva il libro selezionato
                 // recupera recensioni libro
-                recensioni.clear();
-                recensibile = false;
+                recensioni.clear(); // pulisce elenco recensioni
+                recensibile = false; // resetta recensibilità
 
                 // recupera recensibilità
                 RichiestaRecensioniERecensibilita richiesta = new RichiestaRecensioniERecensibilita(libro, amministratore);
                 try {
-                    client.sendMessage(richiesta);
+                    client.sendMessage(richiesta); // invia richiesta al server
                 } catch (IOException ex) {
-                    messaggioerrore.setText("Errore nell'invio della richiesta recensioni e recensibilità: " + ex.getMessage());
+                    messaggioerrore.setText("Errore nell'invio della richiesta recensioni e recensibilità: " + ex.getMessage()); // mostra messaggio di errore
                 }
 
-                this.attendi = true;
+                this.attendi = true; // imposta flag di attesa
                 while (attendi) {
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(100); // attende 100 ms
                     } catch (InterruptedException ex) {
-                        System.out.println("Errore attesa recensioni: " + ex.getMessage());
+                        System.out.println("Errore attesa recensioni: " + ex.getMessage()); // log di errore
                     }
-                };
+                }
+                ;
 
                 // apri dettaglio libro
                 libroDetailedView.show(
@@ -203,35 +208,36 @@ public class HomeAmministratore {
                         recensibile,
                         () -> {
                             this.show(stage, amministratore, onBack);
-                        }
+                        } // azione di ritorno alla home amministratore
                 );
             }
         });
-
+        // Layout top bar
         HBox topBar1 = new HBox(new Label("  Benvenuto, (admin) " + amministratore.getNome() + "!          "), profiloButton, scegliLibroBtn, backButton);
         topBar1.setAlignment(Pos.CENTER_RIGHT);
         HBox topBar2 = new HBox(newLettoreButton);
         topBar2.setAlignment(Pos.CENTER);
         HBox topBar3 = new HBox(newAmministratoreButton);
         topBar3.setAlignment(Pos.CENTER);
-        
-        VBox topBar = new VBox(20,topBar1, topBar2, topBar3, messaggioerrore);
+
+        VBox topBar = new VBox(20, topBar1, topBar2, topBar3, messaggioerrore);
 
         topBar.setPadding(new Insets(20));
         topBar.setAlignment(Pos.TOP_RIGHT);
 
         // ---------- LAYOUT FINALE ----------
 
-        BorderPane root = new BorderPane();
+        BorderPane root = new BorderPane(); // layout principale
         root.setTop(topBar);
 
-        ScrollPane scrollPane = new ScrollPane(root);
+        ScrollPane scrollPane = new ScrollPane(root); // aggiunta dello scroll pane
         scrollPane.setFitToWidth(true);  // adatta la larghezza del contenuto alla finestra
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // scroll verticale solo se serve
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // mai scroll orizzontale
 
-        Scene scene = new Scene(scrollPane,  750, 780);
-        Platform.runLater(() -> {;
+        Scene scene = new Scene(scrollPane, 750, 780); // dimensioni della scena
+        Platform.runLater(() -> {
+            ;
             stage.setScene(scene);
             stage.setTitle("Home Amministratore");
             stage.show();
@@ -253,9 +259,8 @@ public class HomeAmministratore {
      * @param msgerrore il messaggio di errore da visualizzare
      */
     public void mostraErrore(String msgerrore) {
-        Platform.runLater(()->{
+        Platform.runLater(() -> {
             this.messaggioerrore.setText(msgerrore);
         });
     }
-
 }

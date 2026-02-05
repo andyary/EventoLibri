@@ -144,38 +144,38 @@ public class EventoView {
         figliBox.getChildren().add(new Label("Gestisci iscrizioni figli:"));
 
         ArrayList<CheckBox> checkFigli = new ArrayList<>();
-        for (Figlio f : genitore.getFigli()) {
-            CheckBox cb = new CheckBox(f.getNome());
+        for (Figlio f : genitore.getFigli()) { // per ogni figlio del genitore
+            CheckBox cb = new CheckBox(f.getNome()); // crea una checkbox con il nome del figlio
             // Controllo basato sull'ID dell'evento
             boolean iscritto = f.getIscrizioni().stream()
-                    .anyMatch(e -> e.getId() == (evento.getId()));
-            cb.setSelected(iscritto);
+                    .anyMatch(e -> e.getId() == (evento.getId())); // verifica se il figlio è iscritto all'evento
+            cb.setSelected(iscritto); // seleziona la checkbox se il figlio è iscritto
 
-            checkFigli.add(cb);
-            figliBox.getChildren().add(cb);
+            checkFigli.add(cb); // aggiungi la checkbox alla lista
+            figliBox.getChildren().add(cb); // aggiungi la checkbox al layout
         }
 
         Button aggiornaButton = new Button("Aggiorna iscrizioni");
-        aggiornaButton.setOnAction(e -> {
-            this.messaggioerrore.setText("");
-            for (int i = 0; i < checkFigli.size(); i++) {
-                Figlio f = genitore.getFigli().get(i);
-                boolean selezionato = checkFigli.get(i).isSelected();
+        aggiornaButton.setOnAction(e -> { // azione al click del pulsante
+            this.messaggioerrore.setText(""); // reset del messaggio di errore
+            for (int i = 0; i < checkFigli.size(); i++) { // per ogni checkbox
+                Figlio f = genitore.getFigli().get(i); // ottieni il figlio corrispondente
+                boolean selezionato = checkFigli.get(i).isSelected(); // verifica se la checkbox è selezionata
                 // boolean eraIscritto = f.getIscrizioni().contains(evento);
-                boolean eraIscritto = f.getIscrizioni().stream().anyMatch(ev -> ev.getId() == evento.getId());
+                boolean eraIscritto = f.getIscrizioni().stream().anyMatch(ev -> ev.getId() == evento.getId()); // verifica se il figlio era iscritto all'evento
                 if (selezionato && !eraIscritto) {
                     // iscrizione
-                    RichiestaIscrizioneEvento req = new RichiestaIscrizioneEvento(f, evento, genitore);
+                    RichiestaIscrizioneEvento req = new RichiestaIscrizioneEvento(f, evento, genitore); // crea la richiesta di iscrizione
                     try {
-                        client.sendMessage(req);
+                        client.sendMessage(req); // invia la richiesta al server
                     } catch (Exception ex) {
-                        System.out.println("Errore iscrizione: " + ex.getMessage());
+                        System.out.println("Errore iscrizione: " + ex.getMessage()); // gestisci l'errore
                     }
                 } else if (!selezionato && eraIscritto) {
                     // disiscrizione
-                    RichiestaDisiscrizioneEvento req = new RichiestaDisiscrizioneEvento(f, evento, genitore);
+                    RichiestaDisiscrizioneEvento req = new RichiestaDisiscrizioneEvento(f, evento, genitore); // crea la richiesta di disiscrizione
                     try {
-                        client.sendMessage(req);
+                        client.sendMessage(req); // invia la richiesta al server
                     } catch (Exception ex) {
                         System.out.println("Errore disiscrizione: " + ex.getMessage());
                     }
@@ -185,26 +185,26 @@ public class EventoView {
 
         Button backButton = new Button("Indietro");
         backButton.setOnAction(e -> {
-            if (onBack != null) onBack.run();
+            if (onBack != null) onBack.run(); // esegui l'azione di ritorno
         });
 
         // ---------- SCALETTA EVENTO ----------
-        scalettaBox.getChildren().clear();
-        scalettaBox.setPadding(new Insets(10));
-        Label titoloScaletta = new Label("Scaletta dell'evento:");
-        titoloScaletta.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-        scalettaBox.getChildren().add(titoloScaletta);
+        scalettaBox.getChildren().clear(); // pulisce la scaletta prima di popolarla
+        scalettaBox.setPadding(new Insets(10)); // padding interno
+        Label titoloScaletta = new Label("Scaletta dell'evento:"); // titolo della scaletta
+        titoloScaletta.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;"); // stile del titolo
+        scalettaBox.getChildren().add(titoloScaletta); // aggiunge il titolo alla scaletta
 
-        LocalTime tempoinizio= evento.getData().toLocalTime();
-        LocalTime tempofine;
+        LocalTime tempoinizio = evento.getData().toLocalTime(); // tempo di inizio della lettura
+        LocalTime tempofine; // tempo di fine della lettura
 
         for (LibroLettore ll : evento.getScaletta()) {
-            tempofine = tempoinizio.plusMinutes(ll.getLibro().getTempoLettura());
-            String durata = new String("(" + ll.getLibro().getTempoLettura() + " minuti)");
-            DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
-            String orario = new String("[" + tempoinizio.format(formato) + " - " + tempofine.format(formato) + "]");
-            String nomeLettore = new String(ll.getLettore() != null ? ll.getLettore().getNome() : "---------");
-            String titoloLibro = ll.getLibro().getTitolo();
+            tempofine = tempoinizio.plusMinutes(ll.getLibro().getTempoLettura()); // calcola il tempo di fine
+            String durata = new String("(" + ll.getLibro().getTempoLettura() + " minuti)"); // durata della lettura
+            DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm"); // formato orario
+            String orario = new String("[" + tempoinizio.format(formato) + " - " + tempofine.format(formato) + "]"); // orario di lettura
+            String nomeLettore = new String(ll.getLettore() != null ? ll.getLettore().getNome() : "---------"); // nome del lettore
+            String titoloLibro = ll.getLibro().getTitolo(); // titolo del libro
             HBox riga = new HBox(10);
             riga.setAlignment(Pos.CENTER_LEFT);
             Label lbl = new Label(ll.getProgressivo() + ")   " + orario + "   " + titoloLibro + "   " + durata + "   " + nomeLettore);
@@ -213,7 +213,7 @@ public class EventoView {
             scalettaBox.getChildren().add(riga);
             tempoinizio = tempofine; // aggiorna il tempo di inizio per il prossimo libro
         }
-
+        // Pulsanti in alto a destra
         HBox mainBtnBox = new HBox(5, new Label("  Benvenuto, (genitore) " + genitore.getNome() + "!          "), backButton);
         mainBtnBox.setAlignment(Pos.CENTER_RIGHT);
 
@@ -231,10 +231,10 @@ public class EventoView {
                 messaggioerrore,
                 scalettaBox
         );
-        layout.setAlignment(Pos.TOP_LEFT);
-        layout.setPadding(new Insets(20));
+        layout.setAlignment(Pos.TOP_LEFT); // allinea gli elementi in alto a sinistra
+        layout.setPadding(new Insets(20)); // padding interno del layout
 
-        this.scene = new Scene(layout,  750, 780);
+        this.scene = new Scene(layout, 750, 780); // crea la scena con il layout
         // Mostra la scena
         Platform.runLater(() -> {
             stage.setScene(scene);
@@ -249,10 +249,9 @@ public class EventoView {
      * @param msgerrore il messaggio di errore da visualizzare
      */
     public void mostraErrore(String msgerrore) {
-        Platform.runLater(()->{
-            System.out.println("dalla mostraerrore contenuto di this.messaggio errore:" + this.messaggioerrore);
+        Platform.runLater(() -> { // esegue l'aggiornamento sulla UI thread
             System.out.println("dalla mostraerrore contenuto di messaggio errore:" + msgerrore);
-            this.messaggioerrore.setText(msgerrore);
+            this.messaggioerrore.setText(msgerrore); // aggiorna il testo del messaggio di errore
         });
     }
 
@@ -262,15 +261,16 @@ public class EventoView {
      * @param numIscritti il nuovo numero di iscritti
      */
     public void aggiornaIscritti(int numIscritti) {
-        evento.setIscritti(numIscritti);
-        Platform.runLater(() -> {
+        evento.setIscritti(numIscritti); // aggiorna il numero di iscritti nell'evento
+        Platform.runLater(() -> { // esegue l'aggiornamento sulla UI thread
             iscritti.setText("Iscritti: " + evento.getIscritti());
         });
     }
 
     public void aggiornaEvento(Evento eventoAggiornato) {
-        this.evento = eventoAggiornato;
-        Platform.runLater(() -> {
+        this.evento = eventoAggiornato; // aggiorna l'evento con quello passato come parametro
+        Platform.runLater(() -> { // esegue l'aggiornamento sulla UI thread
+            // Aggiorna i dettagli dell'evento visualizzati nella view
             titolo.setText(evento.getNome());
             titolo.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
             DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMMM yyyy 'alle' HH:mm");
@@ -279,16 +279,16 @@ public class EventoView {
             capienza.setText("Capienza: " + evento.getLuogo().getCapienza());
             iscritti.setText("Iscritti: " + evento.getIscritti());
             iscritti.setText("Iscritti: " + evento.getIscritti());
-
+            // Aggiorna la scaletta dell'evento
             scalettaBox.getChildren().clear();
             scalettaBox.setPadding(new Insets(10));
             Label titoloScaletta = new Label("Scaletta dell'evento:");
             titoloScaletta.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
             scalettaBox.getChildren().add(titoloScaletta);
-
-            LocalTime tempoinizio= evento.getData().toLocalTime();
+            // ---------- SCALETTA EVENTO ----------
+            LocalTime tempoinizio = evento.getData().toLocalTime();
             LocalTime tempofine;
-
+            // Popola la scaletta con i libri e i lettori
             for (LibroLettore ll : evento.getScaletta()) {
                 tempofine = tempoinizio.plusMinutes(ll.getLibro().getTempoLettura());
                 String durata = new String("(" + ll.getLibro().getTempoLettura() + " minuti)");
@@ -298,16 +298,12 @@ public class EventoView {
                 String titoloLibro = ll.getLibro().getTitolo();
                 HBox riga = new HBox(10);
                 riga.setAlignment(Pos.CENTER_LEFT);
+                // Crea l'etichetta per la riga della scaletta
                 Label lbl = new Label(ll.getProgressivo() + ")   " + orario + "   " + titoloLibro + "   " + durata + "   " + nomeLettore);
                 lbl.setStyle("-fx-font-size: 14px;");
                 riga.getChildren().add(lbl);
-                scalettaBox.getChildren().add(riga);
+                scalettaBox.getChildren().add(riga); // aggiunge la riga alla scaletta
             }
-
-
         });
     }
-
-
-
 }

@@ -1,7 +1,6 @@
 package it.polimi.eventolibri.Model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 /**
  * Classe che rappresenta un amministratore del sistema.
@@ -27,7 +26,7 @@ public class Amministratore extends  Utente implements Serializable {
      * @param userName Nome utente (username) dell'amministratore.
      */
     public Amministratore(int id, String nome, String cognome, String userName) {
-        super(id, nome, cognome, userName);
+        super(id, nome, cognome, userName); //chiamata al costruttore della superclasse Utente
     }
 
 

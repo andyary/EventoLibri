@@ -26,23 +26,23 @@ public class LuogoDAO {
      * @throws SQLException Se si verifica un errore durante l'accesso al database.
      */
     public Luogo getLuogo(int idLuogo) throws SQLException {
-        String query = "SELECT * FROM luoghi WHERE id = ?";
+        String query = "SELECT * FROM luoghi WHERE id = ?"; //query per prendere il luogo con l'id specificato
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
-            pstatement.setInt(1, idLuogo);
+            pstatement.setInt(1, idLuogo); //imposto id del luogo
             try (ResultSet result = pstatement.executeQuery();) {
-                if (!result.isBeforeFirst()) // no risultati, non esiste utente con queste credenziali
-                    return null;
+                if (!result.isBeforeFirst()) // no risultati non esiste luogo con questo id
+                    return null; //ritorno null
                 else {
-                    result.next();
-                    return new Luogo(result.getString("nome"), result.getInt("capienza"),result.getInt("id"));
+                    result.next(); //sposto il cursore al primo risultato
+                    return new Luogo(result.getString("nome"), result.getInt("capienza"),result.getInt("id")); //creo e ritorno il luogo
                 }
             }catch (SQLException ex) {
-                System.out.println("105" + ex.getMessage());
-                return null;
+                System.out.println("105" + ex.getMessage()); //stampa messaggio di errore
+                return null; //ritorna null in caso di errore
             }
         }catch (SQLException ex) {
-            System.out.println("106" + ex.getMessage());
-            return null;
+            System.out.println("106" + ex.getMessage()); //stampa messaggio di errore
+            return null; //ritorna null in caso di errore
         }
     }
 
@@ -51,26 +51,26 @@ public class LuogoDAO {
      * @throws SQLException Se si verifica un errore durante l'accesso al database.
      */
     public ArrayList<Luogo> getLuoghi() throws SQLException {
-        String query = "SELECT * FROM luoghi";
+        String query = "SELECT * FROM luoghi"; //query per cereare la lista di tutti i luoghi
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
             try (ResultSet result = pstatement.executeQuery();) {
                 if (!result.isBeforeFirst()) // no risultati, non esistono luoghi
-                    return null;
+                    return null; //ritorno null
                 else {
-                    ArrayList<Luogo> luoghi = new ArrayList<>();
+                    ArrayList<Luogo> luoghi = new ArrayList<>(); //lista vuota di luoghi
                     while (result.next()) {
-                        Luogo luogo = new Luogo(result.getString("nome"), result.getInt("capienza"),result.getInt("id"));
-                        luoghi.add(luogo);
+                        Luogo luogo = new Luogo(result.getString("nome"), result.getInt("capienza"),result.getInt("id")); //creo il luogo
+                        luoghi.add(luogo); //aggiungo il luogo alla lista
                     }
-                    return luoghi;
+                    return luoghi; //ritorno la lista di luoghi
                 }
             }catch (SQLException ex) {
-                System.out.println("1105" + ex.getMessage());
-                return null;
+                System.out.println("1105" + ex.getMessage());  //stampa messaggio di errore
+                return null; //ritorna null in caso di errore
             }
         }catch (SQLException ex) {
-            System.out.println("1106" + ex.getMessage());
-            return null;
+            System.out.println("1106" + ex.getMessage()); //stampa messaggio di errore
+            return null; //ritorna null in caso di errore
         }
     }
 }

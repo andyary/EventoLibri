@@ -6,6 +6,7 @@ import it.polimi.eventolibri.Model.Evento;
 import it.polimi.eventolibri.Model.Figlio;
 import it.polimi.eventolibri.Model.Genitore;
 import it.polimi.eventolibri.Network.Client;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Labeled;
@@ -32,9 +33,11 @@ import static org.mockito.Mockito.*;
  * Test per la view HomeGenitore.
  * Struttura analoga a HomeLettoreTest: setup in @Start, mocks, e verifiche principali.
  */
+
+// Estensione di ApplicationExtension per test JavaFX con TestFX
 @ExtendWith(ApplicationExtension.class)
 class HomeGenitoreTest {
-
+    // mock vari usati nei test
     private Client mockClient;
     private EventoView mockEventoView;
     private ProfiloGenitore mockProfiloGenitore;
@@ -49,7 +52,7 @@ class HomeGenitoreTest {
         this.mockEventoView = mock(EventoView.class);
         this.mockProfiloGenitore = mock(ProfiloGenitore.class);
         this.mockLibroDetailedView = mock(LibroDetailedView.class);
-
+        // conserva stage per chiusura dopo test
         this.stage = stage;
 
         // crea un evento di esempio per il figlio
@@ -69,7 +72,7 @@ class HomeGenitoreTest {
 
         // crea lista prossimi eventi (>= 10 per mostrare il bottone next)
         ArrayList<Evento> prossimi = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) { // 10 eventi
             prossimi.add(new Evento("ProssimoEvento" + i, null, LocalDateTime.now().plusDays(i + 1)));
         }
 
@@ -81,24 +84,33 @@ class HomeGenitoreTest {
         WaitForAsyncUtils.waitForFxEvents();
     }
 
+    // Dopo ogni test, chiudi la stage se aperta e resetta i mock
     @AfterEach
     void tearDown() {
         try {
-            // chiudi stage dopo ogni test per evitare interferenze
+            // chiudi la stage se aperta
             if (stage != null) {
-                WaitForAsyncUtils.async(() -> {
-                    stage.close();
+                Platform.runLater(() -> { // chiudi sul FX thread
+                    try {
+                        if (stage.isShowing()) { // controlla se è aperta
+                            stage.close(); // chiudi la stage
+                        }
+                    } catch (Exception ex) {
+                    }
                 });
+                WaitForAsyncUtils.waitForFxEvents(); // attendi che la chiusura sia processata
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ex) {
+        }
         // reset mock invocations
         clearInvocations(mockClient, mockEventoView, mockProfiloGenitore, mockLibroDetailedView);
     }
 
+
     @Test
         // Verifica che all'apertura venga inviata la richiesta per lettori/luoghi/libri
-    void invia_richiesta_lettori_eluoghielibri() {
-        // la sendMessage viene chiamata nella show(); verifichiamo che sia stata invocata
+    void invia_richiesta_iniziale() {
+        // la sendMessage viene chiamata nella show(); verifica che sia stata invocata
         try {
             verify(mockClient, timeout(1000)).sendMessage(isA(RichiestaLettoriELuoghiELibri.class));
         } catch (Exception e) {
@@ -108,13 +120,13 @@ class HomeGenitoreTest {
 
     @Test
         // Verifica che il bottone "Carica Eventi Successivi" sia presente e al click invii RichiestaNextEventi
-    void bottone_next_eventi_click_invia_richiesta(FxRobot robot) {
+    void bottone_next_eventi(FxRobot robot) {
         // trova il pulsante con testo
-        Button nextBtn = robot.lookup("Carica Eventi Successivi").queryButton();
+        Button nextBtn = robot.lookup("Carica Eventi Successivi").queryButton(); // lookup per trovare il bottone
         assertNotNull(nextBtn, "Bottone 'Carica Eventi Successivi' dovrebbe essere presente");
 
         // pulisci chiamate precedenti per isolare questa verifica
-        clearInvocations(mockClient);
+        clearInvocations(mockClient); // pulisci invocazioni precedenti
 
         // click sul bottone
         robot.clickOn(nextBtn);
@@ -129,13 +141,13 @@ class HomeGenitoreTest {
 
     @Test
         // Verifica che reloadEventiFromServer invii RichiestaNextEventi
-    void reload_eventi_invia_richiesta_next() {
+    void reload_eventi() {
         // pulisci invocazioni precedenti
         clearInvocations(mockClient);
-
+        // chiama reloadEventiFromServer
         view.reloadEventiFromServer();
 
-        try {
+        try { // verifica invio RichiestaNextEventi
             verify(mockClient, timeout(1000)).sendMessage(isA(RichiestaNextEventi.class));
         } catch (Exception e) {
             fail("reloadEventiFromServer non ha inviato RichiestaNextEventi: " + e.getMessage());
@@ -144,7 +156,7 @@ class HomeGenitoreTest {
 
     @Test
         // Verifica che il doppio click su una riga evento del figlio apra la view evento
-    void doppio_click_rigaevento_figlio_apre_evento(FxRobot robot) {
+    void doppio_click_rigaevento(FxRobot robot) {
         // prova a trovare nella UI il testo del titolo evento del figlio e doppio click
         // potrebbe essere necessario che TestFX trovi il nodo; esegui una ricerca generica per etichetta testuale
         Node target = null;
@@ -153,16 +165,17 @@ class HomeGenitoreTest {
             target = robot.lookup(node -> {
                 if (node instanceof Labeled) {
                     String txt = ((Labeled) node).getText();
-                    return "TitoloFiglioEvento".equals(txt) || txt != null && txt.contains("TitoloFiglioEvento");
+                    return "TitoloFiglioEvento".equals(txt) || txt != null && txt.contains("TitoloFiglioEvento"); // match esatto o parziale
                 }
-                return false;
-            }).query();
-        } catch (Exception ignored) {}
+                return false;  // altrimenti non è il nodo cercato
+            }).query(); // esegui la query
+        } catch (Exception ex) {
+        }
 
-        if (target != null) {
+        if (target != null) { // se trova il nodo
             // doppio click sulla cella trovata
             robot.doubleClickOn(target);
-            // attendi eventuali chiamate
+            // attendi che JavaFX processi gli eventi
             WaitForAsyncUtils.waitForFxEvents();
 
             // verifica che eventoView.show sia stato chiamato almeno una volta

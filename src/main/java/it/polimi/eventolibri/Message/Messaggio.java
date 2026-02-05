@@ -6,6 +6,5 @@ import java.io.Serializable;
  * Implementa l'interfaccia Serializable.
  */
 public abstract class Messaggio implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+    private static final long serialVersionUID = 1L; // Versione di serializzazione
 }

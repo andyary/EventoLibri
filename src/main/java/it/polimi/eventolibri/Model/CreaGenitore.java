@@ -12,7 +12,7 @@ public class CreaGenitore extends CreaUtente<Genitore> {
      * @return Nuovo oggetto Genitore.
      */
     public Genitore factory(String nome, String cognome, String userName) {
-        return new Genitore(nome, cognome, userName);
+        return new Genitore(nome, cognome, userName); // Chiamata al costruttore di Genitore senza ID
     }
 
     /** Implementazione del metodo factory per creare un nuovo Genitore con ID.
@@ -23,7 +23,7 @@ public class CreaGenitore extends CreaUtente<Genitore> {
      * @return Nuovo oggetto Genitore.
      */
     public Genitore factory(int id, String nome, String cognome, String userName) {
-        return new Genitore(id, nome, cognome, userName);
+        return new Genitore(id, nome, cognome, userName); // Chiamata al costruttore di Genitore con ID
     }
 
 }

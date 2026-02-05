@@ -19,7 +19,9 @@ import java.io.IOException;
  * Classe View per la visualizzazione e modifica del profilo di un genitore.
  */
 public class ProfiloGenitore {
-
+    // ======================================================
+    //                  ATTRIBUTI
+    // ======================================================
     private final Client client;
     private Stage stage;
     private Genitore genitore;
@@ -29,6 +31,9 @@ public class ProfiloGenitore {
     private VBox figliBox;
     private TextField nomeFiglioField;
     private DatePicker dataNascitaPicker;
+    // ======================================================
+    //                  COSTRUTTORE
+    // ======================================================
 
     /**
      * Costruttore della classe ProfiloGenitore.
@@ -36,6 +41,7 @@ public class ProfiloGenitore {
      * @param client l'istanza del client per la comunicazione con il server
      */
     public ProfiloGenitore(Client client) {
+        // Inizializza gli attributi
         this.client = client;
         this.messaggioerrore = new Label("");
         this.messaggioerrore.setStyle("-fx-text-fill: red;");
@@ -79,7 +85,7 @@ public class ProfiloGenitore {
         TextField nomeField = new TextField(genitore.getNome());
         TextField cognomeField = new TextField(genitore.getCognome());
         TextField usernameField = new TextField(genitore.getUserName());
-        usernameField.setDisable(true); // non si cambia normalmente
+        usernameField.setDisable(true); // Lo username non è modificabile
         datiBox.getChildren().addAll(
                 new Label("Nome:"),
                 nomeField,
@@ -88,13 +94,15 @@ public class ProfiloGenitore {
                 new Label("Username:"),
                 usernameField
         );
+        // Pulsante Salva modifiche
         Button salvaDati = new Button("Salva modifiche");
         salvaDati.setOnAction(e -> {
             if (!genitore.getNome().equals(nomeField.getText()) || !genitore.getCognome().equals(cognomeField.getText())) {
                 this.messaggioerrore.setText("");
+                // Crea un nuovo oggetto Genitore con i dati aggiornati
                 CreaUtente<Genitore> creaGenitore = new CreaGenitore();
-                Genitore genitoreTemp= creaGenitore.nuovoUtente(genitore.getId(),nomeField.getText(), cognomeField.getText(), genitore.getUserName());
-                try {
+                Genitore genitoreTemp = creaGenitore.nuovoUtente(genitore.getId(), nomeField.getText(), cognomeField.getText(), genitore.getUserName());
+                try { // Invia la richiesta di aggiornamento al server
                     client.sendMessage(new RichiestaAggiornaGenitore(genitoreTemp));
                 } catch (IOException ex) {
                     System.out.println(ex.getMessage());
@@ -110,12 +118,11 @@ public class ProfiloGenitore {
         Label figliTitle = new Label("Figli:");
         figliTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
         figliBox.setPadding(new Insets(10));
-        figliBox.getChildren().clear();
-        if (genitore.getFigli().isEmpty()) {
-            figliBox.getChildren().add(noFigliLabel);
+        figliBox.getChildren().clear(); // Pulisce la lista dei figli
+        if (genitore.getFigli().isEmpty()) { // Se non ci sono figli, mostra un messaggio
+            figliBox.getChildren().add(noFigliLabel); // Messaggio "Nessun figlio registrato."
         } else {
-            for (Figlio f : genitore.getFigli()) {
-
+            for (Figlio f : genitore.getFigli()) { // Altrimenti, crea una riga per ogni figlio
                 figliBox.getChildren().add(creaRigaFiglio(genitore, f, figliBox));
             }
         }
@@ -127,9 +134,10 @@ public class ProfiloGenitore {
         nomeFiglioField.setPromptText("Nome figlio");
         dataNascitaPicker.setPromptText("Data di nascita");
         Button aggiungiFiglioButton = new Button("Aggiungi figlio");
-        aggiungiFiglioButton.setOnAction(e -> {
+        aggiungiFiglioButton.setOnAction(e -> { // Azione bottone Aggiungi figlio
             this.messaggioerrore2.setText("");
             if (nomeFiglioField.getText().isBlank() || dataNascitaPicker.getValue() == null) {
+                // Mostra un alert se i campi sono vuoti
                 Alert alert2 = new Alert(Alert.AlertType.WARNING, "", ButtonType.OK);
                 alert2.setTitle("Aggiungi Figlio");
                 alert2.setHeaderText("Inserisci nome e data di nascita.");
@@ -137,15 +145,17 @@ public class ProfiloGenitore {
                 alert2.show();
                 return;
             }
+            // Crea un nuovo oggetto Genitore temporaneo per la richiesta
             CreaUtente<Genitore> creaGenitore = new CreaGenitore();
-            Genitore genitoreTemp2= creaGenitore.nuovoUtente(genitore.getId(),genitore.getNome(), genitore.getCognome(), genitore.getUserName());
+            Genitore genitoreTemp2 = creaGenitore.nuovoUtente(genitore.getId(), genitore.getNome(), genitore.getCognome(), genitore.getUserName());
             Figlio nuovoFiglio = new Figlio(nomeFiglioField.getText(), dataNascitaPicker.getValue());
-            try {
+            try { // Invia la richiesta di aggiunta figlio al server
                 client.sendMessage(new RichiestaAggiungiFiglio(genitoreTemp2, nuovoFiglio));
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
         });
+        // Layout aggiunta figlio
         VBox aggiungiBox = new VBox(10, addTitle, nomeFiglioField, dataNascitaPicker, aggiungiFiglioButton, messaggioerrore2);
         aggiungiBox.setPadding(new Insets(10));
         // ===========================
@@ -153,6 +163,7 @@ public class ProfiloGenitore {
         // ===========================
         Button back = new Button("Indietro");
         back.setOnAction(e -> onBack.run());
+        // Layout indietro
         HBox backBox = new HBox(
                 new Label("  Benvenuto, (genitore) " + genitore.getNome() + "!          "),
                 back);
@@ -163,20 +174,22 @@ public class ProfiloGenitore {
         // ===========================
         VBox contenuto = new VBox(25, backBox, title, datiBox, figliTitle, figliBox, aggiungiBox);
         contenuto.setPadding(new Insets(20));
-        ScrollPane scrollPane = new ScrollPane(contenuto);
-        scrollPane.setFitToWidth(true);
-        Scene scene = new Scene(scrollPane,  750, 780);
-        Platform.runLater(() -> {
+        ScrollPane scrollPane = new ScrollPane(contenuto); // Aggiunge uno scroll pane per gestire lo spazio
+        scrollPane.setFitToWidth(true); // Adatta il contenuto alla larghezza della finestra
+        Scene scene = new Scene(scrollPane, 750, 780); // Crea la scena con dimensioni adeguate
+        Platform.runLater(() -> { // Mostra la scena nel thread JavaFX
             stage.setTitle("Profilo Genitore");
             stage.setScene(scene);
             stage.show();
         });
     }
+
     // ======================================================
     //      RIGA FIGLIO (nome + data nascita + "Rimuovi")
     // ======================================================
     private HBox creaRigaFiglio(Genitore genitore, Figlio figlio, VBox container) {
         Label label = new Label(figlio.getNome() + " - nato il " + figlio.getDataNascita());
+//        // Bottone Rimuovi figlio (attualmente non funzionante)
 //        Button eliminaButton = new Button("Rimuovi");
 //        eliminaButton.setOnAction(e -> {
 //            genitore.getFigli().remove(figlio);
@@ -185,8 +198,7 @@ public class ProfiloGenitore {
 //        });
         HBox riga = new HBox(20, label /*, eliminaButton*/);
         riga.setAlignment(Pos.CENTER_LEFT);
-        return riga;
-
+        return riga; // Restituisce la riga creata
     }
 
     /**
@@ -195,8 +207,8 @@ public class ProfiloGenitore {
      * @param msgerrore il messaggio di errore da visualizzare
      */
     public void mostraErrore(String msgerrore) {
-        Platform.runLater(()->{
-            this.messaggioerrore.setText(msgerrore);
+        Platform.runLater(() -> { // Esegui nel thread JavaFX
+            this.messaggioerrore.setText(msgerrore); // Imposta il testo del messaggio di errore
         });
     }
 
@@ -206,8 +218,8 @@ public class ProfiloGenitore {
      * @param msgerrore il messaggio di errore da visualizzare
      */
     public void mostraErrore2(String msgerrore) {
-        Platform.runLater(()->{
-            this.messaggioerrore2.setText(msgerrore);
+        Platform.runLater(() -> { // Esegui nel thread JavaFX
+            this.messaggioerrore2.setText(msgerrore); // Imposta il testo del messaggio di errore
         });
     }
 
@@ -217,16 +229,15 @@ public class ProfiloGenitore {
      * @param nuovoFiglio il nuovo figlio da aggiungere alla lista
      */
     public void aggiornaFigli(Figlio nuovoFiglio) {
-        Platform.runLater(()->{
+        Platform.runLater(() -> {
+            // Esegui nel thread JavaFX
             if (!this.genitore.getFigli().isEmpty() && this.figliBox.getChildren().contains(noFigliLabel)) {
-                this.figliBox.getChildren().remove(noFigliLabel);
+                this.figliBox.getChildren().remove(noFigliLabel); // Rimuovi il messaggio "Nessun figlio registrato." se presente
             }
+            // Aggiungi la riga del nuovo figlio alla lista
             this.figliBox.getChildren().add(creaRigaFiglio(genitore, nuovoFiglio, figliBox));
-            this.nomeFiglioField.clear();
-            this.dataNascitaPicker.setValue(null);
+            this.nomeFiglioField.clear(); // Pulisci i campi di input
+            this.dataNascitaPicker.setValue(null); // Pulisci i campi di input
         });
     }
-
 }
-
-

@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * Classe View per la home di un lettore.
  */
 public class HomeLettore {
-
+    // Attributi
     private final Client client;
     private Stage stage;
     private Scene scene;
@@ -42,21 +42,19 @@ public class HomeLettore {
     private EventoViewLettore eventoView;
     private ProfiloLettore profiloLettore;
     private Runnable onBack;
-
-    private LibroDetailedView libroDetailedView;
+    private LibroDetailedView libroDetailedView; // view per dettaglio libro
     private ArrayList<Libro> elencoLibri = new ArrayList<>();
     private boolean recensibile;
     private ArrayList<Recensione> recensioni = new ArrayList<>(); // da caricare dal server
-    private boolean attendi;
-
-    private Label messaggioerrore;
+    private boolean attendi; // flag per attesa caricamento recensioni
+    private Label messaggioerrore; // per messaggi di errore
 
     /**
      * Costruttore della classe HomeLettore.
      *
-     * @param client          l'istanza del client per la comunicazione con il server
-     * @param eventoView      la view per la visualizzazione degli eventi
-     * @param profiloLettore  la view per la visualizzazione del profilo del lettore
+     * @param client            l'istanza del client per la comunicazione con il server
+     * @param eventoView        la view per la visualizzazione degli eventi
+     * @param profiloLettore    la view per la visualizzazione del profilo del lettore
      * @param libroDetailedView la view per la visualizzazione dettagliata del libro
      */
     public HomeLettore(Client client, EventoViewLettore eventoView, ProfiloLettore profiloLettore, LibroDetailedView libroDetailedView) {
@@ -74,7 +72,7 @@ public class HomeLettore {
      * @param elencoLibri l'elenco dei libri
      */
     public void setElencoLibri(ArrayList<Libro> elencoLibri) {
-        this.elencoLibri = elencoLibri == null ? new ArrayList<>() : elencoLibri;
+        this.elencoLibri = elencoLibri == null ? new ArrayList<>() : elencoLibri; // evita null pointer
     }
 
     /**
@@ -174,46 +172,47 @@ public class HomeLettore {
         try {
             client.sendMessage(richiestaLettoriELuoghiELibri);
         } catch (IOException e) {
-            System.out.println("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage());
-            messaggioerrore.setText("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage());
+            System.out.println("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage()); // log errore
+            messaggioerrore.setText("Errore nel richiestaLettoriELuoghiELibri" + e.getMessage()); // mostra messaggio di errore
         }
 
         // ---------- TOP BAR CON PROFILO ----------
         Button profiloButton = new Button("Profilo lettore");
-        profiloButton.setOnAction(e -> {
+        profiloButton.setOnAction(e -> { // apre profilo lettore
             profiloLettore.show(stage, lettore, () -> reloadEventiFromServer());
         });
-
+        // pulsante crea nuovo evento
         Button newEventoButton = new Button("Crea Nuovo Evento");
         newEventoButton.setOnAction(e -> {
-            Evento eventoTemp = new Evento( "", null, java.time.LocalDateTime.now());
-            eventoTemp.setCreatore(lettore);
-            eventoView.show(stage, eventoTemp , lettore, () -> {
+            Evento eventoTemp = new Evento("", null, java.time.LocalDateTime.now()); // evento temporaneo
+            eventoTemp.setCreatore(lettore); // impostalo come creatore
+            // apri la view per creare nuovo evento
+            eventoView.show(stage, eventoTemp, lettore, () -> {
                 reloadEventiFromServer();
             });
         });
-
+        // pulsante logout
         Button backButton = new Button("Logout");
         backButton.setOnAction(e -> {
-            if (onBack != null) onBack.run();
+            if (onBack != null) onBack.run(); // esegui l'azione di logout
         });
-
+        // pulsante scegli libro
         Label libroSelezionatoLabel = new Label("Seleziona libro (recensioni)");
         Button scegliLibroBtn = new Button("Scegli libro");
-        final Libro[] libroSelezionato = new Libro[1];
+        final Libro[] libroSelezionato = new Libro[1]; // array per mantenere il riferimento al libro selezionato
 
         scegliLibroBtn.setOnAction(e -> {
             messaggioerrore.setText("");
-            LibroView dialog = new LibroView();
-            Libro libro = dialog.show(stage, elencoLibri);
-            if (libro != null) {
+            LibroView dialog = new LibroView(); // crea finestra per selezionare libro
+            Libro libro = dialog.show(stage, elencoLibri); // mostra finestra per selezionare libro
+            if (libro != null) { // se è stato selezionato un libro
                 libroSelezionatoLabel.setText(
                         libro.getTitolo() + " (" + libro.getTempoLettura() + " min)"
                 );
-                libroSelezionato[0] = libro;
+                libroSelezionato[0] = libro; // salva il libro selezionato nell'array
                 // recupera recensioni libro
-                recensioni.clear();
-                recensibile = false;
+                recensioni.clear(); // pulisci lista recensioni
+                recensibile = false; // resetta recensibilità
 
                 // recupera recensibilità
                 RichiestaRecensioniERecensibilita richiesta = new RichiestaRecensioniERecensibilita(libro, lettore);
@@ -222,16 +221,16 @@ public class HomeLettore {
                 } catch (IOException ex) {
                     messaggioerrore.setText("Errore nell'invio della richiesta recensioni e recensibilità: " + ex.getMessage());
                 }
-
+                // attendi risposta
                 this.attendi = true;
                 while (attendi) {
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(100); // attesa di 100ms
                     } catch (InterruptedException ex) {
-                        System.out.println("Errore attesa recensioni: " + ex.getMessage());
+                        System.out.println("Errore attesa recensioni: " + ex.getMessage()); // log errore
                     }
-                };
-
+                }
+                ;
                 // apri dettaglio libro
                 libroDetailedView.show(
                         stage,
@@ -239,21 +238,21 @@ public class HomeLettore {
                         recensioni,
                         lettore,
                         recensibile,
-                        () -> {
+                        () -> { // onBack: ritorna alla home lettore
                             this.show(stage, lettore, this.eventiProssimi, onBack);
                         }
                 );
             }
         });
-
-        HBox topRow = new HBox(10, new Label("  Benvenuto, (lettore) " + lettore.getNome() + "!          "), profiloButton, newEventoButton, scegliLibroBtn ,backButton);
+        // layout top bar
+        HBox topRow = new HBox(10, new Label("  Benvenuto, (lettore) " + lettore.getNome() + "!          "), profiloButton, newEventoButton, scegliLibroBtn, backButton);
         topRow.setAlignment(Pos.TOP_RIGHT);
         HBox topRow2 = new HBox(10, messaggioerrore);
         VBox topBar = new VBox(topRow, topRow2);
         topBar.setPadding(new Insets(20));
         topBar.setAlignment(Pos.CENTER);
 
-        // formatter per colonne
+        // formato per colonne
         DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         DateTimeFormatter formatoOra = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -272,10 +271,10 @@ public class HomeLettore {
         eventiIscrittoBox.setPadding(new Insets(10));
 
         // Prossimi eventi disponibili (5 righe visibili) - filtrati
-        List<Evento> filtrati = this.eventiProssimi.stream()
-                .filter(ev -> !lettore.getEventiCreati().stream().anyMatch(e -> e.getId() == ev.getId()))
-                .filter(ev -> !lettore.getIscrizioniLettura().stream().anyMatch(e -> e.getId() == ev.getId()))
-                .collect(Collectors.toList());
+        List<Evento> filtrati = this.eventiProssimi.stream() // stream degli eventi prossimi
+                .filter(ev -> !lettore.getEventiCreati().stream().anyMatch(e -> e.getId() == ev.getId())) // filtra eventi già creati
+                .filter(ev -> !lettore.getIscrizioniLettura().stream().anyMatch(e -> e.getId() == ev.getId())) // filtra eventi già iscritti
+                .collect(Collectors.toList()); // colleziona in lista
         TableView<Evento> tableProssimi = createEventoTableView(filtrati, 5, formatoData, formatoOra);
         Label lblProssimi = new Label("Prossimi eventi disponibili:");
         VBox eventiProssimiBox = new VBox(5, lblProssimi, tableProssimi);
@@ -283,14 +282,15 @@ public class HomeLettore {
 
         // pulsante "Carica Eventi Successivi" - mantiene stessa logica
         if (this.eventiProssimi.size() >= 10) {
+            // mostra il bottone solo se ci sono almeno 10 eventi
             nextEventiButton = new Button("Carica Eventi Successivi");
             nextEventiButton.setOnAction(e -> {
-                Evento last = this.eventiProssimi.isEmpty() ? null : this.eventiProssimi.get(this.eventiProssimi.size() - 1);
-                RichiestaNextEventi req = new RichiestaNextEventi(last);
+                Evento last = this.eventiProssimi.isEmpty() ? null : this.eventiProssimi.get(this.eventiProssimi.size() - 1); // ultimo evento caricato
+                RichiestaNextEventi req = new RichiestaNextEventi(last); // crea richiesta per eventi successivi
                 try {
-                    client.sendMessage(req);
+                    client.sendMessage(req); // invia richiesta al server
                 } catch (Exception ex) {
-                    System.out.println(ex.getMessage());
+                    System.out.println(ex.getMessage()); // log errore
                 }
             });
             eventiProssimiBox.getChildren().add(nextEventiButton);
@@ -302,16 +302,16 @@ public class HomeLettore {
         centro.setPadding(new Insets(20));
 
         // ---------- LAYOUT FINALE ----------
-        BorderPane root = new BorderPane();
-        root.setTop(topBar);
-        root.setCenter(centro);
+        BorderPane root = new BorderPane(); // layout principale
+        root.setTop(topBar); // top bar
+        root.setCenter(centro); // contenuto centrale
 
-        ScrollPane scrollPane = new ScrollPane(root);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        ScrollPane scrollPane = new ScrollPane(root); // scroll pane per il contenuto
+        scrollPane.setFitToWidth(true); // adatta la larghezza al contenuto
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // barra verticale se necessaria
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // mai barra orizzontale
 
-        this.scene = new Scene(scrollPane,  750, 780);
+        this.scene = new Scene(scrollPane, 750, 780); // crea scena principale
         Platform.runLater(() -> {
             stage.setScene(scene);
             stage.setTitle("Home Lettore");
@@ -335,111 +335,115 @@ public class HomeLettore {
         if (nextEventiButton != null) nextEventiButton.setVisible(false);
     }
 
-    /** Crea una TableView per visualizzare gli eventi.
+    /**
+     * Crea una TableView per visualizzare gli eventi.
      * Crea TableView<Evento> con colonne: Data, Ora inizio, Ora fine (calcolaOraFine), Titolo.
      * visibleRows indica il numero di righe visibili. TableView gestisce lo scrolling interno se ci sono più righe.
-     * @param eventi       l'elenco degli eventi da visualizzare
+     *
+     * @param eventi      l'elenco degli eventi da visualizzare
      * @param visibleRows il numero di righe visibili nella tabella
      * @param formatoData il formato per la visualizzazione della data
      * @param formatoOra  il formato per la visualizzazione dell'ora
      * @return la TableView contenente gli eventi
      */
     private TableView<Evento> createEventoTableView(List<Evento> eventi, int visibleRows, DateTimeFormatter formatoData, DateTimeFormatter formatoOra) {
-        TableView<Evento> table = new TableView<>();
+        TableView<Evento> table = new TableView<>(); // crea TableView per eventi
 
-        TableColumn<Evento, String> dataCol = new TableColumn<>("Data");
+        TableColumn<Evento, String> dataCol = new TableColumn<>("Data"); // colonna data
         dataCol.setCellValueFactory(cell -> {
-            Evento ev = cell.getValue();
-            String val = (ev != null && ev.getData() != null) ? ev.getData().toLocalDate().format(formatoData) : "";
-            return new SimpleStringProperty(val);
+            Evento ev = cell.getValue(); // ottieni evento dalla cella
+            String val = (ev != null && ev.getData() != null) ? ev.getData().toLocalDate().format(formatoData) : ""; // formatta data
+            return new SimpleStringProperty(val); // restituisci come SimpleStringProperty
         });
-        dataCol.setSortable(true);
+        dataCol.setSortable(true); // abilita ordinamento
         dataCol.setPrefWidth(90);
         dataCol.setMinWidth(70);
         dataCol.setMaxWidth(120);
         dataCol.setStyle("-fx-alignment: CENTER;");
 
-        TableColumn<Evento, String> oraInizioCol = new TableColumn<>("Ora inizio");
+        TableColumn<Evento, String> oraInizioCol = new TableColumn<>("Ora inizio"); // colonna ora inizio
         oraInizioCol.setCellValueFactory(cell -> {
-            Evento ev = cell.getValue();
-            String val = (ev != null && ev.getData() != null) ? ev.getData().toLocalTime().format(formatoOra) : "";
-            return new SimpleStringProperty(val);
+            Evento ev = cell.getValue(); // ottieni evento dalla cella
+            String val = (ev != null && ev.getData() != null) ? ev.getData().toLocalTime().format(formatoOra) : ""; // formatta ora inizio
+            return new SimpleStringProperty(val); // restituisci come SimpleStringProperty
         });
-        oraInizioCol.setSortable(true);
+        oraInizioCol.setSortable(true); // abilita ordinamento
         oraInizioCol.setPrefWidth(70);
         oraInizioCol.setMinWidth(50);
         oraInizioCol.setMaxWidth(90);
         oraInizioCol.setStyle("-fx-alignment: CENTER;");
 
-        TableColumn<Evento, String> oraFineCol = new TableColumn<>("Ora fine");
+        TableColumn<Evento, String> oraFineCol = new TableColumn<>("Ora fine"); // colonna ora fine
         oraFineCol.setCellValueFactory(cell -> {
-            Evento ev = cell.getValue();
-            String val = "";
+            Evento ev = cell.getValue(); // ottieni evento dalla cella
+            String val = ""; // valore iniziale vuoto
             try {
                 if (ev != null && ev.calcolaOraFine() != null) {
-                    val = ev.calcolaOraFine().format(formatoOra);
+                    val = ev.calcolaOraFine().format(formatoOra); // calcola e formatta ora fine
                 }
-            } catch (Exception ignored) {}
-            return new SimpleStringProperty(val);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage()); // log errore
+            }
+            return new SimpleStringProperty(val); // restituisci come SimpleStringProperty
         });
-        oraFineCol.setSortable(true);
+        oraFineCol.setSortable(true); // abilita ordinamento
         oraFineCol.setPrefWidth(70);
         oraFineCol.setMinWidth(50);
         oraFineCol.setMaxWidth(90);
         oraFineCol.setStyle("-fx-alignment: CENTER;");
 
-        TableColumn<Evento, String> luogoCol = new TableColumn<>("Luogo evento");
+        TableColumn<Evento, String> luogoCol = new TableColumn<>("Luogo evento"); // colonna luogo evento
         luogoCol.setCellValueFactory(cell -> {
-            Evento ev = cell.getValue();
-            String val = (ev != null && ev.getLuogo() != null) ? ev.getLuogo().getNome() : "";
-            return new SimpleStringProperty(val);
+            Evento ev = cell.getValue(); // ottieni evento dalla cella
+            String val = (ev != null && ev.getLuogo() != null) ? ev.getLuogo().getNome() : ""; // ottieni nome luogo
+            return new SimpleStringProperty(val); // restituisci come SimpleStringProperty
         });
         luogoCol.setPrefWidth(70);
         luogoCol.setMinWidth(50);
         luogoCol.setMaxWidth(90);
-        luogoCol.setSortable(true);
+        luogoCol.setSortable(true); // abilita ordinamento
 
-        TableColumn<Evento, String> titoloCol = new TableColumn<>("Titolo evento");
-        titoloCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue() != null ? cell.getValue().getNome() : ""));
-        titoloCol.setSortable(true);
+        TableColumn<Evento, String> titoloCol = new TableColumn<>("Titolo evento"); // colonna titolo evento
+        titoloCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue() != null ? cell.getValue().getNome() : "")); // ottieni titolo evento
+        titoloCol.setSortable(true); // abilita ordinamento
         // titoloCol rimane flessibile: non impostare maxWidth in modo che occupi lo spazio residuo
 
-        table.getColumns().addAll(dataCol, oraInizioCol, oraFineCol, luogoCol,titoloCol);
+        // aggiungi colonne alla tabella
+        table.getColumns().addAll(dataCol, oraInizioCol, oraFineCol, luogoCol, titoloCol);
 
-        ObservableList<Evento> items = FXCollections.observableArrayList(eventi);
-        table.setItems(items);
+        ObservableList<Evento> items = FXCollections.observableArrayList(eventi); // crea lista osservabile
+        table.setItems(items); // imposta elementi della tabella
 
         // Imposta ordinamento iniziale per data in ordine crescente
         dataCol.setSortType(TableColumn.SortType.ASCENDING);
-        table.getSortOrder().clear();
-        table.getSortOrder().add(dataCol);
-        table.sort();
+        table.getSortOrder().clear(); // pulisci ordine di ordinamento
+        table.getSortOrder().add(dataCol); // aggiungi colonna data all'ordine di ordinamento
+        table.sort(); // applica ordinamento
 
         // Altezza preferita: approssimazione riga 25px + header 30px
         double rowHeight = 25;
         double headerHeight = 30;
-        table.setPrefHeight(visibleRows * rowHeight + headerHeight);
+        table.setPrefHeight(visibleRows * rowHeight + headerHeight); // imposta altezza
 
         // Mantieni policy che riempie la larghezza disponibile, ma rispetta i max/min impostati
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         // doppio clic su riga per aprire l'evento
         table.setRowFactory(tv -> {
-            TableRow<Evento> row = new TableRow<>();
+            TableRow<Evento> row = new TableRow<>(); // crea nuova riga
             row.setOnMouseClicked(ev -> {
-                if (!row.isEmpty() && ev.getButton() == MouseButton.PRIMARY && ev.getClickCount() == 2) {
-                    Evento selected = row.getItem();
-                    eventoView.show(stage, selected, lettore, () -> reloadEventiFromServer());
+                if (!row.isEmpty() && ev.getButton() == MouseButton.PRIMARY && ev.getClickCount() == 2) // doppio clic
+                {
+                    Evento selected = row.getItem(); // ottieni evento selezionato
+                    eventoView.show(stage, selected, lettore, () -> reloadEventiFromServer()); // mostra view evento
                 }
             });
-            return row;
+            return row; // restituisci riga
         });
-
         if (items.isEmpty()) {
-            table.setPlaceholder(new Label("Nessun evento."));
+            table.setPlaceholder(new Label("Nessun evento."));  // messaggio se tabella vuota
         }
-
-        return table;
+        return table; // restituisci tabella
     }
 
     /**
@@ -448,9 +452,9 @@ public class HomeLettore {
      * @param prossimiEventi l'elenco dei prossimi eventi
      */
     public void aggiornaEventi(ArrayList<Evento> prossimiEventi) {
-        if (this.eventiProssimi == null) this.eventiProssimi = new ArrayList<>();
-        this.eventiProssimi.addAll(prossimiEventi);
-        Platform.runLater(() -> this.show(stage, lettore, this.eventiProssimi, onBack));
+        if (this.eventiProssimi == null) this.eventiProssimi = new ArrayList<>(); // evita null pointer
+        this.eventiProssimi.addAll(prossimiEventi); // aggiungi nuovi eventi
+        Platform.runLater(() -> this.show(stage, lettore, this.eventiProssimi, onBack)); // aggiorna view
     }
 
     /**
@@ -459,7 +463,7 @@ public class HomeLettore {
      * @param elencolibri l'elenco dei libri
      */
     public void aggiornaLibri(ArrayList<Libro> elencolibri) {
-        Platform.runLater(() -> this.elencoLibri = elencolibri);
+        Platform.runLater(() -> this.elencoLibri = elencolibri); // aggiorna elenco libri
     }
 
     /**
@@ -467,15 +471,12 @@ public class HomeLettore {
      */
     public void reloadEventiFromServer() {
         if (eventiProssimi == null) eventiProssimi = new ArrayList<>();
-        eventiProssimi.clear();
-
-        try {
+        eventiProssimi.clear(); // pulisci lista eventi
+        try { // invia richiesta per i prossimi eventi
             client.sendMessage(new RichiestaNextEventi(null));
         } catch (Exception ex) {
-            System.out.println("Errore richiesta eventi: " + ex.getMessage());
+            System.out.println("Errore richiesta eventi: " + ex.getMessage()); // log errore
         }
-
-        // Platform.runLater(() -> this.show(stage, lettore, eventiProssimi, onBack));
     }
 
     /**
@@ -484,9 +485,8 @@ public class HomeLettore {
      * @param msgerrore il messaggio di errore da visualizzare
      */
     public void mostraErrore(String msgerrore) {
-        Platform.runLater(()->{
-            this.messaggioerrore.setText(msgerrore);
+        Platform.runLater(() -> {
+            this.messaggioerrore.setText(msgerrore); // mostra messaggio di errore
         });
     }
-
 }

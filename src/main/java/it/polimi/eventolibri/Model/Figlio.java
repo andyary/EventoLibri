@@ -4,25 +4,30 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-/** Classe che rappresenta un figlio di un genitore, implementa l'interfaccia Serializable.
+/**
+ * Classe che rappresenta un figlio di un genitore, implementa l'interfaccia Serializable.
  * Contiene informazioni sul nome, data di nascita e le iscrizioni agli eventi.
  */
 public class Figlio implements Serializable {
 
     private int id;
-	private ArrayList<Evento> iscrizioni;
-	private String nome;
-	private LocalDate dataNascita;
+    private ArrayList<Evento> iscrizioni;
+    private String nome;
+    private LocalDate dataNascita;
 
-    /** Restituisce il nome del figlio.
+    /**
+     * Restituisce il nome del figlio.
+     *
      * @return Nome del figlio.
      */
     public String getNome() {
         return nome;
     }
 
-    /** Costruttori della classe Figlio.
-     * @param nome Nome del figlio.
+    /**
+     * Costruttori della classe Figlio.
+     *
+     * @param nome        Nome del figlio.
      * @param dataNascita Data di nascita del figlio.
      */
     public Figlio(String nome, LocalDate dataNascita) {
@@ -31,16 +36,20 @@ public class Figlio implements Serializable {
         this.iscrizioni = new ArrayList<>();
     }
 
-    /** Imposta l'ID del figlio.
+    /**
+     * Imposta l'ID del figlio.
+     *
      * @param id ID univoco del figlio.
      */
     public void setId(int id) {
         this.id = id;
     }
 
-    /** Costruttori della classe Figlio.
-     * @param id ID univoco del figlio.
-     * @param nome Nome del figlio.
+    /**
+     * Costruttori della classe Figlio.
+     *
+     * @param id          ID univoco del figlio.
+     * @param nome        Nome del figlio.
      * @param dataNascita Data di nascita del figlio.
      */
     public Figlio(int id, String nome, LocalDate dataNascita) {
@@ -50,12 +59,14 @@ public class Figlio implements Serializable {
         this.iscrizioni = new ArrayList<>();
     }
 
-    /** Costruttori della classe Figlio.
-     * @param id ID univoco del figlio.
-     * @param nome Nome del figlio.
+    /**
+     * Costruttori della classe Figlio.
+     *
+     * @param id          ID univoco del figlio.
+     * @param nome        Nome del figlio.
      * @param dataNascita Data di nascita del figlio.
-     * @param iscrizioni Array di eventi a cui il figlio è iscritto.
-     * @param genitore Genitore del figlio, per aggiungere i listener agli eventi.
+     * @param iscrizioni  Array di eventi a cui il figlio è iscritto.
+     * @param genitore    Genitore del figlio, per aggiungere i listener agli eventi.
      */
     public Figlio(int id, String nome, LocalDate dataNascita, ArrayList<Evento> iscrizioni, Genitore genitore) {
         this(id, nome, dataNascita);
@@ -65,59 +76,71 @@ public class Figlio implements Serializable {
         }
     }
 
-    /** Metodo per iscrivere il figlio ad un evento, aggiungendo anche il listener del genitore all'evento.
-     *  @param evento Evento a cui iscrivere il figlio.
-     *  @param genitore Genitore del figlio, per aggiungere il listener all'evento.
+    /**
+     * Metodo per iscrivere il figlio ad un evento, aggiungendo anche il listener del genitore all'evento.
+     *
+     * @param evento   Evento a cui iscrivere il figlio.
+     * @param genitore Genitore del figlio, per aggiungere il listener all'evento.
      */
     public void iscrivi(Evento evento, Genitore genitore) {
-        iscrizioni.add(evento);
-        evento.addListener(genitore);
-        evento.setIscritti(evento.getIscritti() + 1);
+        iscrizioni.add(evento); // Aggiunge l'evento alla lista delle iscrizioni del figlio
+        evento.addListener(genitore); // Aggiunge il genitore come listener dell'evento
+        evento.setIscritti(evento.getIscritti() + 1); // Incrementa il contatore degli iscritti all'evento
     }
 
-    /** Metodo per disiscrivere il figlio da un evento, rimuovendo il listener del genitore dall'evento
-     *  solo se nessun altro figlio del genitore è iscritto all'evento.
-     *  @param evento Evento da cui disiscrivere il figlio.
-     *  @param genitore Genitore del figlio, per rimuovere il listener dall'evento se necessario.
+    /**
+     * Metodo per disiscrivere il figlio da un evento, rimuovendo il listener del genitore dall'evento
+     * solo se nessun altro figlio del genitore è iscritto all'evento.
+     *
+     * @param evento   Evento da cui disiscrivere il figlio.
+     * @param genitore Genitore del figlio, per rimuovere il listener dall'evento se necessario.
      */
-	public void disiscrivi(Evento evento, Genitore genitore) {
-        evento.setIscritti(evento.getIscritti() - 1);
-        iscrizioni.removeIf(e -> e.getId() == evento.getId());
-        for (Figlio figlio : genitore.getFigli()) {
-            if (figlio.getIscrizioni().stream().anyMatch(ev -> ev.getId() == evento.getId())) {
+    public void disiscrivi(Evento evento, Genitore genitore) {
+        evento.setIscritti(evento.getIscritti() - 1); // Decrementa il contatore degli iscritti all'evento
+        iscrizioni.removeIf(e -> e.getId() == evento.getId()); // Rimuove l'evento dalla lista delle iscrizioni del figlio
+        for (Figlio figlio : genitore.getFigli()) { // Cicla su tutti i figli del genitore
+            if (figlio.getIscrizioni().stream().anyMatch(ev -> ev.getId() == evento.getId())) { // Controlla se un altro figlio è iscritto all'evento
                 return; // Un altro figlio del genitore è ancora iscritto all'evento
             }
         }
-        evento.removeListener(genitore);
-	}
+        evento.removeListener(genitore); // Rimuove il genitore come listener dell'evento se nessun altro figlio è iscritto
+    }
 
-    /** Restituisce il numero di iscrizioni del figlio.
+    /**
+     * Restituisce il numero di iscrizioni del figlio.
+     *
      * @return Numero di iscrizioni del figlio.
      */
     public int getNumeroIscrizioni() {
         return iscrizioni.size();
     }
 
-    /** Restituisce la lista delle iscrizioni del figlio.
+    /**
+     * Restituisce la lista delle iscrizioni del figlio.
+     *
      * @return Lista delle iscrizioni del figlio.
      */
     public ArrayList<Evento> getIscrizioni() {
         return iscrizioni;
     }
 
-    /** Aggiorna un evento nella lista delle iscrizioni del figlio.
+    /**
+     * Aggiorna un evento nella lista delle iscrizioni del figlio.
+     *
      * @param eventoAggiornato Evento aggiornato da sostituire nella lista delle iscrizioni.
      */
     public void aggiornaEvento(Evento eventoAggiornato) {
-        for (int i = 0; i < iscrizioni.size(); i++) {
-            if (iscrizioni.get(i).getId() == eventoAggiornato.getId()) {
-                iscrizioni.set(i, eventoAggiornato);
-                break;
+        for (int i = 0; i < iscrizioni.size(); i++) { // Cicla su tutte le iscrizioni
+            if (iscrizioni.get(i).getId() == eventoAggiornato.getId()) { // Trova l'evento da aggiornare
+                iscrizioni.set(i, eventoAggiornato); // Sostituisce l'evento con quello aggiornato
+                break; // Esce dal ciclo dopo aver aggiornato l'evento
             }
         }
     }
 
-    /** Verifica se il figlio è iscritto ad un evento specifico.
+    /**
+     * Verifica se il figlio è iscritto ad un evento specifico.
+     *
      * @param evento Evento da verificare.
      * @return true se il figlio è iscritto all'evento, false altrimenti.
      */
@@ -125,14 +148,18 @@ public class Figlio implements Serializable {
         return iscrizioni.stream().anyMatch(e -> e.getId() == evento.getId());
     }
 
-    /** Restituisce l'ID del figlio.
+    /**
+     * Restituisce l'ID del figlio.
+     *
      * @return ID del figlio.
      */
     public int getId() {
         return id;
     }
 
-    /** Restituisce la data di nascita del figlio.
+    /**
+     * Restituisce la data di nascita del figlio.
+     *
      * @return Data di nascita del figlio.
      */
     public LocalDate getDataNascita() {

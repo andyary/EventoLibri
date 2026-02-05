@@ -21,11 +21,16 @@ import java.io.IOException;
  * Classe View per la visualizzazione e modifica del profilo di un amministratore.
  */
 public class ProfiloAmministratore {
-
+    // ===========================
+    // ATTRIBUTI
+    // ===========================
     private final Client client;
     private Stage stage;
     private Amministratore amministratore;
     private Label messaggioerrore;
+    // ===========================
+    // COSTRUTTORE
+    // ===========================
 
     /**
      * Costruttore della classe ProfiloAmministratore.
@@ -47,6 +52,10 @@ public class ProfiloAmministratore {
         return amministratore;
     }
 
+    // ===========================
+    // METODI
+    // ===========================
+
     /**
      * Mostra la schermata del profilo dell'amministratore.
      *
@@ -55,6 +64,7 @@ public class ProfiloAmministratore {
      * @param onBack         l'azione da eseguire quando si preme il pulsante "Indietro"
      */
     public void show(Stage stage, Amministratore amministratore, Runnable onBack) {
+        // Salva i riferimenti
         this.stage = stage;
         this.amministratore = amministratore;
         // ===========================
@@ -70,7 +80,7 @@ public class ProfiloAmministratore {
         TextField nomeField = new TextField(amministratore.getNome());
         TextField cognomeField = new TextField(amministratore.getCognome());
         TextField usernameField = new TextField(amministratore.getUserName());
-        usernameField.setDisable(true); // non si cambia normalmente
+        usernameField.setDisable(true); // Lo username non è modificabile
         datiBox.getChildren().addAll(
                 new Label("Nome:"),
                 nomeField,
@@ -79,13 +89,16 @@ public class ProfiloAmministratore {
                 new Label("Username:"),
                 usernameField
         );
+        // Pulsante Salva Dati
         Button salvaDati = new Button("Salva modifiche");
         salvaDati.setOnAction(e -> {
+            // Controlla se ci sono modifiche nei campi nome o cognome
             if (!amministratore.getNome().equals(nomeField.getText()) || !amministratore.getCognome().equals(cognomeField.getText())) {
-                this.messaggioerrore.setText("");
+                this.messaggioerrore.setText(""); // Pulisce il messaggio di errore
+                // Crea un nuovo amministratore con i dati aggiornati
                 CreaUtente<Amministratore> creaAmministratore = new CreaAmministratore();
                 Amministratore amministratoreTemp = creaAmministratore.nuovoUtente(amministratore.getId(), nomeField.getText(), cognomeField.getText(), amministratore.getUserName());
-                try {
+                try { // Invia la richiesta di aggiornamento al server
                     client.sendMessage(new RichiestaAggiornaAmministratore(amministratoreTemp));
                 } catch (IOException ex) {
                     System.out.println(ex.getMessage());
@@ -100,7 +113,7 @@ public class ProfiloAmministratore {
         // ===========================
         Button back = new Button("Indietro");
         back.setOnAction(e -> onBack.run());
-        HBox backBox = new HBox(new Label("  Benvenuto, (admin) " + amministratore.getNome() + "!          "),back);
+        HBox backBox = new HBox(new Label("  Benvenuto, (admin) " + amministratore.getNome() + "!          "), back);
         backBox.setAlignment(Pos.TOP_RIGHT);
         backBox.setPadding(new Insets(10));
         // ===========================
@@ -108,9 +121,9 @@ public class ProfiloAmministratore {
         // ===========================
         VBox contenuto = new VBox(25, backBox, title, datiBox);
         contenuto.setPadding(new Insets(20));
-        ScrollPane scrollPane = new ScrollPane(contenuto);
-        scrollPane.setFitToWidth(true);
-        Scene scene = new Scene(scrollPane,  750, 780);
+        ScrollPane scrollPane = new ScrollPane(contenuto); // Aggiunge lo scroll pane per gestire contenuti lunghi
+        scrollPane.setFitToWidth(true); // Adatta la larghezza del contenuto alla larghezza della finestra
+        Scene scene = new Scene(scrollPane, 750, 780); // Dimensioni della scena
         Platform.runLater(() -> {
             stage.setTitle("Profilo Amministratore");
             stage.setScene(scene);
@@ -128,8 +141,4 @@ public class ProfiloAmministratore {
             this.messaggioerrore.setText(msgerrore);
         });
     }
-
 }
-
-
-

@@ -23,6 +23,7 @@ public class RegistraNewAmministratore {
     private Label messaggioerrore;
     private Amministratore amministratore;
 
+    // Costruttore della classe RegistraNewAmministratore.
     public RegistraNewAmministratore(Client client) {
         this.client = client;
         this.messaggioerrore = new Label("");
@@ -36,7 +37,7 @@ public class RegistraNewAmministratore {
      * @param amministratore l'amministratore che sta registrando il nuovo amministratore
      * @param onBack         l'azione da eseguire quando si preme il pulsante "Indietro"
      */
-    public void show(Stage stage, Amministratore amministratore,Runnable onBack) {
+    public void show(Stage stage, Amministratore amministratore, Runnable onBack) {
         this.stage = stage;
         this.amministratore = amministratore;
         this.messaggioerrore.setText("");
@@ -68,11 +69,15 @@ public class RegistraNewAmministratore {
                 new Label("Password:"),
                 pswField
         );
+        // ===========================
+        // PULSANTE SALVA DATI
+        // ===========================
         Button salvaDati = new Button("Registra nuovo amministratore");
         salvaDati.setId("saveButton"); // id per test
-        salvaDati.setOnAction(e -> {
+        salvaDati.setOnAction(e -> { // Azione al click del pulsante
             if ((!nomeField.getText().isBlank()) && (!cognomeField.getText().isBlank()) && (!usernameField.getText().isBlank()) && (!pswField.getText().isBlank())) {
                 this.messaggioerrore.setText("");
+                // Creazione del nuovo amministratore e invio della richiesta al server
                 CreaUtente<Amministratore> creaAmministratore = new CreaAmministratore();
                 Amministratore amministratoreTemp = creaAmministratore.nuovoUtente(nomeField.getText(), cognomeField.getText(),
                         usernameField.getText());
@@ -103,9 +108,10 @@ public class RegistraNewAmministratore {
         // ===========================
         VBox contenuto = new VBox(25, backBox, title, datiBox);
         contenuto.setPadding(new Insets(20));
-        ScrollPane scrollPane = new ScrollPane(contenuto);
-        scrollPane.setFitToWidth(true);
-        Scene scene = new Scene(scrollPane,  750, 780);
+        ScrollPane scrollPane = new ScrollPane(contenuto); // Aggiunta dello scroll pane
+        scrollPane.setFitToWidth(true); // Adatta il contenuto alla larghezza della finestra
+        Scene scene = new Scene(scrollPane, 750, 780); // Dimensioni della scena
+        // Mostra la scena nello stage
         Platform.runLater(() -> {
             stage.setTitle("Registra Nuovo Amministratore");
             stage.setScene(scene);
@@ -120,9 +126,9 @@ public class RegistraNewAmministratore {
      * @param messaggioerrore il messaggio di successo da mostrare
      */
     public void mostraSuccesso(String messaggioerrore) {
-        Platform.runLater(()->{
+        Platform.runLater(() -> { // Aggiornamento dell'interfaccia grafica
             this.messaggioerrore.setStyle("-fx-text-fill: green;");
-            this.messaggioerrore.setText(messaggioerrore);
+            this.messaggioerrore.setText(messaggioerrore); // Impostazione del messaggio di successo
         });
     }
 
@@ -132,10 +138,9 @@ public class RegistraNewAmministratore {
      * @param messaggioerrore il messaggio di errore da mostrare
      */
     public void mostraErrore(String messaggioerrore) {
-        Platform.runLater(()->{
+        Platform.runLater(() -> { // Aggiornamento dell'interfaccia grafica
             this.messaggioerrore.setStyle("-fx-text-fill: red;");
-            this.messaggioerrore.setText(messaggioerrore);
+            this.messaggioerrore.setText(messaggioerrore); // Impostazione del messaggio di errore
         });
     }
-
 }
